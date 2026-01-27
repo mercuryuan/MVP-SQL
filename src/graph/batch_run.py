@@ -39,8 +39,13 @@ def process_dataset(dataset_name, dataset_root_path, skip_existing=False):
     print(f"📂 扫描到 {len(db_dirs)} 个数据库文件夹")
     print(f"📂 输出根目录: {paths.OUTPUT_ROOT}")
 
+    # 打印跳过模式状态
+    if skip_existing:
+        print("⏩ 已开启断点续传模式：检测到目标文件存在将自动跳过")
+
     success_count = 0
     fail_count = 0
+    skip_count = 0  # 新增统计
 
     # 使用 tqdm 显示进度
     pbar = tqdm(db_dirs, desc=f"Building Graphs ({dataset_name})", unit="db")
@@ -48,7 +53,7 @@ def process_dataset(dataset_name, dataset_root_path, skip_existing=False):
     for db_dir in pbar:
         db_name = db_dir.name
 
-        # 寻找该目录下的 sqlite 文件 (通常文件名与文件夹名一致，但也可能不一致，这里做个模糊匹配)
+        # 寻找该目录下的 sqlite 文件
         sqlite_files = list(db_dir.glob("*.sqlite"))
 
         if not sqlite_files:
@@ -63,9 +68,14 @@ def process_dataset(dataset_name, dataset_root_path, skip_existing=False):
         output_dir = paths.OUTPUT_ROOT / dataset_name / db_name
         output_pkl = output_dir / f"{db_name}.pkl"
 
-        # 增量处理逻辑
+        # === 核心修改：检测存在则跳过 ===
         if skip_existing and output_pkl.exists():
+            skip_count += 1
+            # 记录日志，并在进度条后缀显示状态，但不打印刷屏
+            logging.info(f"Skipping {db_name}: Output file already exists -> {output_pkl}")
+            pbar.set_postfix(status="Skipped", db=db_name)
             continue
+        # ============================
 
         # 3. 执行 Pipeline
         try:
@@ -73,13 +83,11 @@ def process_dataset(dataset_name, dataset_root_path, skip_existing=False):
             output_dir.mkdir(parents=True, exist_ok=True)
 
             # 更新进度条描述
-            pbar.set_postfix(db=db_name)
+            pbar.set_postfix(status="Processing", db=db_name)
 
-            # === 核心调用 ===
             # 这里的 SchemaPipeline 封装了所有细节：SQLite读取 -> 分析 -> 构建图 -> 保存
             pipeline = SchemaPipeline(str(sqlite_path), str(output_pkl))
-            pipeline.run()  # 内部已经包含了 tqdm (列级别)，可能会有双重进度条，视情况调整
-            # ===============
+            pipeline.run()  # 内部已经包含了 tqdm (列级别)
 
             success_count += 1
             logging.info(f"Success: {db_name} -> {output_pkl}")
@@ -88,12 +96,11 @@ def process_dataset(dataset_name, dataset_root_path, skip_existing=False):
             fail_count += 1
             error_msg = f"Failed: {db_name}. Error: {str(e)}"
             logging.error(error_msg)
-            # 在控制台打印简短错误，详细错误进日志
-            # tqdm.write(f"❌ {db_name} 失败: {e}")
 
     print(f"\n✅ [{dataset_name}] 处理完成 Summary:")
     print(f"   - 成功: {success_count}")
     print(f"   - 失败: {fail_count}")
+    print(f"   - 跳过: {skip_count}")  # 输出跳过数量
     print(f"   - 日志已保存至 pipeline_batch_run.log")
 
 
@@ -101,22 +108,24 @@ if __name__ == "__main__":
     # ================= 配置区域 =================
 
     # 1. BIRD 数据集配置
-    # 请修改为你实际的 BIRD 数据集路径
+    # 注意：这里使用 getattr 是为了防止 paths.py 中没有定义 TRAIN_BIRD 导致报错，默认回退到你之前的路径
+    bird_path = getattr(paths, "TRAIN_BIRD", r"F:\train_bird\train_databases")
 
     # 2. SPIDER 数据集配置
-    # 请修改为你实际的 SPIDER 数据集路径
-    # SPIDER_TRAIN = r"../data/spider/database"
+    # spider_path = getattr(paths, "SPIDER_TRAIN", r"../data/spider/database")
 
     # ================= 执行区域 =================
 
     # 执行 BIRD
-    if os.path.exists(paths.TRAIN_BIRD):
+    if os.path.exists(bird_path):
         process_dataset(
             dataset_name="bird",
-            dataset_root_path=paths.TRAIN_BIRD,
-            skip_existing=False  # 设为 True 可以断点续传
+            dataset_root_path=bird_path,
+            skip_existing=True  # 【修改】开启跳过模式，避免覆盖生成
         )
+    else:
+        print(f"❌ 未找到 BIRD 数据集路径: {bird_path}")
 
     # 执行 SPIDER (稍后配置好路径后取消注释)
-    # if os.path.exists(SPIDER_ROOT):
-    #     process_dataset("spider", SPIDER_ROOT)
+    # if os.path.exists(spider_path):
+    #     process_dataset("spider", spider_path, skip_existing=True)
