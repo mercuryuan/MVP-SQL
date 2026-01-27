@@ -1,8 +1,8 @@
 import networkx as nx
-from utils import generate_fk_hash
+from .utils import generate_fk_hash
 
 
-class GraphLoader:
+class GraphBuilder:
     def __init__(self):
         """
         初始化 NetworkX 图构建器。

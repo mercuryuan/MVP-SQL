@@ -1,12 +1,9 @@
 import os
 import pickle
 import networkx as nx
-from tqdm import tqdm  # 建议加上 tqdm 显示进度，因为处理大库时可能会慢
-
-from sqlite_handler import SQLiteHandler
-from data_profiler import DataProfiler
-from metadata_manager import MetadataManager
-from graph_loader import GraphLoader
+from tqdm import tqdm
+from core import SQLiteHandler, DataProfiler, MetadataManager, GraphBuilder
+from configs import paths
 
 
 class SchemaPipeline:
@@ -24,7 +21,7 @@ class SchemaPipeline:
         # 注意：SQLiteHandler 在 run() 中通过 with 上下文使用，此处不实例化连接
         self.profiler = DataProfiler()
         self.metadata_manager = MetadataManager(database_path)
-        self.graph_loader = GraphLoader()
+        self.builder = GraphBuilder()
 
     def run(self):
         """
@@ -61,7 +58,7 @@ class SchemaPipeline:
                     table_props["foreign_key"] = fk_columns if len(fk_columns) > 1 else fk_columns[0]
 
                 # 在图中创建表节点
-                self.graph_loader.add_table_node(table_name, **table_props)
+                self.builder.add_table_node(table_name, **table_props)
 
                 # --- 阶段 2: 处理列 (Column Nodes) ---
                 # 获取 CSV 描述文件中的元数据
@@ -104,7 +101,7 @@ class SchemaPipeline:
                             final_props["value_description"] = matching_desc["value_description"]
 
                     # E. 写入图
-                    self.graph_loader.add_column_node(
+                    self.builder.add_column_node(
                         table_name,
                         col_name,
                         is_primary_key=is_pk,
@@ -130,7 +127,7 @@ class SchemaPipeline:
                             to_column = target_pks[0]  # 假设单主键
 
                     if to_column:
-                        self.graph_loader.add_foreign_key(
+                        self.builder.add_foreign_key(
                             from_table=table_name,
                             from_column=from_column,
                             to_table=to_table,
@@ -138,7 +135,7 @@ class SchemaPipeline:
                         )
 
         # 4. 保存图结构
-        self.graph_loader.save_graph(self.output_path)
+        self.builder.save_graph(self.output_path)
         print(f"Pipeline completed. Schema graph saved to {self.output_path}")
 
     @staticmethod
@@ -157,8 +154,8 @@ class SchemaPipeline:
 # --- 使用示例 (对应原代码的 main 部分) ---
 if __name__ == "__main__":
     # 配置路径
-    database_file = "../data/spider/medicine_enzyme_interaction.sqlite"
-    output_graph_file = "./output/spider/sfda/medicine_enzyme_interaction.pkl"
+    database_file = os.path.join(paths.PROJECT_ROOT, "data/spider/medicine_enzyme_interaction.sqlite")
+    output_graph_file = os.path.join(paths.PROJECT_ROOT, "output/spider/sfda/medicine_enzyme_interaction.pkl")
     # database_file = "../data/bird/european_football_1/european_football_1.sqlite"
     # output_graph_file = "./output/bird/european_football_1/european_football_1.pkl"
 

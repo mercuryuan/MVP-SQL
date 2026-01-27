@@ -6,7 +6,7 @@ from collections import Counter
 from decimal import Decimal
 from datetime import datetime, date
 from dateutil import parser
-from utils import convert_date_string
+from .utils import convert_date_string
 
 
 class DataProfiler:

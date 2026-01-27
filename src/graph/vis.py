@@ -5,6 +5,7 @@ import os
 import json
 import pandas as pd
 import pickle
+from configs import paths
 
 # ==========================================
 # 0. 全局配置
@@ -12,7 +13,7 @@ import pickle
 st.set_page_config(page_title="Schema 图结构可视化", layout="wide", page_icon="🕸️")
 
 # 【请修改此处】图数据存储的根目录
-ROOT_DIR = "graph/output"
+ROOT_DIR = paths.OUTPUT_ROOT
 
 # 样式定义
 # 【修改点1】调整大小定义，这里的 size 现在代表直径
