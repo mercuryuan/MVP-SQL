@@ -154,10 +154,10 @@ class SchemaPipeline:
 # --- 使用示例 (对应原代码的 main 部分) ---
 if __name__ == "__main__":
     # 配置路径
-    database_file = os.path.join(paths.PROJECT_ROOT, "data/spider/medicine_enzyme_interaction.sqlite")
-    output_graph_file = os.path.join(paths.PROJECT_ROOT, "output/spider/sfda/medicine_enzyme_interaction.pkl")
-    # database_file = "../data/bird/european_football_1/european_football_1.sqlite"
-    # output_graph_file = "./output/bird/european_football_1/european_football_1.pkl"
+    # database_file = os.path.join(paths.PROJECT_ROOT, "data/spider/medicine_enzyme_interaction.sqlite")
+    # output_graph_file = os.path.join(paths.PROJECT_ROOT, "output/spider/sfda/medicine_enzyme_interaction.pkl")
+    database_file = "F:/train_bird/train_databases/chicago_crime/chicago_crime.sqlite"
+    output_graph_file = "./output/bird/chicago_crime/chicago_crime.pkl"
 
     # 运行 Pipeline
     pipeline = SchemaPipeline(database_file, output_graph_file)
