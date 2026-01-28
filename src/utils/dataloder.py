@@ -1,22 +1,14 @@
 import json
 import logging
-from typing import Optional, List, Dict, Any, Union, Set
+import os
 from pathlib import Path
+from typing import Optional, List, Dict, Any, Union
 
 # 尝试导入配置，如果不存在则使用占位符，防止报错影响阅读
-try:
-    from configs import (
-        SPIDER_TRAIN_JSON, SPIDER_DEV_JSON, SPIDER_TRAIN_OTHER_JSON,
-        BIRD_TRAIN_JSON, BIRD_DEV_JSON, SPIDER
-    )
-except ImportError:
-    # 仅作为演示时的兜底，实际环境请确保 config 存在
-    SPIDER_TRAIN_JSON = "spider_train.json"
-    SPIDER_TRAIN_OTHER_JSON = "spider_train_others.json"
-    SPIDER_DEV_JSON = "spider_dev.json"
-    SPIDER = "spider_full.json"
-    BIRD_TRAIN_JSON = "bird_train.json"
-    BIRD_DEV_JSON = "bird_dev.json"
+from configs.paths import (
+    SPIDER_TRAIN_JSON, SPIDER_DEV_JSON, SPIDER_TRAIN_OTHER_JSON,
+    BIRD_TRAIN_JSON, BIRD_DEV_JSON
+)
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -31,8 +23,13 @@ class DataLoader:
     1. 支持自动合并多个源文件（如 Spider 的 train + others）。
     2. 自动标准化字段名（将 query/SQL 统一为 sql）。
     3. 支持像 List 一样操作 (len(), loader[0])。
+    可选数据集：
+    1. spider：Spider 数据集，包含 train + others。
+    2. spider_dev：Spider 开发集。
+    3. spider_train：Spider 训练集（train.json）。
+    4. bird：BIRD 数据集（train.json）。
+    5. bird_dev：BIRD 开发集（dev.json）。
     """
-
     # 数据集配置：支持单个文件路径或文件路径列表
     # 如果是列表，加载时会自动合并数据
     DATASET_CONFIG: Dict[str, Union[str, List[str]]] = {
@@ -169,21 +166,11 @@ class DataLoader:
 
 
 if __name__ == '__main__':
-    # 模拟环境：创建一个假的 JSON 文件以便直接运行测试
-    import os
-
-    if not os.path.exists("dummy.json"):
-        dummy_data = [
-            {"db_id": "bank", "query": "SELECT * FROM account", "question": "Show accounts"},
-            {"db_id": "school", "SQL": "SELECT name FROM student", "question": "List students"}
-        ]
-        with open("spider_train.json", "w") as f: json.dump(dummy_data, f)
-        with open("spider_train_others.json", "w") as f: json.dump([], f)  # 空文件用于测试合并
-
-    # --- 使用示例 ---
+    # 验证BIRD_DEV_JSON是否存在
+    assert os.path.exists(BIRD_DEV_JSON), f"BIRD_DEV_JSON 文件不存在: {BIRD_DEV_JSON}"
 
     # 1. 初始化 (自动合并 Spider 的 train 和 others)
-    loader = DataLoader("spider")
+    loader = DataLoader("bird_dev")
 
     # 2. Pythonic 访问
     print(f"数据总条数: {len(loader)}")
