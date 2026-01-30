@@ -46,7 +46,12 @@ class DataLoader:
     def __init__(self, dataset_name: str, auto_load: bool = True):
         """
         初始化加载器。
-
+        可选数据集：
+            1. spider：Spider 数据集，包含 train + others。
+            2. spider_dev：Spider 开发集。
+            3. spider_train：Spider 训练集（train.json）。
+            4. bird：BIRD 数据集（train.json）。
+            5. bird_dev：BIRD 开发集（dev.json）。
         Args:
             dataset_name: 数据集名称 (key in DATASET_CONFIG)
             auto_load: 是否在初始化时立即加载数据到内存，默认为 True
@@ -166,11 +171,9 @@ class DataLoader:
 
 
 if __name__ == '__main__':
-    # 验证BIRD_DEV_JSON是否存在
-    assert os.path.exists(BIRD_DEV_JSON), f"BIRD_DEV_JSON 文件不存在: {BIRD_DEV_JSON}"
 
     # 1. 初始化 (自动合并 Spider 的 train 和 others)
-    loader = DataLoader("bird_dev")
+    loader = DataLoader("spider_train")
 
     # 2. Pythonic 访问
     print(f"数据总条数: {len(loader)}")
@@ -179,8 +182,9 @@ if __name__ == '__main__':
 
     # 3. 过滤数据 (注意：它会自动把 'query' 和 'SQL' 都变成 'sql')
     filtered_data = loader.filter(
-        db_id="bank",
-        fields=["question", "sql"],
+        db_id="apartment_rentals",
+        # fields=["question", "sql"],
+        fields=["sql"],
         verbose=True
     )
     print("\n过滤后的数据 (Bank):", filtered_data)

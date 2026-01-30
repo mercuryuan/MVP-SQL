@@ -343,3 +343,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # 命令为 streamlit run src/graph/vis.py
