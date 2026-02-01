@@ -6,6 +6,7 @@ import json
 import pandas as pd
 import pickle
 from configs import paths
+from src.utils.graph_loader import GraphLoader
 
 # ==========================================
 # 0. 全局配置
@@ -63,12 +64,10 @@ def smart_truncate(content, length=8):
 
 @st.cache_data
 def load_graph_from_pkl(pkl_path):
-    try:
-        with open(pkl_path, "rb") as f:
-            return pickle.load(f)
-    except Exception as e:
-        st.error(f"文件加载失败: {e}")
-        return None
+    G = GraphLoader.load_graph(pkl_path)
+    if G is None:
+        st.error(f"文件加载失败，请检查日志。路径: {pkl_path}")
+    return G
 
 
 # ==========================================
