@@ -157,7 +157,7 @@ if __name__ == "__main__":
     # database_file = os.path.join(paths.PROJECT_ROOT, "data/spider/medicine_enzyme_interaction.sqlite")
     # output_graph_file = os.path.join(paths.PROJECT_ROOT, "output/spider/sfda/medicine_enzyme_interaction.pkl")
     database_file = "F:/train_bird/train_databases/chicago_crime/chicago_crime.sqlite"
-    output_graph_file = r"D:\MVP-SQL-V2\output\raw_graphs\bird\books\books.pkl"
+    output_graph_file = r"D:\MVP-SQL\output\raw_graphs\bird\books\books.pkl"
 
     # 运行 Pipeline
     # pipeline = SchemaPipeline(database_file, output_graph_file)

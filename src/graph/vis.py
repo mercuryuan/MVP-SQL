@@ -15,7 +15,7 @@ st.set_page_config(page_title="Schema 图结构可视化", layout="wide", page_i
 
 # 【请修改此处】图数据存储的根目录
 # ROOT_DIR = paths.OUTPUT_ROOT
-ROOT_DIR = os.path.join(paths.OUTPUT_ROOT, "converted_graph_pkl")
+ROOT_DIR = os.path.join(paths.OUTPUT_ROOT, "schema_graph_repo")
 
 # 样式定义
 # 【修改点1】调整大小定义，这里的 size 现在代表直径

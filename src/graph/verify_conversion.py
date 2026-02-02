@@ -51,4 +51,4 @@ def verify_graph(pkl_path):
         print(G.get_edge_data(*fk_edges[0]))
 
 if __name__ == "__main__":
-    verify_graph(r"d:\MVP-SQL\converted_graph_pkl\spider\phone_1\phone_1.pkl")
+    verify_graph(r"d:\MVP-SQL\schema_graph_repo\spider\phone_1\phone_1.pkl")

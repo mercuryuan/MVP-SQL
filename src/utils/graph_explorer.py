@@ -5,11 +5,13 @@ from typing import List, Dict, Any, Set
 
 logger = logging.getLogger(__name__)
 
+
 class GraphExplorer:
     """
     NetworkX implementation of the graph explorer, replacing the old Neo4jExplorer.
     Operates on a NetworkX DiGraph loaded from a pickle file.
     """
+
     def __init__(self, graph: nx.DiGraph):
         self.graph = graph
 
@@ -79,14 +81,14 @@ class GraphExplorer:
                     if node_data.get("type") == "Column":
                         # Use node properties as column info
                         columns[node_data.get("name")] = node_data
-        
+
         if not columns:
-             # Just a warning, not necessarily an error (table might have no columns or not exist)
-             # But following original logic, it might print warning.
-             # Original code: print warning if not found.
-             pass
-             # logger.warning(f"No columns found for table '{table_name}'")
-        
+            # Just a warning, not necessarily an error (table might have no columns or not exist)
+            # But following original logic, it might print warning.
+            # Original code: print warning if not found.
+            pass
+            # logger.warning(f"No columns found for table '{table_name}'")
+
         return columns
 
     def get_neighbor_tables(self, table_name: str, n_hop: int) -> List[str]:
@@ -100,7 +102,7 @@ class GraphExplorer:
 
         visited = {table_name}
         current_layer = {table_name}
-        
+
         for _ in range(n_hop):
             next_layer = set()
             for node in current_layer:
@@ -119,18 +121,18 @@ class GraphExplorer:
                     if neighbor == node: continue
                     edge_data = self.graph.get_edge_data(neighbor, node)
                     if edge_data.get("type") == "FOREIGN_KEY":
-                         if self.graph.nodes[neighbor].get("type") == "Table":
+                        if self.graph.nodes[neighbor].get("type") == "Table":
                             if neighbor not in visited:
                                 visited.add(neighbor)
                                 next_layer.add(neighbor)
-                                
+
             current_layer = next_layer
-            
+
         neighbors = list(visited - {table_name})
         if not neighbors:
-             pass 
-             # logger.warning(f"No {n_hop}-hop neighbors found for {table_name}")
-             
+            pass
+            # logger.warning(f"No {n_hop}-hop neighbors found for {table_name}")
+
         return neighbors
 
     def is_subgraph_connected(self, selected_tables: List[str]) -> bool:
@@ -139,17 +141,17 @@ class GraphExplorer:
         """
         if not selected_tables:
             return False
-        
+
         sub_nodes = set(selected_tables)
         visited = set()
         queue = [selected_tables[0]]
-        
+
         while queue:
             curr = queue.pop(0)
             if curr in visited:
                 continue
             visited.add(curr)
-            
+
             if curr not in self.graph: continue
 
             # Check neighbors that are in sub_nodes
@@ -158,13 +160,13 @@ class GraphExplorer:
                 if neighbor in sub_nodes and neighbor not in visited:
                     if self.graph[curr][neighbor].get("type") == "FOREIGN_KEY":
                         queue.append(neighbor)
-            
+
             # Incoming
             for neighbor in self.graph.predecessors(curr):
                 if neighbor in sub_nodes and neighbor not in visited:
-                     if self.graph[neighbor][curr].get("type") == "FOREIGN_KEY":
-                         queue.append(neighbor)
-                         
+                    if self.graph[neighbor][curr].get("type") == "FOREIGN_KEY":
+                        queue.append(neighbor)
+
         return len(visited) == len(selected_tables)
 
     def bfs_subgraph(self, selected_tables: List[str]) -> List[List[str]]:
@@ -175,21 +177,21 @@ class GraphExplorer:
         all_tables = set(self.get_all_tables().keys())
         invalid_tables = [t for t in selected_tables if t not in all_tables]
         if invalid_tables:
-             # raise RuntimeError(f"[ERROR] Tables not found: {invalid_tables}")
-             logger.error(f"[ERROR] Tables not found: {invalid_tables}")
-             # Original code raised string? "raise (f...)" -> Actually "raise (f...)" evaluates to raising a TypeError (exception class must be type). 
-             # Original code line 144: `raise (f"[ERROR] ...")` which is a bug in original code (raise "string").
-             # I will fix it to raise RuntimeError or just log and return empty.
-             return []
+            # raise RuntimeError(f"[ERROR] Tables not found: {invalid_tables}")
+            logger.error(f"[ERROR] Tables not found: {invalid_tables}")
+            # Original code raised string? "raise (f...)" -> Actually "raise (f...)" evaluates to raising a TypeError (exception class must be type).
+            # Original code line 144: `raise (f"[ERROR] ...")` which is a bug in original code (raise "string").
+            # I will fix it to raise RuntimeError or just log and return empty.
+            return []
 
         if not self.is_subgraph_connected(selected_tables):
-             logger.error("[ERROR] Selected subgraph is not connected.")
-             return []
+            logger.error("[ERROR] Selected subgraph is not connected.")
+            return []
 
         visited = set(selected_tables)
         queue = [(t, 0) for t in selected_tables]
         result = []
-        
+
         # To handle level separation correctly (original logic appends list of tables for each level processed in batch)
         # Original code logic:
         # while queue:
@@ -197,29 +199,29 @@ class GraphExplorer:
         #    level_tables = []
         #    for _ in range(level_size): ...
         #    result.append(level_tables)
-        
+
         while queue:
             level_size = len(queue)
             level_tables = []
-            
+
             for _ in range(level_size):
                 current_table, level = queue.pop(0)
                 level_tables.append(current_table)
-                
+
                 # 1-hop neighbors
                 neighbors = self.get_neighbor_tables(current_table, 1)
                 for neighbor in neighbors:
                     if neighbor not in visited:
                         visited.add(neighbor)
                         queue.append((neighbor, level + 1))
-            
+
             if level_tables:
                 result.append(level_tables)
-                
+
         unvisited_tables = all_tables - visited
         if unvisited_tables:
-             logger.debug(f"[DEBUG] Unvisited tables: {unvisited_tables}")
-             
+            logger.debug(f"[DEBUG] Unvisited tables: {unvisited_tables}")
+
         return result
 
     def get_foreign_keys_between_tables(self, table1: str, table2: str) -> List[str]:
@@ -227,26 +229,28 @@ class GraphExplorer:
         Get reference paths for FKs between two tables.
         """
         paths = []
-        
+
         # t1 -> t2
         if self.graph.has_edge(table1, table2):
             data = self.graph[table1][table2]
             if data.get("type") == "FOREIGN_KEY":
                 if data.get("reference_path"):
                     paths.append(data["reference_path"])
-        
+
         # t2 -> t1
         if self.graph.has_edge(table2, table1):
             data = self.graph[table2][table1]
             if data.get("type") == "FOREIGN_KEY":
-                 if data.get("reference_path"):
+                if data.get("reference_path"):
                     paths.append(data["reference_path"])
-                    
+
         return paths
+
 
 if __name__ == "__main__":
     from src.utils.graph_loader import GraphLoader
-    pkl_path = r"d:\MVP-SQL\output\converted_graph_pkl\bird\books\books.pkl"
+
+    pkl_path = r"D:\MVP-SQL\output\schema_graph_repo\bird\books\books.pkl"
     G = GraphLoader.load_graph(pkl_path)
     # 全面的图探索
     explorer = GraphExplorer(G)
@@ -259,7 +263,7 @@ if __name__ == "__main__":
     # 测试BFS层序遍历
     layers = explorer.bfs_subgraph(["book", "publisher"])
     logger.info(f"BFS layers: {layers}")
-    
+
     # 测试外键路径查询
     paths = explorer.get_foreign_keys_between_tables("book", "publisher")
-    logger.info(f"Foreign key paths between book and author: {paths}")  
+    logger.info(f"Foreign key paths between book and author: {paths}")
