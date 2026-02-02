@@ -28,8 +28,9 @@ d:\MVP-SQL-V2/
 │   │   ├── pipeline.py     # Main ETL entry point
 │   │   └── batch_run.py    # Batch processing script
 │   ├── llm/                # LLM Interaction Module
-│   │   ├── clients.py      # OpenAI & Ollama Client Implementations
-│   │   └── prompt_manager.py # Prompt Loading & Formatting
+│   │   ├── clients.py      # OpenAI, Ollama & Gemini Client Implementations
+│   │   ├── prompt_manager.py # Prompt Loading & Formatting
+│   │   └── example_usage.py # Usage examples for LLM clients
 │   └── utils/              # Downstream Consumption Utilities
 │       ├── dataloder.py    # NL-SQL dataset loader
 │       ├── graph_explorer.py # Graph query API
@@ -74,8 +75,10 @@ This module provides a unified interface for interacting with Large Language Mod
 
 * **`clients.py` (LLMFactory, BaseLLMClient)**:
     * **Role**: Abstraction layer for LLM providers.
-    * **Function**: Supports both **OpenAI-compatible APIs** (via `OpenAIClient`) and **Private Ollama Models** (
-      via `OllamaClient`). Use `LLMFactory.create_client('openai'|'ollama', **config)` to instantiate.
+  * **Function**: Supports **OpenAI-compatible APIs** (via `OpenAIClient`), **Private Ollama Models** (
+    via `OllamaClient`), and **Google Gemini** (via `GeminiClient`).
+    Use `LLMFactory.create_client('openai'|'ollama'|'gemini', **config)` to instantiate. Note that Gemini requires
+    the `google-generativeai` package.
 * **`prompt_manager.py` (PromptManager)**:
     * **Role**: Prompt Management.
     * **Function**: Decouples prompts from code by loading them from YAML files in `configs/prompts/`. Supports
