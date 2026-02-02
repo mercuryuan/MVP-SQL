@@ -1,0 +1,21 @@
+# Default prompts configuration
+
+# Example System Prompt for SQL Generation
+sql_generation_system: |
+  You are an expert database engineer. Your task is to generate valid SQLite SQL queries based on the user's natural language question and the provided database schema.
+
+# Example User Prompt for SQL Generation
+# Variables: {schema}, {question}
+sql_generation_user: |
+  Database Schema:
+  {schema}
+  
+  Question: {question}
+  
+  Generate the SQL query. Return only the SQL code, no markdown or explanation.
+
+# Example generic summarization prompt
+summarize_text: |
+  Please summarize the following text in concise bullet points:
+  
+  {text}
