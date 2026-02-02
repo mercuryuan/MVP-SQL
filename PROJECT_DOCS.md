@@ -21,7 +21,9 @@ d:\MVP-SQL-V2/
 │   ├── bird/               # BIRD dataset databases (SQLite)
 │   └── spider/             # Spider dataset databases (SQLite)
 ├── output/                 # Processed Artifacts
-│   └── converted_graph_pkl/# Final serialized graphs (.pkl files)
+│   └── schema_graph_repo/  # Processed Graph Repository (Schema + Profiling)
+│       └── [dataset_name]/ # e.g. bird, spider
+│           └── [db_name].pkl # Serialized NetworkX DiGraph
 ├── src/                    # Source Code
 │   ├── graph/              # Core ETL & Graph Construction Logic
 │   │   ├── core/           # Low-level processing components
