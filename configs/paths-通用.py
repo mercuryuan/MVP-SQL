@@ -6,6 +6,8 @@ PROJECT_ROOT = (Path(__file__).parent.parent).resolve()
 # 输出目录
 OUTPUT_ROOT = (Path(__file__).parent.parent / "output").resolve()
 
+TRAIN_BIRD = r"F:\train_bird\train_databases"
+
 BIRD_TRAIN_DATABASES_PATH = "E:/BIRD_train/train/train_databases/"
 BIRD_DEV_DATABASES_PATH = "E:/BIRD/dev_20240627/dev_databases/"
 BIRD_DEV_JSON = "E:/BIRD/dev_20240627/dev.json"  # BIRD所有开发集

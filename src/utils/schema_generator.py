@@ -3,11 +3,19 @@ from ast import main
 from typing import List, Dict, Any
 import logging
 import networkx as nx
+import sys
+from pathlib import Path
+
+# Add project root to Python path
+project_root = Path(__file__).resolve().parent.parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
 
 import configs.paths
-# 假设 .graph_explorer 和 src.utils 是项目内部的模块
-from graph_explorer import GraphExplorer
-from src.utils import GraphLoader
+# 使用基于项目根目录的完整路径
+from src.utils.graph_explorer import GraphExplorer
+from src.utils.graph_loader import GraphLoader
+# --- 绝对导入结束 ---
 
 logger = logging.getLogger(__name__)
 

@@ -68,9 +68,13 @@ class DataLoader:
     def load(self):
         """执行数据加载操作"""
         paths = self.DATASET_CONFIG[self.dataset_name]
-        # 统一转为列表处理，方便支持单文件和多文件
-        if isinstance(paths, str):
+
+        # --- 修改这里 ---
+        # 兼容字符串和 pathlib.Path 对象
+        # 如果不是列表（即单个路径），则包装成列表
+        if not isinstance(paths, list):
             paths = [paths]
+        # ----------------
 
         self._raw_data = []
         for path in paths:
@@ -78,11 +82,14 @@ class DataLoader:
 
         logger.info(f"数据集 [{self.dataset_name}] 加载完成，共 {len(self._raw_data)} 条数据。")
 
-    def _read_json(self, file_path: str) -> List[Dict]:
+    def _read_json(self, file_path: Union[str, Path]) -> List[Dict]:
         """读取单个 JSON 文件，包含基础的错误处理"""
+        # 确保它是一个 Path 对象
         path_obj = Path(file_path)
+
         if not path_obj.exists():
-            logger.warning(f"文件不存在: {file_path}，跳过加载。")
+            # 报错时打印绝对路径，方便你排查到底是在哪个目录下找不到文件
+            logger.warning(f"文件不存在: {path_obj.absolute()}，跳过加载。")
             return []
 
         try:
@@ -172,7 +179,7 @@ class DataLoader:
 
 if __name__ == '__main__':
 
-    # 1. 初始化 (自动合并 Spider 的 train 和 others)
+    # 1. 初始化
     loader = DataLoader("spider_train")
 
     # 2. Pythonic 访问

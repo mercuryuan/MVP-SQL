@@ -3,6 +3,8 @@ import networkx as nx
 import logging
 from typing import List, Dict, Any, Set
 
+import configs.paths
+
 logger = logging.getLogger(__name__)
 
 
@@ -250,7 +252,7 @@ class GraphExplorer:
 if __name__ == "__main__":
     from src.utils.graph_loader import GraphLoader
 
-    pkl_path = r"D:\MVP-SQL\output\schema_graph_repo\bird\books\books.pkl"
+    pkl_path = configs.paths.OUTPUT_ROOT / "schema_graph_repo" / "bird" / "books" / "books.pkl"
     G = GraphLoader.load_graph(pkl_path)
     # 全面的图探索
     explorer = GraphExplorer(G)

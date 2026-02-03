@@ -1,10 +1,16 @@
+import json
+import os
+import sys
+from pathlib import Path
+
+import pandas as pd
 import streamlit as st
 from streamlit_agraph import agraph, Node, Edge, Config
-import networkx as nx
-import os
-import json
-import pandas as pd
-import pickle
+
+# Add project root to Python path
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
+
 from configs import paths
 from src.utils.graph_loader import GraphLoader
 
