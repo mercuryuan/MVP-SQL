@@ -1,203 +1,122 @@
 import json
-import logging
-import os
-from pathlib import Path
-from typing import Optional, List, Dict, Any, Union
+from typing import Optional, List, Dict
 
-# 尝试导入配置，如果不存在则使用占位符，防止报错影响阅读
 from configs.paths import (
-    SPIDER_TRAIN_JSON, SPIDER_DEV_JSON, SPIDER_TRAIN_OTHER_JSON,
-    BIRD_TRAIN_JSON, BIRD_DEV_JSON
+    SPIDER_TRAIN_JSON,
+    SPIDER_TRAIN_OTHER_JSON,
+    SPIDER_DEV_JSON,
+    BIRD_TRAIN_JSON,
+    BIRD_DEV_JSON,
 )
-
-# 配置日志
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
 
 
 class DataLoader:
     """
-    通用 Text-to-SQL 数据加载器。
-
-    特点：
-    1. 支持自动合并多个源文件（如 Spider 的 train + others）。
-    2. 自动标准化字段名（将 query/SQL 统一为 sql）。
-    3. 支持像 List 一样操作 (len(), loader[0])。
-    可选数据集：
-    1. spider：Spider 数据集，包含 train + others。
-    2. spider_dev：Spider 开发集。
-    3. spider_train：Spider 训练集（train.json）。
-    4. bird：BIRD 数据集（train.json）。
-    5. bird_dev：BIRD 开发集（dev.json）。
+    科研级通用数据加载器
+    功能：统一 Spider 和 BIRD 数据集的字段映射，支持按需提取、数据库筛选及字段补齐。
     """
-    # 数据集配置：支持单个文件路径或文件路径列表
-    # 如果是列表，加载时会自动合并数据
-    DATASET_CONFIG: Dict[str, Union[str, List[str]]] = {
-        "spider": [SPIDER_TRAIN_JSON, SPIDER_TRAIN_OTHER_JSON],  # 自动合并这两个文件
-        "spider_dev": SPIDER_DEV_JSON,
+
+    # 数据集路径配置映射
+    DATASETS = {
         "spider_train": SPIDER_TRAIN_JSON,
+        "spider_other": SPIDER_TRAIN_OTHER_JSON,
+        "spider_dev": SPIDER_DEV_JSON,
         "bird": BIRD_TRAIN_JSON,
         "bird_dev": BIRD_DEV_JSON,
     }
 
-    # 需要被标准化为 'sql' 的别名集合
-    SQL_ALIASES = {"query", "sql", "SQL"}
+    # 字段别名映射：{ 原始字段名: 统一后的目标名 }
+    COLUMN_MAPPING = {
+        "query": "sql_query",  # Spider 的原始 SQL
+        "SQL": "sql_query",  # BIRD 的原始 SQL
+        "question": "question",
+        "db_id": "db_id",
+        "evidence": "evidence"  # BIRD 特有字段
+    }
 
-    def __init__(self, dataset_name: str, auto_load: bool = True):
+    def __init__(self, dataset_name: str):
         """
-        初始化加载器。
-        可选数据集：
-            1. spider：Spider 数据集，包含 train + others。
-            2. spider_dev：Spider 开发集。
-            3. spider_train：Spider 训练集（train.json）。
-            4. bird：BIRD 数据集（train.json）。
-            5. bird_dev：BIRD 开发集（dev.json）。
-        Args:
-            dataset_name: 数据集名称 (key in DATASET_CONFIG)
-            auto_load: 是否在初始化时立即加载数据到内存，默认为 True
+        初始化加载器
+        :param dataset_name: 支持 spider, spider_dev, bird 等
         """
-        if dataset_name not in self.DATASET_CONFIG:
-            raise ValueError(f"不支持的数据集: '{dataset_name}'。可选: {list(self.DATASET_CONFIG.keys())}")
+        if dataset_name == "spider":
+            self.data = self._merge_json_files(SPIDER_TRAIN_JSON, SPIDER_TRAIN_OTHER_JSON)
+            self.dataset_name = "spider_full_train"
+        elif dataset_name in self.DATASETS:
+            self.data = self._load_data(self.DATASETS[dataset_name])
+            self.dataset_name = dataset_name
+        else:
+            raise ValueError(f"未知数据集: {dataset_name}，支持: {list(self.DATASETS.keys()) + ['spider']}")
 
-        self.dataset_name = dataset_name
-        self._raw_data: List[Dict[str, Any]] = []
+    def _load_data(self, file_path: str) -> List[Dict]:
+        """从 JSON 文件读取数据"""
+        with open(file_path, "r", encoding="utf-8") as f:
+            return json.load(f)
 
-        if auto_load:
-            self.load()
+    def _merge_json_files(self, path1: str, path2: str) -> List[Dict]:
+        """合并两个 JSON 文件"""
+        return self._load_data(path1) + self._load_data(path2)
 
-    def load(self):
-        """执行数据加载操作"""
-        paths = self.DATASET_CONFIG[self.dataset_name]
-
-        # --- 修改这里 ---
-        # 兼容字符串和 pathlib.Path 对象
-        # 如果不是列表（即单个路径），则包装成列表
-        if not isinstance(paths, list):
-            paths = [paths]
-        # ----------------
-
-        self._raw_data = []
-        for path in paths:
-            self._raw_data.extend(self._read_json(path))
-
-        logger.info(f"数据集 [{self.dataset_name}] 加载完成，共 {len(self._raw_data)} 条数据。")
-
-    def _read_json(self, file_path: Union[str, Path]) -> List[Dict]:
-        """读取单个 JSON 文件，包含基础的错误处理"""
-        # 确保它是一个 Path 对象
-        path_obj = Path(file_path)
-
-        if not path_obj.exists():
-            # 报错时打印绝对路径，方便你排查到底是在哪个目录下找不到文件
-            logger.warning(f"文件不存在: {path_obj.absolute()}，跳过加载。")
-            return []
-
-        try:
-            with open(path_obj, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except json.JSONDecodeError:
-            logger.error(f"文件格式错误（非标准 JSON）: {file_path}")
-            return []
-
-    def filter(self,
-               db_id: Optional[str] = None,
-               fields: Optional[List[str]] = None,
-               verbose: bool = False) -> List[Dict[str, Any]]:
+    def filter_data(self, db_id: Optional[str] = None, fields: Optional[List[str]] = None, show_count: bool = False):
         """
-        核心方法：过滤数据并提取特定字段。
-        会自动将不同数据集的 SQL 字段统一重命名为 'sql'。
-
-        Args:
-            db_id: 数据库 ID 过滤 (Exact match)
-            fields: 需要保留的字段列表，例如 ["question", "sql"]
-            verbose: 是否打印筛选统计信息
-
-        Returns:
-            List[Dict]: 处理后的字典列表
+        统一提取数据字段
+        :param db_id: 过滤指定的数据库 ID
+        :param fields: 用户想要保留的统一字段名（如 ['question', 'sql_query', 'evidence']）
+        :param show_count: 是否打印处理后的条数
         """
-        # 1. 预处理：确定需要保留的字段集合
-        target_fields = set(fields) if fields else None
+        # 1. 基础数据库筛选
+        filtered = [item for item in self.data if item.get("db_id") == db_id] if db_id else self.data
 
-        results = []
-
-        for item in self._raw_data:
-            # 1. DB_ID 过滤
-            if db_id and item.get("db_id") != db_id:
+        processed_data = []
+        for item in filtered:
+            # 如果没有指定 fields，则保留原始 item 的副本
+            if not fields:
+                processed_data.append(item.copy())
                 continue
 
+            # 2. 字段映射与补齐逻辑
             new_item = {}
-            # 2. 字段映射与提取
-            for key, value in item.items():
-                # 标准化 Key：如果是 query 或 SQL，统一视为 sql
-                normalized_key = "sql" if key in self.SQL_ALIASES else key
 
-                # 判读逻辑：
-                # 如果没指定 fields -> 全部保留
-                # 如果指定了 fields -> 检查 normalized_key 是否在目标中
-                if target_fields is None or normalized_key in target_fields:
-                    new_item[normalized_key] = value
+            # 建立一个临时映射，方便快速查找原始数据中有哪些统一后的字段
+            # 例如 { "sql_query": "SELECT...", "question": "What..." }
+            current_mapped_values = {self.COLUMN_MAPPING.get(k, k): v for k, v in item.items()}
 
-            results.append(new_item)
+            for field in fields:
+                # 获取映射后的值
+                val = current_mapped_values.get(field)
 
-        if verbose:
-            logger.info(f"筛选结果: {len(results)}/{len(self._raw_data)} (db_id={db_id})")
+                # 核心处理：如果请求了 evidence 但原始数据没有（如 Spider），则补 None
+                if field == "evidence" and val is None:
+                    new_item["evidence"] = None
+                # 处理 SQL 清洗：去掉分号和多余空格
+                elif field == "sql_query" and isinstance(val, str):
+                    new_item["sql_query"] = val.strip().rstrip(';')
+                else:
+                    new_item[field] = val
 
-        return results
+            processed_data.append(new_item)
 
-    def get_db_names(self) -> List[str]:
-        """获取当前数据集中所有唯一的 db_id，并按字母排序"""
-        db_ids = {item.get("db_id") for item in self._raw_data if "db_id" in item}
-        return sorted(list(db_ids))
+        if show_count:
+            print(f"[{self.dataset_name}] 筛选/处理完成，共 {len(processed_data)} 条数据。")
 
-    def inspect_sample(self, index: int = 0):
-        """打印特定索引的数据结构，方便调试"""
-        if not self._raw_data:
-            print("数据为空")
-            return
+        return processed_data
 
-        print(f"--- Sample [{index}] Structure ---")
-        try:
-            sample = self._raw_data[index]
-            print(json.dumps(sample, indent=2, ensure_ascii=False))
-        except IndexError:
-            print(f"索引 {index} 超出范围")
-
-    # --- Pythonic Magic Methods (让对象更好用) ---
-
-    def __len__(self):
-        """允许使用 len(loader)"""
-        return len(self._raw_data)
-
-    def __getitem__(self, idx):
-        """允许使用 loader[0] 或 loader[0:10]"""
-        return self._raw_data[idx]
-
-    def __iter__(self):
-        """允许直接使用 for item in loader"""
-        return iter(self._raw_data)
+    def list_dbnames(self):
+        """列出当前数据集中包含的所有数据库 ID"""
+        db_ids = sorted(list({item.get("db_id") for item in self.data if "db_id" in item}))
+        return db_ids
 
 
 if __name__ == '__main__':
+    # 验证接口一致性
+    # 1. 测试 Spider (会自动补全 evidence 为 None)
+    spider_loader = DataLoader("spider_dev")
+    spider_res = spider_loader.filter_data(fields=["question", "sql_query", "evidence"], show_count=True)
+    print("Spider 样例 (带 evidence 补全):", spider_res[0])
 
-    # 1. 初始化
-    loader = DataLoader("spider_train")
-
-    # 2. Pythonic 访问
-    print(f"数据总条数: {len(loader)}")
-    if len(loader) > 0:
-        print(f"第一条数据: {loader[0]}")
-
-    # 3. 过滤数据 (注意：它会自动把 'query' 和 'SQL' 都变成 'sql')
-    filtered_data = loader.filter(
-        db_id="apartment_rentals",
-        # fields=["question", "sql"],
-        fields=["sql"],
-        verbose=True
-    )
-    print("\n过滤后的数据 (Bank):", filtered_data)
-
-    # 4. 获取所有数据库名
-    print("\n包含的数据库:", loader.get_db_names())
-
-    # 5. 查看数据结构
-    loader.inspect_sample(0)
+    # 2. 测试 BIRD (会保留原始 evidence 内容)
+    bird_loader = DataLoader("bird")
+    bird_res = bird_loader.filter_data(db_id="superstore", fields=["question", "sql_query", "evidence"],
+                                       show_count=True)
+    if bird_res:
+        print("BIRD 样例 (原生 evidence):", bird_res[0])

@@ -131,3 +131,34 @@ The output `.pkl` file contains a `networkx.DiGraph` with the following schema:
     * **Type**: `HAS_COLUMN` (Table -> Column)
     * **Type**: `FOREIGN_KEY` (Table -> Table)
         * *Attributes*: `from_column`, `to_column`, `reference_path`.
+# 关于数据集
+
+## 📄 文档一：项目前提提要 (Project Context & Background)
+
+### 1. 任务背景
+
+在 Text-to-SQL（自然语言转 SQL）研究领域，**Spider** 和 **BIRD** 是两个最具代表性的基准数据集。
+
+* **Spider**: 侧重于复杂的 SQL 语法结构（多表连接、嵌套查询），但在 Schema 内容上相对简单。
+* **BIRD**: 侧重于真实世界的数据库应用，包含大量长表格和需要外部知识（Evidence）才能理解的查询。
+
+### 2. 核心痛点
+
+由于两个数据集的发布机构和侧重点不同，它们在 JSON 文件中的字段命名存在显著差异，导致模型训练或评估脚本难以直接兼容：
+
+| 特性 | Spider 数据集 | BIRD 数据集 |
+| --- | --- | --- |
+| **SQL 字符串字段** | `query` | `SQL` |
+| **外部知识字段** | 无 (N/A) | `evidence` |
+| **字段命名冲突** | 存在 `sql` 字段（存储为 Dict 结构的 AST） | 无 `sql` 字段名冲突 |
+| **SQL 风格** | 纯净字符串，通常无分号 | 可能包含多余空格或分号 |
+
+### 3. 处理策略
+
+为了实现“一套代码跑通所有数据集”，本项目采取了**统一视图映射**策略：
+
+1. **统一命名**：将 `query` 和 `SQL` 统一映射为 `sql_query`。
+2. **接口对齐**：为 Spider 数据集虚拟化 `evidence` 字段（填充为 `None`），确保下游输入流的一致性。
+3. **数据清洗**：在读取阶段自动剔除 SQL 字符串末尾的分号。
+
+---
