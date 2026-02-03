@@ -1,272 +1,163 @@
 import os
 import requests
-import json
 import logging
 from abc import ABC, abstractmethod
-from typing import List, Dict, Any, Union, Optional
+from typing import List, Dict, Optional, Any
+from dotenv import load_dotenv
 
+
+load_dotenv()
+
+# 调整日志级别，屏蔽烦人的 httpx info
+logging.basicConfig(level=logging.INFO)
+logging.getLogger("httpx").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
 
-class BaseLLMClient(ABC):
-    """
-    LLM客户端的抽象基类。
-    定义了与不同LLM提供者交互的标准接口。
-    """
-
+# --- 1. 核心驱动层 (保持不变) ---
+class BaseDriver(ABC):
     @abstractmethod
-    def generate(self, prompt: str, system_prompt: Optional[str] = None, **kwargs) -> str:
-        """
-        根据提示生成文本。
-
-Args：
-            提示：用户输入提示。
-            system_prompt：可选系统指令。
-            **kwargs：额外模型参数（温度、max_tokens等）
-Return:
-            生成文本字符串。
-        """
-        pass
-
-    @abstractmethod
-    def chat(self, messages: List[Dict[str, str]], **kwargs) -> str:
-        """
-        Chat completion interface.
-        
-        Args:
-            messages: List of message dicts [{'role': 'user', 'content': '...'}, ...]
-            **kwargs: Additional model parameters.
-            
-        Returns:
-            Response content string.
-        """
-        pass
+    def request(self, messages: List[Dict], **kwargs) -> str: pass
 
 
-class OpenAIClient(BaseLLMClient):
-    """
-    OpenAI兼容API客户端（OpenAI、DeepSeek、vLLM等）。
-    需要安装'openai'包。
-    """
-
-    def __init__(self, api_key: str, base_url: Optional[str] = None, model: str = "gpt-3.5-turbo"):
-        try:
-            from openai import OpenAI
-        except ImportError:
-            raise ImportError("Please install openai package: pip install openai")
-
+class OpenAIDriver(BaseDriver):
+    def __init__(self, api_key: str, base_url: Optional[str] = None, model: str = "gpt-4o"):
+        from openai import OpenAI
         self.client = OpenAI(api_key=api_key, base_url=base_url)
         self.model = model
 
-    def generate(self, prompt: str, system_prompt: Optional[str] = None, **kwargs) -> str:
-        messages = []
-        if system_prompt:
-            messages.append({"role": "system", "content": system_prompt})
-        messages.append({"role": "user", "content": prompt})
-
-        return self.chat(messages, **kwargs)
-
-    def chat(self, messages: List[Dict[str, str]], **kwargs) -> str:
-        try:
-            # Merge default params with kwargs
-            params = {
-                "model": self.model,
-                "messages": messages,
-                "temperature": 0.0,
-            }
-            params.update(kwargs)
-
-            response = self.client.chat.completions.create(**params)
-            return response.choices[0].message.content
-        except Exception as e:
-            logger.error(f"OpenAI API Call Error: {e}")
-            raise
+    def request(self, messages: List[Dict], **kwargs) -> str:
+        params = {"model": self.model, "messages": messages, "temperature": 0, **kwargs}
+        response = self.client.chat.completions.create(**params)
+        return response.choices[0].message.content
 
 
-class OllamaClient(BaseLLMClient):
-    """
-    Ollama私有部署客户端。
-    直接与Ollama API端点交互。
-    """
-
-    def __init__(self, base_url: str = "http://localhost:11434", model: str = "llama3"):
+class OllamaDriver(BaseDriver):
+    def __init__(self, base_url: str, model: str):
         self.base_url = base_url.rstrip('/')
         self.model = model
 
-    def generate(self, prompt: str, system_prompt: Optional[str] = None, **kwargs) -> str:
-        url = f"{self.base_url}/api/generate"
-
-        payload = {
-            "model": self.model,
-            "prompt": prompt,
-            "stream": False,
-            "options": kwargs
-        }
-
-        if system_prompt:
-            payload["system"] = system_prompt
-
-        try:
-            response = requests.post(url, json=payload)
-            response.raise_for_status()
-            return response.json().get("response", "")
-        except requests.exceptions.RequestException as e:
-            logger.error(f"Ollama API Error: {e}")
-            raise
-
-    def chat(self, messages: List[Dict[str, str]], **kwargs) -> str:
+    def request(self, messages: List[Dict], **kwargs) -> str:
         url = f"{self.base_url}/api/chat"
-
-        payload = {
-            "model": self.model,
-            "messages": messages,
-            "stream": False,
-            "options": kwargs
-        }
-
+        payload = {"model": self.model, "messages": messages, "stream": False, "options": kwargs}
         try:
             response = requests.post(url, json=payload)
             response.raise_for_status()
             return response.json().get("message", {}).get("content", "")
-        except requests.exceptions.RequestException as e:
-            logger.error(f"Ollama Chat API Error: {e}")
+        except Exception as e:
+            logger.error(f"Ollama Error: {e}")
             raise
 
 
-from google import genai
-from google.genai import types
-
-
-class GeminiClient(BaseLLMClient):
-    """
-    使用最新的 Google Gen AI SDK (支持 Gemini 2.0)
-    """
-
-    def __init__(self, api_key: str, model: str = "gemini-2.0-flash"):
-        # 新版不再使用全局 configure，而是实例化 Client 对象
+class GeminiDriver(BaseDriver):
+    def __init__(self, api_key: str, model: str):
+        from google import genai
         self.client = genai.Client(api_key=api_key)
-        self.model_id = model
+        self.model = model
 
-    def generate(self, prompt: str, system_prompt: Optional[str] = None, **kwargs) -> str:
-        try:
-            # 系统指令直接放在 config 中
-            config = {}
-            if system_prompt:
-                config["system_instruction"] = system_prompt
-
-            # 合并其他参数（如 temperature, max_output_tokens 等）
-            config.update(kwargs)
-
-            response = self.client.models.generate_content(
-                model=self.model_id,
-                contents=prompt,
-                config=config
-            )
-            return response.text
-        except Exception as e:
-            logger.error(f"Gemini Generate Error: {e}")
-            raise
-
-    def chat(self, messages: List[Dict[str, str]], **kwargs) -> str:
-        try:
-            # 1. 提取系统指令
-            system_instruction = None
-            history = []
-
-            # 2. 转换历史消息格式
-            for msg in messages[:-1]:
-                if msg['role'] == 'system':
-                    system_instruction = msg['content']
-                else:
-                    # 注意：Gemini 角色必须是 'user' 或 'model'
-                    role = "model" if msg['role'] == 'assistant' else "user"
-                    history.append({"role": role, "parts": [{"text": msg['content']}]})
-
-            # 3. 获取最后一条消息作为当前输入
-            last_msg = messages[-1]['content']
-
-            # 4. 创建会话并发送
-            chat = self.client.chats.create(
-                model=self.model_id,
-                config=types.GenerateContentConfig(
-                    system_instruction=system_instruction,
-                    **kwargs
-                ),
-                history=history
-            )
-
-            response = chat.send_message(last_msg)
-            return response.text
-        except Exception as e:
-            logger.error(f"Gemini Chat Error: {e}")
-            raise
+    def request(self, messages: List[Dict], **kwargs) -> str:
+        sys_instr = next((m['content'] for m in messages if m['role'] == 'system'), None)
+        last_msg = messages[-1]['content']
+        response = self.client.models.generate_content(
+            model=self.model, contents=last_msg, config={"system_instruction": sys_instr, **kwargs}
+        )
+        return response.text
 
 
-class LLMFactory:
-    """
-    LLM客户端工厂类。
-    根据配置创建不同LLM客户端。
-    """
+# --- 2. 统一调用入口 (集成了 PromptManager) ---
 
-    @staticmethod
-    def create_client(provider: str, **config) -> BaseLLMClient:
+class LLMClient:
+    def __init__(self, provider: str = "openai", model: Optional[str] = None, prompt_dir: str = None, **kwargs):
         """
-        Create an LLM client.
-        
-        Args:
-            provider: 'openai', 'ollama', or 'gemini'
-            **config: Configuration arguments for the specific client.
+        :param prompt_dir: 指定提示词 YAML 文件的目录，如果不传则使用 PromptManager 的默认路径
         """
-        provider = provider.lower()
+        self.provider = provider.lower()
 
-        if provider == "openai":
-            return OpenAIClient(
-                api_key=config.get("api_key", os.getenv("OPENAI_API_KEY")),
-                base_url=config.get("base_url"),
-                model=config.get("model", "gpt-3.5-turbo")
+        # 1. 初始化驱动 (Driver)
+        if self.provider == "deepseek":
+            self.driver = OpenAIDriver(
+                api_key=kwargs.get("api_key", os.getenv("DEEPSEEK_API_KEY")),
+                base_url="https://api.deepseek.com",
+                # 模型只有deepseek-chat和deepseek-reasoner
+                model=model or "deepseek-chat"
             )
-        elif provider == "ollama":
-            return OllamaClient(
-                base_url=config.get("base_url", "http://localhost:11434"),
-                model=config.get("model", "llama3")
+        elif self.provider == "gemini":
+            self.driver = GeminiDriver(
+                api_key=kwargs.get("api_key", os.getenv("GEMINI_API_KEY")),
+                model=model or "gemini-2.0-flash"
             )
-        elif provider == "gemini":
-            return GeminiClient(
-                api_key=config.get("api_key", os.getenv("GEMINI_API_KEY")),
-                model=config.get("model", "gemini-pro")
+        elif self.provider == "ollama":
+            self.driver = OllamaDriver(
+                base_url=kwargs.get("base_url", os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")),
+                model=model or "llama3"
+            )
+        elif self.provider == "openai":
+            self.driver = OpenAIDriver(
+                api_key=kwargs.get("api_key", os.getenv("OPENAI_API_KEY")),
+                model=model or "gpt-4o"
             )
         else:
-            raise ValueError(f"Unsupported LLM provider: {provider}")
+            raise ValueError(f"Unknown provider: {self.provider}")
+
+        try:
+            from .prompt_manager import PromptManager
+        except ImportError:
+            # 如果相对导入失败（比如直接运行脚本时），尝试绝对导入
+            from src.llm.prompt_manager import PromptManager
+
+        # 2. 初始化 PromptManager
+        # 这样 LLMClient 就拥有了管理提示词的能力
+        self.prompter = PromptManager(prompt_dir=prompt_dir)
+
+    def ask(self, prompt: str, system: str = "You are a helpful assistant", **kwargs) -> str:
+        """原生接口：直接传字符串"""
+        messages = [
+            {"role": "system", "content": system},
+            {"role": "user", "content": prompt}
+        ]
+        return self.driver.request(messages, **kwargs)
+
+    def ask_with_template(self, template_name: str, variables: Dict[str, Any] = {}, system_template: str = None,
+                          **kwargs) -> str:
+        """
+        高级接口：使用 YAML 中的模板
+
+        :param template_name: YAML 文件中定义的 prompt key (如 'text_to_sql_v1')
+        :param variables: 用于填充模板的变量 (如 {'schema': '...', 'question': '...'})
+        :param system_template: 可选，YAML 中定义的系统提示词 key
+        """
+        # 1. 获取并填充用户提示词
+        user_prompt = self.prompter.get_prompt(template_name, **variables)
+
+        # 2. 获取系统提示词 (如果指定了 key，就去取；否则用默认的)
+        if system_template:
+            system_prompt = self.prompter.get_prompt(system_template)  # 假设系统提示词不需要动态填充
+        else:
+            system_prompt = "You are a helpful assistant."
+
+        # 3. 发送请求
+        return self.ask(user_prompt, system=system_prompt, **kwargs)
 
 
-# 示例代码
+# --- 3. 使用示例 ---
 if __name__ == '__main__':
-    print("--- 1. OpenAI Client Example ---")
-    # openai_client = LLMFactory.create_client(
-    #     "openai",
-    #     api_key="your-api-key",
-    #     base_url="https://api.deepseek.cn/v1",
-    #     model="deepseek-3.5"
-    # )
+    # 假设你有一个 sql.yaml 文件，内容如下：
+    # system_sql: "你是一个数据库专家，只输出 SQL。"
+    # generate_sql: "基于以下表结构：\n{schema}\n\n请生成查询：{question}"
 
-    print("--- 2. Ollama Client Example ---")
-    # ollama_client = LLMFactory.create_client(
-    #     "ollama",
-    #     base_url="http://localhost:11434",
-    #     model="llama3"
-    # )
+    client = LLMClient(provider="deepseek")
 
-    print("--- 3. Gemini Client Example ---")
+    # 模拟数据
+    schema_str = "Table: users (id, name, age)"
+    user_q = "查询所有年龄大于20的用户"
+
     try:
-        # 使用 provider="gemini" 调用原生 Google SDK
-        my_gemini = LLMFactory.create_client(
-            "gemini",
-            # 请替换为有效的 Google AI Studio API Key
-            api_key="AIzaSyA442ZAvdXJ5aI0zFfPaNlglZnmaiV5r3E",
-            model="gemini-2.0-flash"
+        # 使用模板调用，代码非常干净
+        sql = client.ask_with_template(
+            template_name="generate_sql",
+            variables={"schema": schema_str, "question": user_q},
+            system_template="system_sql"
         )
-        print("Gemini client initialized.")
-        # 测试生成 (如果有有效key可取消注释)
-        print(my_gemini.generate("Hello, Gemini!"))
-    except Exception as e:
-        print(f"Gemini example failed: {e}")
+        print(sql)
+    except KeyError as e:
+        print(f"提示词未找到，请检查 YAML 文件: {e}")

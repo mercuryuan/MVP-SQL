@@ -1,1 +1,1 @@
-from .anchor_generator import DatabaseAnchorGenerator
+from .anchor_selectior import DatabaseAnchorGenerator

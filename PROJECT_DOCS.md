@@ -28,14 +28,19 @@ d:\MVP-SQL-V2/
 │   ├── graph/              # Core ETL & Graph Construction Logic
 │   │   ├── core/           # Low-level processing components
 │   │   ├── pipeline.py     # Main ETL entry point
-│   │   └── batch_run.py    # Batch processing script
+│   │   ├── batch_run.py    # Batch processing script
+│   │   ├── vis.py          # Graph Visualization App (Streamlit)
+│   │   └── convert_repo.py # Legacy Graph Conversion Tool
 │   ├── llm/                # LLM Interaction Module
 │   │   ├── clients.py      # OpenAI, Ollama & Gemini Client Implementations
 │   │   ├── prompt_manager.py # Prompt Loading & Formatting
 │   │   └── example_usage.py # Usage examples for LLM clients
+│   ├── schema_linking/     # Schema Linking Module
+│   │   └── anchor_generator.py # Schema Anchor Generation
 │   └── utils/              # Downstream Consumption Utilities
 │       ├── dataloder.py    # NL-SQL dataset loader
 │       ├── graph_explorer.py # Graph query API
+│       ├── graph_loader.py # Graph Loading Utility
 │       └── schema_generator.py # Schema text description generator
 ```
 
@@ -71,6 +76,15 @@ This module handles the transformation from SQLite to NetworkX Graph.
     * **Function**: Manages safe SQLite connections and executes raw SQL queries for schema extraction and data
       sampling.
 
+* **`vis.py` (GraphVisualization)**:
+    * **Role**: Interactive Visualization Tool.
+    * **Function**: A Streamlit web app to visualize the generated `.pkl` graph files. Supports interactive exploration of nodes (Tables, Columns) and edges, with a details panel for attributes.
+    * **Usage**: `streamlit run src/graph/vis.py`
+
+* **`convert_repo.py` (GraphRepoConverter)**:
+    * **Role**: Migration Tool.
+    * **Function**: Converts legacy JSON-based graph repositories into the standard NetworkX `.pkl` format.
+
 ### 3.2. LLM Interaction Module (`src/llm/`)
 
 This module provides a unified interface for interacting with Large Language Models and managing prompts.
@@ -104,6 +118,18 @@ This module provides tools for using the generated graphs and loading training d
     * **Role**: Prompt/Description Generator.
     * **Function**: Uses `GraphExplorer` to generate structured text descriptions of tables and columns (e.g., for LLM
       prompts). Supports modes like "full", "brief", and "minimal".
+
+* **`graph_loader.py` (GraphLoader)**:
+    * **Role**: Graph Deserialization.
+    * **Function**: Provides a standard static method `load_graph(path)` to load and validate NetworkX graphs from `.pkl` files.
+
+### 3.4. Schema Linking Module (`src/schema_linking/`)
+
+This module focuses on linking natural language questions to the corresponding database schema elements.
+
+* **`anchor_generator.py`**:
+    * **Role**: Anchor Identification.
+    * **Function**: Identifies and generates "anchors" - schema elements (tables, columns, values) that are mentioned or implied in the natural language query.
 
 ## 4. System Data Flow
 
