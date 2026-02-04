@@ -22,9 +22,16 @@ class GraphSchemaExtractor:
         初始化 GraphSchemaExtractor。
         :param dataset_name: 数据集名称 (e.g., 'bird', 'spider')，用于定位图文件路径。
         """
-        self.dataset_name = dataset_name
-        # 图文件存储根目录: output/schema_graph_repo/
-        self.graph_repo_path = os.path.join(paths.OUTPUT_ROOT, "schema_graph_repo", dataset_name)
+        # 统一处理 dataset_name，去除 _dev 等后缀，映射回 spider 或 bird
+        if "spider" in dataset_name.lower():
+            self.dataset_name = "spider"
+        elif "bird" in dataset_name.lower():
+            self.dataset_name = "bird"
+        else:
+            self.dataset_name = dataset_name
+            
+        # 图文件存储根目录: output/schema_graph_repo/[mapped_dataset_name]
+        self.graph_repo_path = os.path.join(paths.OUTPUT_ROOT, "schema_graph_repo", self.dataset_name)
 
     def extract_schema(self, db_name: str) -> Dict[str, List[str]]:
         """

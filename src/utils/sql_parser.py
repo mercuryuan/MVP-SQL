@@ -6,7 +6,7 @@ import networkx as nx
 import sqlglot
 from sqlglot.optimizer.qualify import qualify
 from sqlglot.errors import OptimizeError
-from sqlglot.expressions import Table, Column, Join, Where, Identifier, EQ
+from sqlglot.expressions import Table, Column, Join, Where, Identifier, EQ, Star
 from typing import Dict, List, Tuple, Set, Any, Optional
 
 # 将项目根目录添加到 sys.path 以便导入 src
@@ -59,13 +59,47 @@ class SQLParser:
         如果校正失败（通常是因为找不到列或表），会抛出异常。
         """
         try:
-            expression = sqlglot.parse_one(sql)
+            # 使用 sqlite 风格解析，它更宽容双引号作为字符串
+            expression = sqlglot.parse_one(sql, read="sqlite")
+            
+            # 修复被错误识别为 Identifier 的双引号字符串
+            expression = self._fix_double_quotes(expression)
+            
             # 使用 sqlglot 的 qualify 进行优化和校正
             qualified_expression = qualify(expression, schema=self.optimizer_schema)
             return qualified_expression
         except OptimizeError as e:
             # 将 sqlglot 的优化错误转换为 ValueError，提供更友好的提示
             raise ValueError(f"SQL validation failed: {e}")
+
+    def _fix_double_quotes(self, expression: sqlglot.Expression) -> sqlglot.Expression:
+        """
+        修复被错误识别为 Identifier 的双引号字符串。
+        如果双引号标识符在 Schema 中不存在，则将其转换为 String Literal。
+        """
+        # 收集所有已知的列名 (lower case)
+        all_known_cols = set()
+        for t_cols in self._col_map_lower.values():
+            all_known_cols.update(t_cols.keys())
+
+        for node in expression.find_all(Column):
+            identifier = node.this
+            if isinstance(identifier, Identifier) and identifier.args.get("quoted"):
+                col_name = identifier.this
+                col_lower = col_name.lower()
+                
+                # 如果指定了表名 (e.g. T."Col")
+                if node.table:
+                    # 保守起见，如果明确指定了表名，我们假设用户就是想引用列，不转 Literal
+                    pass 
+                else:
+                    # 没有表名，检查是否在任何表中出现
+                    if col_lower not in all_known_cols:
+                        # 不在任何表中 -> 肯定是字符串
+                        node.replace(sqlglot.exp.Literal.string(col_name))
+                        
+        return expression
+
 
     def extract_entities(self, sql: str) -> Dict[str, List[str]]:
         """
@@ -91,6 +125,18 @@ class SQLParser:
         
         for column in expression.find_all(Column):
             table_alias = column.table
+            col_name = column.name
+            
+            # 处理 t.* 情况
+            if col_name == "*":
+                if table_alias and table_alias in real_table_names:
+                    real_table = real_table_names[table_alias]
+                    # 扩展为该表所有列
+                    all_cols = self.raw_schema.get(real_table, [])
+                    for c in all_cols:
+                        table_columns[real_table].add(c)
+                continue
+
             real_table = None
             
             if table_alias:
@@ -100,10 +146,6 @@ class SQLParser:
                 # 这里的 else 情况已经被 parse_sql/qualify 处理了，理论上不会出现未知 alias
             
             if real_table:
-                col_name = column.name
-                if col_name == "*":
-                    continue
-                
                 # 验证列名 (不区分大小写)
                 c_lower = col_name.lower()
                 t_lower = real_table.lower()
@@ -115,6 +157,20 @@ class SQLParser:
                 # 存储真实列名
                 real_col = self._col_map_lower[t_lower][c_lower]
                 table_columns[real_table].add(real_col)
+
+        # 4. 处理独立的 Star (*) 节点 (SELECT *)
+        # 如果 qualify 没有扩展 * (例如因大小写问题)，这里会捕获到
+        for star in expression.find_all(Star):
+            # 忽略作为 Column 一部分的 Star (t.* 已在上面处理)
+            if isinstance(star.parent, Column):
+                continue
+            
+            # 对于 SELECT *，我们将当前作用域内所有表的列都加进去
+            # 简化处理：将所有已识别的表的所有列都加进去
+            for r_table in real_table_names.values():
+                all_cols = self.raw_schema.get(r_table, [])
+                for c in all_cols:
+                    table_columns[r_table].add(c)
 
         # 转换为列表并排序
         return {k: sorted(list(v)) for k, v in table_columns.items()}
@@ -349,26 +405,26 @@ class SQLParser:
 if __name__ == '__main__':
     # 测试代码
     try:
-        parser = SQLParser("bird", "books")
+        parser = SQLParser("spider", "activity_1")
         
-        test_sql = "SELECT T2.publisher_name FROM book AS T1 INNER JOIN publisher AS T2 ON T1.publisher_id = T2.publisher_id WHERE T1.title = 'The Illuminati'"
+        # test_sql = "SELECT T2.publisher_name FROM book AS T1 INNER JOIN publisher AS T2 ON T1.publisher_id = T2.publisher_id WHERE T1.title = 'The Illuminati'"
         
-        print(f"SQL: {test_sql}\n")
+        # print(f"SQL: {test_sql}\n")
         
-        # 1. 提取并分组实体
-        entities = parser.extract_entities(test_sql)
+        # # 1. 提取并分组实体
+        # entities = parser.extract_entities(test_sql)
         
-        # 2. 格式化输出
-        print(parser.format_entities(entities))
+        # # 2. 格式化输出
+        # print(parser.format_entities(entities))
 
         
-        # 3. 关系提取
-        relationships = parser.extract_relationships(test_sql)
-        print(parser.format_relationships(relationships))
+        # # 3. 关系提取
+        # relationships = parser.extract_relationships(test_sql)
+        # print(parser.format_relationships(relationships))
 
         # 直接调用
         sql = """
-        SELECT T1.title FROM book AS T1 INNER JOIN publisher AS T2 ON T1.publisher_id = T2.publisher_id WHERE T2.publisher_name = 'Thomas Nelson' ORDER BY T1.publication_date ASC LIMIT 1
+        SELECT count(*) FROM Faculty
         """
         print(parser.generate_report(sql))
 

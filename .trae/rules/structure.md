@@ -43,5 +43,6 @@ d:\MVP-SQL-V2/
 │       ├── graph_loader.py # Graph Loading Utility
 │       ├── graph_schema_extractor.py # Graph-based schema & FK extractor
 │       ├── schema_generator.py # Schema text description generator
-│       └── sql_parser.py   # SQL analysis, validation & reporting
+│       ├── sql_parser.py   # SQL analysis, validation & reporting
+│       └── sql_vis.py      # SQL visualization & analysis tool (Streamlit)
 ```

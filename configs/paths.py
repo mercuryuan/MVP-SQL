@@ -10,7 +10,7 @@ TRAIN_BIRD = r"F:\train_bird\train_databases"
 
 BIRD_TRAIN_DATABASES_PATH = "E:/BIRD_train/train/train_databases/"
 BIRD_DEV_DATABASES_PATH = "E:/BIRD/dev_20240627/dev_databases/"
-BIRD_DEV_JSON = "E:/BIRD/dev_20240627/dev.json"  # BIRD所有开发集
+BIRD_DEV_JSON = DEFAULT_DATA_ROOT/ "bird" /"dev.json"  # BIRD所有开发集
 BIRD_TRAIN_JSON = DEFAULT_DATA_ROOT/ "bird" / "train.json"  # BIRD所有训练集
 
 SPIDER = "All the spider databases"  # 所有spider数据集
