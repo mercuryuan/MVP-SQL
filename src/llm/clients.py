@@ -145,7 +145,9 @@ if __name__ == '__main__':
     # system_sql: "你是一个数据库专家，只输出 SQL。"
     # generate_sql: "基于以下表结构：\n{schema}\n\n请生成查询：{question}"
 
-    client = LLMClient(provider="deepseek")
+    client = LLMClient(provider="gemini")
+    # client = LLMClient(provider="deepseek")
+    print(client.ask("你是谁？"))
 
     # 模拟数据
     schema_str = "Table: users (id, name, age)"
@@ -154,9 +156,9 @@ if __name__ == '__main__':
     try:
         # 使用模板调用，代码非常干净
         sql = client.ask_with_template(
-            template_name="generate_sql",
+            template_name="sql_generation_user",
             variables={"schema": schema_str, "question": user_q},
-            system_template="system_sql"
+            system_template="sql_generation_system"
         )
         print(sql)
     except KeyError as e:

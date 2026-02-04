@@ -5,16 +5,16 @@ import sys
 from pathlib import Path
 import logging
 
-# Configure logging
+# 配置日志
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-# Add project root to sys.path
+# 添加项目根目录到 sys.path
 project_root = str(Path(__file__).resolve().parent.parent.parent)
 if project_root not in sys.path:
     sys.path.append(project_root)
 
-# Imports
+# 导入项目模块
 from src.utils.graph_loader import GraphLoader
 from src.utils.schema_generator import SchemaGenerator
 from src.llm.clients import LLMClient
@@ -28,18 +28,23 @@ class AnchorSelector:
     负责将自然语言问题映射到数据库中相关的表实体（锚点）。
     """
 
-    def __init__(self, provider: str = "deepseek", model: str = "deepseek-chat"):
+    def __init__(self, provider: str = "deepseek", model: Optional[str] = None):
+        """
+        初始化选择器
+        :param provider: 模型供应商 (openai, deepseek, gemini, ollama)
+        :param model: 具体模型名称 (如 gpt-4o, deepseek-chat, gemini-2.0-flash)。
+                      如果为 None，则使用 LLMClient 内部定义的默认值。
+        """
         self.prompt_manager = PromptManager()
-        # 初始化 LLM 客户端
+
+        # 初始化 LLM 客户端，透传参数
         self.llm_client = LLMClient(provider=provider, model=model)
 
         # 预加载 System Prompt
-        # 注意：这里假设你的 yaml 文件里 key 还是 'schema_selection_system'
-        # 如果你也改了 yaml，请同步修改这里的 key
         self.system_prompt = self.prompt_manager.get_prompt("schema_selection_system")
 
     def _extract_json(self, text: str) -> Dict:
-        """Helper: 从 LLM 响应中提取 JSON"""
+        """从 LLM 响应中提取 JSON"""
         try:
             return json.loads(text)
         except:
@@ -53,13 +58,13 @@ class AnchorSelector:
             if matches:
                 return json.loads(matches.group(1))
 
-            raise ValueError("No valid JSON found in response")
+            # 如果都失败，记录错误但不要抛出异常中断流程，而是返回空结果
+            logger.error(f"JSON extraction failed for text: {text[:100]}...")
+            return {"selected_entity": [], "reasoning": {}, "decomposition_steps": []}
 
     def select_anchors(self, db_schema_str: str, question: str) -> Dict:
-        """
-        执行锚点选择的核心交互逻辑
-        """
-        # 获取 User Prompt (自动格式化)
+        """执行锚点选择的核心交互逻辑"""
+        # 获取 User Prompt
         user_msg = self.prompt_manager.get_prompt(
             "schema_selection_user",
             db_schema=db_schema_str,
@@ -76,11 +81,16 @@ class AnchorSelector:
             return self._extract_json(raw_response)
         except Exception as e:
             logger.error(f"Anchor Selection LLM error: {str(e)}")
-            # 返回空结构以防程序崩溃
             return {"selected_entity": [], "reasoning": {}, "decomposition_steps": []}
 
 
-def run_anchor_selection(dataset_name: str, db_id: str, question: str) -> Dict:
+def run_anchor_selection(
+        dataset_name: str,
+        db_id: str,
+        question: str,
+        provider: str = "deepseek",
+        model: Optional[str] = None
+) -> Dict:
     """
     【核心封装接口】执行一次完整的锚点选择流程。
 
@@ -88,19 +98,19 @@ def run_anchor_selection(dataset_name: str, db_id: str, question: str) -> Dict:
         dataset_name (str): 数据集名称 (如 'spider')
         db_id (str): 数据库 ID (如 'geo')
         question (str): 自然语言问题
+        provider (str): 模型供应商 (默认 'deepseek')
+        model (str, optional): 指定模型名称。不传则使用默认。
 
     Returns:
         Dict: 包含 'selected_entity', 'reasoning' 等字段的结果
     """
-    logger.info(f"Starting Anchor Selection for DB: '{db_id}'")
+    logger.info(f"Starting Anchor Selection for DB: '{db_id}' using {provider} ({model or 'default'})")
 
     # 1. 动态定位 Schema Graph 文件路径
-    # 路径逻辑兼容：repo/dataset/db_id/db_id.pkl 或 repo/dataset/db_id.pkl
     base_repo = OUTPUT_ROOT / "schema_graph_repo" / dataset_name
     pkl_path = base_repo / db_id / f"{db_id}.pkl"
 
     if not pkl_path.exists():
-        # 尝试备用路径结构
         pkl_path = base_repo / f"{db_id}.pkl"
 
     if not pkl_path.exists():
@@ -115,14 +125,14 @@ def run_anchor_selection(dataset_name: str, db_id: str, question: str) -> Dict:
             raise ValueError("Graph loaded is empty")
 
         sg = SchemaGenerator(graph)
-
-        # 将所有表的描述合并为一个字符串
         db_schema_str = "\n".join(
             sg.generate_combined_description(table) for table in sg.tables
         )
 
-        # 3. 初始化选择器并执行
-        selector = AnchorSelector()
+        # 3. 初始化选择器 (传入 provider 和 model)
+        selector = AnchorSelector(provider=provider, model=model)
+
+        # 4. 执行选择
         result = selector.select_anchors(db_schema_str, question)
 
         logger.info(f"Anchor Selection completed. Selected: {result.get('selected_entity', [])}")
@@ -135,15 +145,22 @@ def run_anchor_selection(dataset_name: str, db_id: str, question: str) -> Dict:
 
 # --- 测试调用示例 ---
 if __name__ == "__main__":
-    # 模拟外部传入的信息
+    # 模拟外部调用
     test_dataset = "spider"
-    test_db = "car_1"
-    test_question = "For model volvo, how many cylinders does the car with the least accelerate have?"
+    test_db = "academic"
+    test_question = """return me the number of the keywords related to " H. V. Jagadish " ."""
 
-    # 调用封装好的函数
-    result = run_anchor_selection(test_dataset, test_db, test_question)
+    print("\n--- Test 1: Using Default (DeepSeek) ---")
+    res1 = run_anchor_selection(test_dataset, test_db, test_question)
+    print(f"Result (DeepSeek): {res1.get('selected_entity')}")
 
-    print("\n" + "=" * 30)
-    print("锚点选择结果 (Anchor Selection Result):")
-    print(json.dumps(result, indent=2, ensure_ascii=False))
-    print("=" * 30)
+    print("\n--- Test 2: Using Gemini (Explicit) ---")
+    # 这里显式传入 provider 和 model
+    res2 = run_anchor_selection(
+        test_dataset,
+        test_db,
+        test_question,
+        provider="ollama",
+        model="llama3.2:3b"
+    )
+    print(f"Result (Gemini): {res2.get('selected_entity')}")
