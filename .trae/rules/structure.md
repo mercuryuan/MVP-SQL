@@ -41,5 +41,7 @@ d:\MVP-SQL-V2/
 │       ├── dataloder.py    # NL-SQL dataset loader
 │       ├── graph_explorer.py # Graph query API
 │       ├── graph_loader.py # Graph Loading Utility
-│       └── schema_generator.py # Schema text description generator
+│       ├── graph_schema_extractor.py # Graph-based schema & FK extractor
+│       ├── schema_generator.py # Schema text description generator
+│       └── sql_parser.py   # SQL analysis, validation & reporting
 ```
