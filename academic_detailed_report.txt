@@ -1,0 +1,4778 @@
+Detailed Parsing Report for Database: academic
+Total Queries: 181
+============================================================
+
+No.1
+Question: return me the homepage of PVLDB .
+SQL: SELECT homepage FROM journal WHERE name  =  "PVLDB"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 journal
+   - homepage
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：无
+2. WHERE 筛选：
+   - journal.name = 'PVLDB'
+--------------------------------------------------
+
+No.2
+Question: return me the homepage of " H. V. Jagadish " .
+SQL: SELECT homepage FROM author WHERE name  =  "H. V. Jagadish"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 author
+   - homepage
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：无
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish'
+--------------------------------------------------
+
+No.3
+Question: return me the abstract of " Making database systems usable " .
+SQL: SELECT abstract FROM publication WHERE title  =  "Making database systems usable"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - abstract
+   - title
+
+涉及的关系信息：
+1. JOIN 连接：无
+2. WHERE 筛选：
+   - publication.title = 'Making database systems usable'
+--------------------------------------------------
+
+No.4
+Question: return me the year of " Making database systems usable "
+SQL: SELECT YEAR FROM publication WHERE title  =  "Making database systems usable"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - title
+   - year
+
+涉及的关系信息：
+1. JOIN 连接：无
+2. WHERE 筛选：
+   - publication.title = 'Making database systems usable'
+--------------------------------------------------
+
+No.5
+Question: return me the year of " Making database systems usable " .
+SQL: SELECT YEAR FROM publication WHERE title  =  "Making database systems usable"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - title
+   - year
+
+涉及的关系信息：
+1. JOIN 连接：无
+2. WHERE 筛选：
+   - publication.title = 'Making database systems usable'
+--------------------------------------------------
+
+No.6
+Question: return me the papers after 2000 .
+SQL: SELECT title FROM publication WHERE YEAR  >  2000
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - title
+   - year
+
+涉及的关系信息：
+1. JOIN 连接：无
+2. WHERE 筛选：
+   - publication.year > 2000
+--------------------------------------------------
+
+No.7
+Question: return me the homepage of the VLDB conference .
+SQL: SELECT homepage FROM conference WHERE name  =  "VLDB"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 conference
+   - homepage
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：无
+2. WHERE 筛选：
+   - conference.name = 'VLDB'
+--------------------------------------------------
+
+No.8
+Question: return me all the keywords .
+SQL: SELECT keyword FROM keyword
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 keyword
+   - keyword
+
+涉及的关系信息：
+1. JOIN 连接：无
+2. WHERE 筛选：无
+--------------------------------------------------
+
+No.9
+Question: return me all the organizations .
+SQL: SELECT name FROM organization
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 organization
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：无
+2. WHERE 筛选：无
+--------------------------------------------------
+
+No.10
+Question: return me all the organizations in " North America " .
+SQL: SELECT name FROM organization WHERE continent  =  "North America"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 organization
+   - continent
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：无
+2. WHERE 筛选：
+   - organization.continent = 'North America'
+--------------------------------------------------
+
+No.11
+Question: return me the homepage of " University of Michigan " .
+SQL: SELECT homepage FROM organization WHERE name  =  "University of Michigan"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 organization
+   - homepage
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：无
+2. WHERE 筛选：
+   - organization.name = 'University of Michigan'
+--------------------------------------------------
+
+No.12
+Question: return me the number of references of " Making database systems usable " .
+SQL: SELECT reference_num FROM publication WHERE title  =  "Making database systems usable"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - reference_num
+   - title
+
+涉及的关系信息：
+1. JOIN 连接：无
+2. WHERE 筛选：
+   - publication.title = 'Making database systems usable'
+--------------------------------------------------
+
+No.13
+Question: return me the references of " Making database systems usable " .
+SQL: SELECT reference_num FROM publication WHERE title  =  "Making database systems usable"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - reference_num
+   - title
+
+涉及的关系信息：
+1. JOIN 连接：无
+2. WHERE 筛选：
+   - publication.title = 'Making database systems usable'
+--------------------------------------------------
+
+No.14
+Question: return me the number of citations of " Making database systems usable " .
+SQL: SELECT citation_num FROM publication WHERE title  =  "Making database systems usable"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - citation_num
+   - title
+
+涉及的关系信息：
+1. JOIN 连接：无
+2. WHERE 筛选：
+   - publication.title = 'Making database systems usable'
+--------------------------------------------------
+
+No.15
+Question: return me the citations of " Making database systems usable " .
+SQL: SELECT citation_num FROM publication WHERE title  =  "Making database systems usable"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - citation_num
+   - title
+
+涉及的关系信息：
+1. JOIN 连接：无
+2. WHERE 筛选：
+   - publication.title = 'Making database systems usable'
+--------------------------------------------------
+
+No.16
+Question: return me the paper with more than 200 citations .
+SQL: SELECT title FROM publication WHERE citation_num  >  200
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - citation_num
+   - title
+
+涉及的关系信息：
+1. JOIN 连接：无
+2. WHERE 筛选：
+   - publication.citation_num > 200
+--------------------------------------------------
+
+No.17
+Question: return me the authors who have papers in PVLDB 2010 .
+SQL: SELECT t1.name FROM publication AS t4 JOIN journal AS t2 ON t4.jid  =  t2.jid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t2.name  =  "PVLDB" AND t4.year  =  2010
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - jid
+   - pid
+   - year
+2. 表 journal
+   - jid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB' AND publication.year = 2010
+--------------------------------------------------
+
+No.18
+Question: return me the authors who have papers in PVLDB after 2010 .
+SQL: SELECT t1.name FROM publication AS t4 JOIN journal AS t2 ON t4.jid  =  t2.jid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t2.name  =  "PVLDB" AND t4.year  >  2010
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - jid
+   - pid
+   - year
+2. 表 journal
+   - jid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB' AND publication.year > 2010
+--------------------------------------------------
+
+No.19
+Question: return me the authors who have papers in VLDB conference in 2002 .
+SQL: SELECT t1.name FROM publication AS t4 JOIN conference AS t2 ON t4.cid  =  t2.cid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t2.name  =  "VLDB" AND t4.year  =  2002
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - pid
+   - year
+2. 表 conference
+   - cid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - conference.name = 'VLDB' AND publication.year = 2002
+--------------------------------------------------
+
+No.20
+Question: return me the authors who have papers in VLDB conference before 2002 .
+SQL: SELECT t1.name FROM publication AS t4 JOIN conference AS t2 ON t4.cid  =  t2.cid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t2.name  =  "VLDB" AND t4.year  <  2002
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - pid
+   - year
+2. 表 conference
+   - cid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - conference.name = 'VLDB' AND publication.year < 2002
+--------------------------------------------------
+
+No.21
+Question: return me the authors who have papers in VLDB conference before 2002 after 1995 .
+SQL: SELECT t1.name FROM publication AS t4 JOIN conference AS t2 ON t4.cid  =  t2.cid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t2.name  =  "VLDB" AND t4.year  <  2002 AND t4.year  >  1995
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - pid
+   - year
+2. 表 conference
+   - cid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - conference.name = 'VLDB' AND publication.year < 2002 AND publication.year > 1995
+--------------------------------------------------
+
+No.22
+Question: return me the area of PVLDB .
+SQL: SELECT t3.name FROM DOMAIN AS t3 JOIN domain_journal AS t1 ON t3.did  =  t1.did JOIN journal AS t2 ON t2.jid  =  t1.jid WHERE t2.name  =  "PVLDB"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 domain
+   - did
+   - name
+2. 表 domain_journal
+   - did
+   - jid
+3. 表 journal
+   - jid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: domain.did = domain_journal.did
+   - 类型: 
+   - 条件: journal.jid = domain_journal.jid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB'
+--------------------------------------------------
+
+No.23
+Question: return me the authors who have papers in PVLDB .
+SQL: SELECT t1.name FROM publication AS t4 JOIN journal AS t2 ON t4.jid  =  t2.jid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t2.name  =  "PVLDB"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - jid
+   - pid
+2. 表 journal
+   - jid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB'
+--------------------------------------------------
+
+No.24
+Question: return me the organization " H. V. Jagadish " is in .
+SQL: SELECT t2.name FROM organization AS t2 JOIN author AS t1 ON t2.oid  =  t1.oid WHERE t1.name  =  "H. V. Jagadish"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 organization
+   - name
+   - oid
+2. 表 author
+   - name
+   - oid
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: organization.oid = author.oid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish'
+--------------------------------------------------
+
+No.25
+Question: return me the conferences, which have papers by " H. V. Jagadish " .
+SQL: SELECT t2.name FROM publication AS t4 JOIN conference AS t2 ON t4.cid  =  t2.cid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t1.name  =  "H. V. Jagadish"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - pid
+2. 表 conference
+   - cid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish'
+--------------------------------------------------
+
+No.26
+Question: return me the journals, which have papers by " H. V. Jagadish " .
+SQL: SELECT t2.name FROM publication AS t4 JOIN journal AS t2 ON t4.jid  =  t2.jid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t1.name  =  "H. V. Jagadish"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - jid
+   - pid
+2. 表 journal
+   - jid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish'
+--------------------------------------------------
+
+No.27
+Question: return me the domain where " H. V. Jagadish " is focused .
+SQL: SELECT t2.name FROM domain_author AS t3 JOIN author AS t1 ON t3.aid  =  t1.aid JOIN DOMAIN AS t2 ON t2.did  =  t3.did WHERE t1.name  =  "H. V. Jagadish"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 domain_author
+   - aid
+   - did
+2. 表 author
+   - aid
+   - name
+3. 表 domain
+   - did
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: domain_author.aid = author.aid
+   - 类型: 
+   - 条件: domain.did = domain_author.did
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish'
+--------------------------------------------------
+
+No.28
+Question: return me the authors of " Making database systems usable " .
+SQL: SELECT t1.name FROM writes AS t2 JOIN author AS t1 ON t2.aid  =  t1.aid JOIN publication AS t3 ON t2.pid  =  t3.pid WHERE t3.title  =  "Making database systems usable"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 writes
+   - aid
+   - pid
+2. 表 author
+   - aid
+   - name
+3. 表 publication
+   - pid
+   - title
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+2. WHERE 筛选：
+   - publication.title = 'Making database systems usable'
+--------------------------------------------------
+
+No.29
+Question: return me the conference, which published " Making database systems usable " .
+SQL: SELECT t1.name FROM publication AS t2 JOIN conference AS t1 ON t2.cid  =  t1.cid WHERE t2.title  =  "Making database systems usable"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - title
+2. 表 conference
+   - cid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+2. WHERE 筛选：
+   - publication.title = 'Making database systems usable'
+--------------------------------------------------
+
+No.30
+Question: return me the papers by " H. V. Jagadish " .
+SQL: SELECT t3.title FROM writes AS t2 JOIN author AS t1 ON t2.aid  =  t1.aid JOIN publication AS t3 ON t2.pid  =  t3.pid WHERE t1.name  =  "H. V. Jagadish"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 writes
+   - aid
+   - pid
+2. 表 author
+   - aid
+   - name
+3. 表 publication
+   - pid
+   - title
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish'
+--------------------------------------------------
+
+No.31
+Question: return me the papers on VLDB conference .
+SQL: SELECT t2.title FROM publication AS t2 JOIN conference AS t1 ON t2.cid  =  t1.cid WHERE t1.name  =  "VLDB"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - title
+2. 表 conference
+   - cid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+2. WHERE 筛选：
+   - conference.name = 'VLDB'
+--------------------------------------------------
+
+No.32
+Question: return me the papers on PVLDB .
+SQL: SELECT t2.title FROM publication AS t2 JOIN journal AS t1 ON t2.jid  =  t1.jid WHERE t1.name  =  "PVLDB"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - jid
+   - title
+2. 表 journal
+   - jid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB'
+--------------------------------------------------
+
+No.33
+Question: return me the papers on PVLDB after 2000 .
+SQL: SELECT t2.title FROM publication AS t2 JOIN journal AS t1 ON t2.jid  =  t1.jid WHERE t1.name  =  "PVLDB" AND t2.year  >  2000
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - jid
+   - title
+   - year
+2. 表 journal
+   - jid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB' AND publication.year > 2000
+--------------------------------------------------
+
+No.34
+Question: return me the papers on VLDB conference after 2000 .
+SQL: SELECT t2.title FROM publication AS t2 JOIN conference AS t1 ON t2.cid  =  t1.cid WHERE t1.name  =  "VLDB" AND t2.year  >  2000
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - title
+   - year
+2. 表 conference
+   - cid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+2. WHERE 筛选：
+   - conference.name = 'VLDB' AND publication.year > 2000
+--------------------------------------------------
+
+No.35
+Question: return me the papers by " H. V. Jagadish " on PVLDB .
+SQL: SELECT t4.title FROM publication AS t4 JOIN journal AS t2 ON t4.jid  =  t2.jid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t1.name  =  "H. V. Jagadish" AND t2.name  =  "PVLDB"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - jid
+   - pid
+   - title
+2. 表 journal
+   - jid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish' AND journal.name = 'PVLDB'
+--------------------------------------------------
+
+No.36
+Question: return me the papers by " H. V. Jagadish " on VLDB conference .
+SQL: SELECT t4.title FROM publication AS t4 JOIN conference AS t2 ON t4.cid  =  t2.cid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t1.name  =  "H. V. Jagadish" AND t2.name  =  "VLDB"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - pid
+   - title
+2. 表 conference
+   - cid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish' AND conference.name = 'VLDB'
+--------------------------------------------------
+
+No.37
+Question: return me the papers by " H. V. Jagadish " after 2000 .
+SQL: SELECT t3.title FROM writes AS t2 JOIN author AS t1 ON t2.aid  =  t1.aid JOIN publication AS t3 ON t2.pid  =  t3.pid WHERE t1.name  =  "H. V. Jagadish" AND t3.year  >  2000
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 writes
+   - aid
+   - pid
+2. 表 author
+   - aid
+   - name
+3. 表 publication
+   - pid
+   - title
+   - year
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish' AND publication.year > 2000
+--------------------------------------------------
+
+No.38
+Question: return me the papers by " H. V. Jagadish " on PVLDB after 2000 .
+SQL: SELECT t4.title FROM publication AS t4 JOIN journal AS t2 ON t4.jid  =  t2.jid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t1.name  =  "H. V. Jagadish" AND t2.name  =  "PVLDB" AND t4.year  >  2000
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - jid
+   - pid
+   - title
+   - year
+2. 表 journal
+   - jid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish' AND journal.name = 'PVLDB' AND publication.year > 2000
+--------------------------------------------------
+
+No.39
+Question: return me the papers by " H. V. Jagadish " on VLDB conference after 2000 .
+SQL: SELECT t4.title FROM publication AS t4 JOIN conference AS t2 ON t4.cid  =  t2.cid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t1.name  =  "H. V. Jagadish" AND t2.name  =  "VLDB" AND t4.year  >  2000
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - pid
+   - title
+   - year
+2. 表 conference
+   - cid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish' AND conference.name = 'VLDB' AND publication.year > 2000
+--------------------------------------------------
+
+No.40
+Question: return me the area of the VLDB conference .
+SQL: SELECT t2.name FROM domain_conference AS t3 JOIN conference AS t1 ON t3.cid  =  t1.cid JOIN DOMAIN AS t2 ON t2.did  =  t3.did WHERE t1.name  =  "VLDB"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 domain_conference
+   - cid
+   - did
+2. 表 conference
+   - cid
+   - name
+3. 表 domain
+   - did
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: domain_conference.cid = conference.cid
+   - 类型: 
+   - 条件: domain.did = domain_conference.did
+2. WHERE 筛选：
+   - conference.name = 'VLDB'
+--------------------------------------------------
+
+No.41
+Question: return me the authors who have papers in the VLDB conference .
+SQL: SELECT t1.name FROM publication AS t4 JOIN conference AS t2 ON t4.cid  =  t2.cid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t2.name  =  "VLDB"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - pid
+2. 表 conference
+   - cid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - conference.name = 'VLDB'
+--------------------------------------------------
+
+No.42
+Question: return me all the keywords in Databases area .
+SQL: SELECT t1.keyword FROM DOMAIN AS t3 JOIN domain_keyword AS t2 ON t3.did  =  t2.did JOIN keyword AS t1 ON t1.kid  =  t2.kid WHERE t3.name  =  "Databases"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 domain
+   - did
+   - name
+2. 表 domain_keyword
+   - did
+   - kid
+3. 表 keyword
+   - keyword
+   - kid
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: domain.did = domain_keyword.did
+   - 类型: 
+   - 条件: keyword.kid = domain_keyword.kid
+2. WHERE 筛选：
+   - domain.name = 'Databases'
+--------------------------------------------------
+
+No.43
+Question: return me all the papers, which contain the keyword " Natural Language " .
+SQL: SELECT t3.title FROM publication_keyword AS t2 JOIN keyword AS t1 ON t2.kid  =  t1.kid JOIN publication AS t3 ON t3.pid  =  t2.pid WHERE t1.keyword  =  "Natural Language"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - pid
+   - title
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+2. WHERE 筛选：
+   - keyword.keyword = 'Natural Language'
+--------------------------------------------------
+
+No.44
+Question: return me the keywords of " Making database systems usable " .
+SQL: SELECT t1.keyword FROM publication_keyword AS t3 JOIN keyword AS t1 ON t3.kid  =  t1.kid JOIN publication AS t2 ON t2.pid  =  t3.pid WHERE t2.title  =  "Making database systems usable"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - pid
+   - title
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+2. WHERE 筛选：
+   - publication.title = 'Making database systems usable'
+--------------------------------------------------
+
+No.45
+Question: return me the keywords related to " H. V. Jagadish " .
+SQL: SELECT t1.keyword FROM publication_keyword AS t5 JOIN keyword AS t1 ON t5.kid  =  t1.kid JOIN publication AS t3 ON t3.pid  =  t5.pid JOIN writes AS t4 ON t4.pid  =  t3.pid JOIN author AS t2 ON t4.aid  =  t2.aid WHERE t2.name  =  "H. V. Jagadish"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - pid
+4. 表 writes
+   - aid
+   - pid
+5. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish'
+--------------------------------------------------
+
+No.46
+Question: return me the keywords in VLDB conference .
+SQL: SELECT t1.keyword FROM publication_keyword AS t4 JOIN keyword AS t1 ON t4.kid  =  t1.kid JOIN publication AS t3 ON t3.pid  =  t4.pid JOIN conference AS t2 ON t3.cid  =  t2.cid WHERE t2.name  =  "VLDB"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - cid
+   - pid
+4. 表 conference
+   - cid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+2. WHERE 筛选：
+   - conference.name = 'VLDB'
+--------------------------------------------------
+
+No.47
+Question: return me the keywords in PVLDB .
+SQL: SELECT t1.keyword FROM publication_keyword AS t4 JOIN keyword AS t1 ON t4.kid  =  t1.kid JOIN publication AS t2 ON t2.pid  =  t4.pid JOIN journal AS t3 ON t2.jid  =  t3.jid WHERE t3.name  =  "PVLDB"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - jid
+   - pid
+4. 表 journal
+   - jid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB'
+--------------------------------------------------
+
+No.48
+Question: return me the keywords in the papers of " University of Michigan " .
+SQL: SELECT t1.keyword FROM organization AS t6 JOIN author AS t2 ON t6.oid  =  t2.oid JOIN writes AS t4 ON t4.aid  =  t2.aid JOIN publication AS t5 ON t4.pid  =  t5.pid JOIN publication_keyword AS t3 ON t5.pid  =  t3.pid JOIN keyword AS t1 ON t3.kid  =  t1.kid WHERE t6.name  =  "University of Michigan"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 organization
+   - name
+   - oid
+2. 表 author
+   - aid
+   - oid
+3. 表 writes
+   - aid
+   - pid
+4. 表 publication
+   - pid
+5. 表 publication_keyword
+   - kid
+   - pid
+6. 表 keyword
+   - keyword
+   - kid
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: organization.oid = author.oid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+2. WHERE 筛选：
+   - organization.name = 'University of Michigan'
+--------------------------------------------------
+
+No.49
+Question: return me the papers of " H. V. Jagadish " containing keyword " User Study " .
+SQL: SELECT t5.title FROM publication_keyword AS t3 JOIN keyword AS t1 ON t3.kid  =  t1.kid JOIN publication AS t5 ON t5.pid  =  t3.pid JOIN writes AS t4 ON t4.pid  =  t5.pid JOIN author AS t2 ON t4.aid  =  t2.aid WHERE t2.name  =  "H. V. Jagadish" AND t1.keyword  =  "User Study"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - pid
+   - title
+4. 表 writes
+   - aid
+   - pid
+5. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish' AND keyword.keyword = 'User Study'
+--------------------------------------------------
+
+No.50
+Question: return me the papers in PVLDB containing keyword " Keyword search " .
+SQL: SELECT t4.title FROM publication_keyword AS t2 JOIN keyword AS t1 ON t2.kid  =  t1.kid JOIN publication AS t4 ON t4.pid  =  t2.pid JOIN journal AS t3 ON t4.jid  =  t3.jid WHERE t3.name  =  "PVLDB" AND t1.keyword  =  "Keyword search"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - jid
+   - pid
+   - title
+4. 表 journal
+   - jid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB' AND keyword.keyword = 'Keyword search'
+--------------------------------------------------
+
+No.51
+Question: return me the papers in VLDB conference containing keyword " Information Retrieval " .
+SQL: SELECT t4.title FROM publication_keyword AS t3 JOIN keyword AS t1 ON t3.kid  =  t1.kid JOIN publication AS t4 ON t4.pid  =  t3.pid JOIN conference AS t2 ON t4.cid  =  t2.cid WHERE t2.name  =  "VLDB" AND t1.keyword  =  "Information Retrieval"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - cid
+   - pid
+   - title
+4. 表 conference
+   - cid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+2. WHERE 筛选：
+   - conference.name = 'VLDB' AND keyword.keyword = 'Information Retrieval'
+--------------------------------------------------
+
+No.52
+Question: return me the authors who have papers containing keyword " Relational Database " .
+SQL: SELECT t2.name FROM publication_keyword AS t5 JOIN keyword AS t1 ON t5.kid  =  t1.kid JOIN publication AS t3 ON t3.pid  =  t5.pid JOIN writes AS t4 ON t4.pid  =  t3.pid JOIN author AS t2 ON t4.aid  =  t2.aid WHERE t1.keyword  =  "Relational Database"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - pid
+4. 表 writes
+   - aid
+   - pid
+5. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - keyword.keyword = 'Relational Database'
+--------------------------------------------------
+
+No.53
+Question: return me all the organizations in Databases area .
+SQL: SELECT t2.name FROM domain_author AS t4 JOIN author AS t1 ON t4.aid  =  t1.aid JOIN DOMAIN AS t3 ON t3.did  =  t4.did JOIN organization AS t2 ON t2.oid  =  t1.oid WHERE t3.name  =  "Databases"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 domain_author
+   - aid
+   - did
+2. 表 author
+   - aid
+   - oid
+3. 表 domain
+   - did
+   - name
+4. 表 organization
+   - name
+   - oid
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: domain_author.aid = author.aid
+   - 类型: 
+   - 条件: domain.did = domain_author.did
+   - 类型: 
+   - 条件: organization.oid = author.oid
+2. WHERE 筛选：
+   - domain.name = 'Databases'
+--------------------------------------------------
+
+No.54
+Question: return me all the organizations in Databases area located in " North America " .
+SQL: SELECT t2.name FROM domain_author AS t4 JOIN author AS t1 ON t4.aid  =  t1.aid JOIN DOMAIN AS t3 ON t3.did  =  t4.did JOIN organization AS t2 ON t2.oid  =  t1.oid WHERE t3.name  =  "Databases" AND t2.continent  =  "North America"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 domain_author
+   - aid
+   - did
+2. 表 author
+   - aid
+   - oid
+3. 表 domain
+   - did
+   - name
+4. 表 organization
+   - continent
+   - name
+   - oid
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: domain_author.aid = author.aid
+   - 类型: 
+   - 条件: domain.did = domain_author.did
+   - 类型: 
+   - 条件: organization.oid = author.oid
+2. WHERE 筛选：
+   - domain.name = 'Databases' AND organization.continent = 'North America'
+--------------------------------------------------
+
+No.55
+Question: return me all the researchers in " University of Michigan " .
+SQL: SELECT t1.name FROM organization AS t2 JOIN author AS t1 ON t2.oid  =  t1.oid WHERE t2.name  =  "University of Michigan"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 organization
+   - name
+   - oid
+2. 表 author
+   - name
+   - oid
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: organization.oid = author.oid
+2. WHERE 筛选：
+   - organization.name = 'University of Michigan'
+--------------------------------------------------
+
+No.56
+Question: return me all the researchers in Databases area in " University of Michigan " .
+SQL: SELECT t1.name FROM domain_author AS t4 JOIN author AS t1 ON t4.aid  =  t1.aid JOIN DOMAIN AS t3 ON t3.did  =  t4.did JOIN organization AS t2 ON t2.oid  =  t1.oid WHERE t3.name  =  "Databases" AND t2.name  =  "University of Michigan"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 domain_author
+   - aid
+   - did
+2. 表 author
+   - aid
+   - name
+   - oid
+3. 表 domain
+   - did
+   - name
+4. 表 organization
+   - name
+   - oid
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: domain_author.aid = author.aid
+   - 类型: 
+   - 条件: domain.did = domain_author.did
+   - 类型: 
+   - 条件: organization.oid = author.oid
+2. WHERE 筛选：
+   - domain.name = 'Databases' AND organization.name = 'University of Michigan'
+--------------------------------------------------
+
+No.57
+Question: return me all the papers in " University of Michigan " .
+SQL: SELECT t4.title FROM organization AS t2 JOIN author AS t1 ON t2.oid  =  t1.oid JOIN writes AS t3 ON t3.aid  =  t1.aid JOIN publication AS t4 ON t3.pid  =  t4.pid WHERE t2.name  =  "University of Michigan"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 organization
+   - name
+   - oid
+2. 表 author
+   - aid
+   - oid
+3. 表 writes
+   - aid
+   - pid
+4. 表 publication
+   - pid
+   - title
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: organization.oid = author.oid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+2. WHERE 筛选：
+   - organization.name = 'University of Michigan'
+--------------------------------------------------
+
+No.58
+Question: return me all the papers after 2000 in " University of Michigan " .
+SQL: SELECT t4.title FROM organization AS t2 JOIN author AS t1 ON t2.oid  =  t1.oid JOIN writes AS t3 ON t3.aid  =  t1.aid JOIN publication AS t4 ON t3.pid  =  t4.pid WHERE t2.name  =  "University of Michigan" AND t4.year  >  2000
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 organization
+   - name
+   - oid
+2. 表 author
+   - aid
+   - oid
+3. 表 writes
+   - aid
+   - pid
+4. 表 publication
+   - pid
+   - title
+   - year
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: organization.oid = author.oid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+2. WHERE 筛选：
+   - organization.name = 'University of Michigan' AND publication.year > 2000
+--------------------------------------------------
+
+No.59
+Question: return me all the papers in VLDB conference in " University of Michigan " .
+SQL: SELECT t5.title FROM organization AS t3 JOIN author AS t1 ON t3.oid  =  t1.oid JOIN writes AS t4 ON t4.aid  =  t1.aid JOIN publication AS t5 ON t4.pid  =  t5.pid JOIN conference AS t2 ON t5.cid  =  t2.cid WHERE t2.name  =  "VLDB" AND t3.name  =  "University of Michigan"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 organization
+   - name
+   - oid
+2. 表 author
+   - aid
+   - oid
+3. 表 writes
+   - aid
+   - pid
+4. 表 publication
+   - cid
+   - pid
+   - title
+5. 表 conference
+   - cid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: organization.oid = author.oid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+2. WHERE 筛选：
+   - conference.name = 'VLDB' AND organization.name = 'University of Michigan'
+--------------------------------------------------
+
+No.60
+Question: return me all the papers in PVLDB in " University of Michigan " .
+SQL: SELECT t5.title FROM organization AS t2 JOIN author AS t1 ON t2.oid  =  t1.oid JOIN writes AS t4 ON t4.aid  =  t1.aid JOIN publication AS t5 ON t4.pid  =  t5.pid JOIN journal AS t3 ON t5.jid  =  t3.jid WHERE t3.name  =  "PVLDB" AND t2.name  =  "University of Michigan"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 organization
+   - name
+   - oid
+2. 表 author
+   - aid
+   - oid
+3. 表 writes
+   - aid
+   - pid
+4. 表 publication
+   - jid
+   - pid
+   - title
+5. 表 journal
+   - jid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: organization.oid = author.oid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB' AND organization.name = 'University of Michigan'
+--------------------------------------------------
+
+No.61
+Question: return me all the papers in PVLDB after 2000 in " University of Michigan " .
+SQL: SELECT t5.title FROM organization AS t2 JOIN author AS t1 ON t2.oid  =  t1.oid JOIN writes AS t4 ON t4.aid  =  t1.aid JOIN publication AS t5 ON t4.pid  =  t5.pid JOIN journal AS t3 ON t5.jid  =  t3.jid WHERE t3.name  =  "PVLDB" AND t2.name  =  "University of Michigan" AND t5.year  >  2000
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 organization
+   - name
+   - oid
+2. 表 author
+   - aid
+   - oid
+3. 表 writes
+   - aid
+   - pid
+4. 表 publication
+   - jid
+   - pid
+   - title
+   - year
+5. 表 journal
+   - jid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: organization.oid = author.oid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB' AND organization.name = 'University of Michigan' AND publication.year > 2000
+--------------------------------------------------
+
+No.62
+Question: return me the paper in Databases area with more than 200 citations .
+SQL: SELECT t3.title FROM DOMAIN AS t2 JOIN domain_publication AS t1 ON t2.did  =  t1.did JOIN publication AS t3 ON t3.pid  =  t1.pid WHERE t2.name  =  "Databases" AND t3.citation_num  >  200
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 domain
+   - did
+   - name
+2. 表 domain_publication
+   - did
+   - pid
+3. 表 publication
+   - citation_num
+   - pid
+   - title
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: domain.did = domain_publication.did
+   - 类型: 
+   - 条件: publication.pid = domain_publication.pid
+2. WHERE 筛选：
+   - domain.name = 'Databases' AND publication.citation_num > 200
+--------------------------------------------------
+
+No.63
+Question: return me the paper in PVLDB with more than 200 citations .
+SQL: SELECT t2.title FROM publication AS t2 JOIN journal AS t1 ON t2.jid  =  t1.jid WHERE t1.name  =  "PVLDB" AND t2.citation_num  >  200
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - citation_num
+   - jid
+   - title
+2. 表 journal
+   - jid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB' AND publication.citation_num > 200
+--------------------------------------------------
+
+No.64
+Question: return me the paper in VLDB conference with more than 200 citations .
+SQL: SELECT t2.title FROM publication AS t2 JOIN conference AS t1 ON t2.cid  =  t1.cid WHERE t1.name  =  "VLDB" AND t2.citation_num  >  200
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - citation_num
+   - title
+2. 表 conference
+   - cid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+2. WHERE 筛选：
+   - conference.name = 'VLDB' AND publication.citation_num > 200
+--------------------------------------------------
+
+No.65
+Question: return me the paper by " H. V. Jagadish " with more than 200 citations .
+SQL: SELECT t3.title FROM writes AS t2 JOIN author AS t1 ON t2.aid  =  t1.aid JOIN publication AS t3 ON t2.pid  =  t3.pid WHERE t1.name  =  "H. V. Jagadish" AND t3.citation_num  >  200
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 writes
+   - aid
+   - pid
+2. 表 author
+   - aid
+   - name
+3. 表 publication
+   - citation_num
+   - pid
+   - title
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish' AND publication.citation_num > 200
+--------------------------------------------------
+
+No.66
+Question: return me the papers by " H. V. Jagadish " on PVLDB with more than 200 citations .
+SQL: SELECT t4.title FROM publication AS t4 JOIN journal AS t2 ON t4.jid  =  t2.jid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t1.name  =  "H. V. Jagadish" AND t2.name  =  "PVLDB" AND t4.citation_num  >  200
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - citation_num
+   - jid
+   - pid
+   - title
+2. 表 journal
+   - jid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish' AND journal.name = 'PVLDB' AND publication.citation_num > 200
+--------------------------------------------------
+
+No.67
+Question: return me the papers by " H. V. Jagadish " on VLDB conference with more than 200 citations .
+SQL: SELECT t4.title FROM publication AS t4 JOIN conference AS t2 ON t4.cid  =  t2.cid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t1.name  =  "H. V. Jagadish" AND t2.name  =  "VLDB" AND t4.citation_num  >  200
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - citation_num
+   - pid
+   - title
+2. 表 conference
+   - cid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish' AND conference.name = 'VLDB' AND publication.citation_num > 200
+--------------------------------------------------
+
+No.68
+Question: return me the paper after 2000 with more than 200 citations .
+SQL: SELECT title FROM publication WHERE citation_num  >  200 AND YEAR  >  2000
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - citation_num
+   - title
+   - year
+
+涉及的关系信息：
+1. JOIN 连接：无
+2. WHERE 筛选：
+   - publication.citation_num > 200 AND publication.year > 2000
+--------------------------------------------------
+
+No.69
+Question: return me the paper after 2000 in Databases area with more than 200 citations .
+SQL: SELECT t3.title FROM DOMAIN AS t2 JOIN domain_publication AS t1 ON t2.did  =  t1.did JOIN publication AS t3 ON t3.pid  =  t1.pid WHERE t2.name  =  "Databases" AND t3.citation_num  >  200 AND t3.year  >  2000
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 domain
+   - did
+   - name
+2. 表 domain_publication
+   - did
+   - pid
+3. 表 publication
+   - citation_num
+   - pid
+   - title
+   - year
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: domain.did = domain_publication.did
+   - 类型: 
+   - 条件: publication.pid = domain_publication.pid
+2. WHERE 筛选：
+   - domain.name = 'Databases' AND publication.citation_num > 200 AND publication.year > 2000
+--------------------------------------------------
+
+No.70
+Question: return me the paper after 2000 in PVLDB with more than 200 citations .
+SQL: SELECT t2.title FROM publication AS t2 JOIN journal AS t1 ON t2.jid  =  t1.jid WHERE t1.name  =  "PVLDB" AND t2.citation_num  >  200 AND t2.year  >  2000
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - citation_num
+   - jid
+   - title
+   - year
+2. 表 journal
+   - jid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB' AND publication.citation_num > 200 AND publication.year > 2000
+--------------------------------------------------
+
+No.71
+Question: return me the paper after 2000 in VLDB conference with more than 200 citations .
+SQL: SELECT t2.title FROM publication AS t2 JOIN conference AS t1 ON t2.cid  =  t1.cid WHERE t1.name  =  "VLDB" AND t2.citation_num  >  200 AND t2.year  >  2000
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - citation_num
+   - title
+   - year
+2. 表 conference
+   - cid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+2. WHERE 筛选：
+   - conference.name = 'VLDB' AND publication.citation_num > 200 AND publication.year > 2000
+--------------------------------------------------
+
+No.72
+Question: return me the number of conferences which have papers by " H. V. Jagadish " .
+SQL: SELECT COUNT ( DISTINCT t2.name ) FROM publication AS t4 JOIN conference AS t2 ON t4.cid  =  t2.cid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t1.name  =  "H. V. Jagadish"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - pid
+2. 表 conference
+   - cid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish'
+--------------------------------------------------
+
+No.73
+Question: return me the number of journals which have papers by " H. V. Jagadish " .
+SQL: SELECT COUNT ( DISTINCT t2.name ) FROM publication AS t4 JOIN journal AS t2 ON t4.jid  =  t2.jid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t1.name  =  "H. V. Jagadish"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - jid
+   - pid
+2. 表 journal
+   - jid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish'
+--------------------------------------------------
+
+No.74
+Question: return me the number of papers written by " H. V. Jagadish " in each year .
+SQL: SELECT COUNT ( DISTINCT t3.title )  ,  t3.year FROM writes AS t2 JOIN author AS t1 ON t2.aid  =  t1.aid JOIN publication AS t3 ON t2.pid  =  t3.pid WHERE t1.name  =  "H. V. Jagadish" GROUP BY t3.year
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 writes
+   - aid
+   - pid
+2. 表 author
+   - aid
+   - name
+3. 表 publication
+   - pid
+   - title
+   - year
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish'
+--------------------------------------------------
+
+No.75
+Question: return me the number of authors of " Making database systems usable " .
+SQL: SELECT COUNT ( DISTINCT t1.name ) FROM writes AS t2 JOIN author AS t1 ON t2.aid  =  t1.aid JOIN publication AS t3 ON t2.pid  =  t3.pid WHERE t3.title  =  "Making database systems usable"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 writes
+   - aid
+   - pid
+2. 表 author
+   - aid
+   - name
+3. 表 publication
+   - pid
+   - title
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+2. WHERE 筛选：
+   - publication.title = 'Making database systems usable'
+--------------------------------------------------
+
+No.76
+Question: return me the number of citations of " Making database systems usable " in each year .
+SQL: SELECT YEAR  ,  SUM ( citation_num ) FROM publication WHERE title  =  "Making database systems usable" GROUP BY YEAR
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - citation_num
+   - title
+   - year
+
+涉及的关系信息：
+1. JOIN 连接：无
+2. WHERE 筛选：
+   - publication.title = 'Making database systems usable'
+--------------------------------------------------
+
+No.77
+Question: return me the number of citations of " Making database systems usable " before 2010 .
+SQL: SELECT COUNT ( DISTINCT t2.title ) FROM publication AS t3 JOIN cite AS t1 ON t3.pid  =  t1.cited JOIN publication AS t2 ON t2.pid  =  t1.citing WHERE t3.title  =  "Making database systems usable" AND t2.year  <  2010
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - pid
+   - title
+   - year
+2. 表 cite
+   - cited
+   - citing
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.pid = cite.cited
+   - 类型: 
+   - 条件: publication.pid = cite.citing
+     [提示]: 未命中已知外键关系
+2. WHERE 筛选：
+   - publication.title = 'Making database systems usable' AND publication.year < 2010
+--------------------------------------------------
+
+No.78
+Question: return me the number of papers by " H. V. Jagadish " .
+SQL: SELECT COUNT ( DISTINCT t3.title ) FROM writes AS t2 JOIN author AS t1 ON t2.aid  =  t1.aid JOIN publication AS t3 ON t2.pid  =  t3.pid WHERE t1.name  =  "H. V. Jagadish"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 writes
+   - aid
+   - pid
+2. 表 author
+   - aid
+   - name
+3. 表 publication
+   - pid
+   - title
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish'
+--------------------------------------------------
+
+No.79
+Question: return me the number of papers on VLDB conference .
+SQL: SELECT COUNT ( DISTINCT t2.title ) FROM publication AS t2 JOIN conference AS t1 ON t2.cid  =  t1.cid WHERE t1.name  =  "VLDB"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - title
+2. 表 conference
+   - cid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+2. WHERE 筛选：
+   - conference.name = 'VLDB'
+--------------------------------------------------
+
+No.80
+Question: return me the number of papers on PVLDB .
+SQL: SELECT COUNT ( DISTINCT t2.title ) FROM publication AS t2 JOIN journal AS t1 ON t2.jid  =  t1.jid WHERE t1.name  =  "PVLDB"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - jid
+   - title
+2. 表 journal
+   - jid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB'
+--------------------------------------------------
+
+No.81
+Question: return me the number of papers after 2000 .
+SQL: SELECT COUNT ( DISTINCT title ) FROM publication WHERE YEAR  >  2000
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - title
+   - year
+
+涉及的关系信息：
+1. JOIN 连接：无
+2. WHERE 筛选：
+   - publication.year > 2000
+--------------------------------------------------
+
+No.82
+Question: return me the number of papers on PVLDB after 2000 .
+SQL: SELECT COUNT ( DISTINCT t2.title ) FROM publication AS t2 JOIN journal AS t1 ON t2.jid  =  t1.jid WHERE t1.name  =  "PVLDB" AND t2.year  >  2000
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - jid
+   - title
+   - year
+2. 表 journal
+   - jid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB' AND publication.year > 2000
+--------------------------------------------------
+
+No.83
+Question: return me the number of papers on VLDB conference after 2000 .
+SQL: SELECT COUNT ( DISTINCT t2.title ) FROM publication AS t2 JOIN conference AS t1 ON t2.cid  =  t1.cid WHERE t1.name  =  "VLDB" AND t2.year  >  2000
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - title
+   - year
+2. 表 conference
+   - cid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+2. WHERE 筛选：
+   - conference.name = 'VLDB' AND publication.year > 2000
+--------------------------------------------------
+
+No.84
+Question: return me the number of papers by " H. V. Jagadish " on PVLDB .
+SQL: SELECT COUNT ( DISTINCT t4.title ) FROM publication AS t4 JOIN journal AS t2 ON t4.jid  =  t2.jid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t1.name  =  "H. V. Jagadish" AND t2.name  =  "PVLDB"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - jid
+   - pid
+   - title
+2. 表 journal
+   - jid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish' AND journal.name = 'PVLDB'
+--------------------------------------------------
+
+No.85
+Question: return me the number of papers by " H. V. Jagadish " on VLDB conference .
+SQL: SELECT COUNT ( DISTINCT t4.title ) FROM publication AS t4 JOIN conference AS t2 ON t4.cid  =  t2.cid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t1.name  =  "H. V. Jagadish" AND t2.name  =  "VLDB"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - pid
+   - title
+2. 表 conference
+   - cid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish' AND conference.name = 'VLDB'
+--------------------------------------------------
+
+No.86
+Question: return me the number of papers by " H. V. Jagadish " after 2000 .
+SQL: SELECT COUNT ( DISTINCT t3.title ) FROM writes AS t2 JOIN author AS t1 ON t2.aid  =  t1.aid JOIN publication AS t3 ON t2.pid  =  t3.pid WHERE t1.name  =  "H. V. Jagadish" AND t3.year  >  2000
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 writes
+   - aid
+   - pid
+2. 表 author
+   - aid
+   - name
+3. 表 publication
+   - pid
+   - title
+   - year
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish' AND publication.year > 2000
+--------------------------------------------------
+
+No.87
+Question: return me the number of papers by " H. V. Jagadish " on PVLDB after 2000 .
+SQL: SELECT COUNT ( DISTINCT t4.title ) FROM publication AS t4 JOIN journal AS t2 ON t4.jid  =  t2.jid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t1.name  =  "H. V. Jagadish" AND t2.name  =  "PVLDB" AND t4.year  >  2000
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - jid
+   - pid
+   - title
+   - year
+2. 表 journal
+   - jid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish' AND journal.name = 'PVLDB' AND publication.year > 2000
+--------------------------------------------------
+
+No.88
+Question: return me the number of papers by " H. V. Jagadish " on VLDB conference after 2000 .
+SQL: SELECT COUNT ( DISTINCT t4.title ) FROM publication AS t4 JOIN conference AS t2 ON t4.cid  =  t2.cid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t1.name  =  "H. V. Jagadish" AND t2.name  =  "VLDB" AND t4.year  >  2000
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - pid
+   - title
+   - year
+2. 表 conference
+   - cid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish' AND conference.name = 'VLDB' AND publication.year > 2000
+--------------------------------------------------
+
+No.89
+Question: return me the number of keywords .
+SQL: SELECT COUNT ( DISTINCT keyword ) FROM keyword
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 keyword
+   - keyword
+
+涉及的关系信息：
+1. JOIN 连接：无
+2. WHERE 筛选：无
+--------------------------------------------------
+
+No.90
+Question: return me the number of keywords in Databases area .
+SQL: SELECT COUNT ( DISTINCT t1.keyword ) FROM DOMAIN AS t3 JOIN domain_keyword AS t2 ON t3.did  =  t2.did JOIN keyword AS t1 ON t1.kid  =  t2.kid WHERE t3.name  =  "Databases"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 domain
+   - did
+   - name
+2. 表 domain_keyword
+   - did
+   - kid
+3. 表 keyword
+   - keyword
+   - kid
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: domain.did = domain_keyword.did
+   - 类型: 
+   - 条件: keyword.kid = domain_keyword.kid
+2. WHERE 筛选：
+   - domain.name = 'Databases'
+--------------------------------------------------
+
+No.91
+Question: return me the number of papers which contain the keyword " Natural Language " .
+SQL: SELECT COUNT ( DISTINCT t3.title ) FROM publication_keyword AS t2 JOIN keyword AS t1 ON t2.kid  =  t1.kid JOIN publication AS t3 ON t3.pid  =  t2.pid WHERE t1.keyword  =  "Natural Language"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - pid
+   - title
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+2. WHERE 筛选：
+   - keyword.keyword = 'Natural Language'
+--------------------------------------------------
+
+No.92
+Question: return me the number of the keywords of " Making database systems usable " .
+SQL: SELECT COUNT ( DISTINCT t1.keyword ) FROM publication_keyword AS t3 JOIN keyword AS t1 ON t3.kid  =  t1.kid JOIN publication AS t2 ON t2.pid  =  t3.pid WHERE t2.title  =  "Making database systems usable"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - pid
+   - title
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+2. WHERE 筛选：
+   - publication.title = 'Making database systems usable'
+--------------------------------------------------
+
+No.93
+Question: return me the number of the keywords related to " H. V. Jagadish " .
+SQL: SELECT COUNT ( DISTINCT t1.keyword ) FROM publication_keyword AS t5 JOIN keyword AS t1 ON t5.kid  =  t1.kid JOIN publication AS t3 ON t3.pid  =  t5.pid JOIN writes AS t4 ON t4.pid  =  t3.pid JOIN author AS t2 ON t4.aid  =  t2.aid WHERE t2.name  =  "H. V. Jagadish"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - pid
+4. 表 writes
+   - aid
+   - pid
+5. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish'
+--------------------------------------------------
+
+No.94
+Question: return me the number of keywords in VLDB conference .
+SQL: SELECT COUNT ( DISTINCT t1.keyword ) FROM publication_keyword AS t4 JOIN keyword AS t1 ON t4.kid  =  t1.kid JOIN publication AS t3 ON t3.pid  =  t4.pid JOIN conference AS t2 ON t3.cid  =  t2.cid WHERE t2.name  =  "VLDB"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - cid
+   - pid
+4. 表 conference
+   - cid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+2. WHERE 筛选：
+   - conference.name = 'VLDB'
+--------------------------------------------------
+
+No.95
+Question: return me the number of keywords in PVLDB .
+SQL: SELECT COUNT ( DISTINCT t1.keyword ) FROM publication_keyword AS t4 JOIN keyword AS t1 ON t4.kid  =  t1.kid JOIN publication AS t2 ON t2.pid  =  t4.pid JOIN journal AS t3 ON t2.jid  =  t3.jid WHERE t3.name  =  "PVLDB"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - jid
+   - pid
+4. 表 journal
+   - jid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB'
+--------------------------------------------------
+
+No.96
+Question: return me the number of keywords in the papers of " University of Michigan " .
+SQL: SELECT COUNT ( DISTINCT t1.keyword ) FROM organization AS t6 JOIN author AS t2 ON t6.oid  =  t2.oid JOIN writes AS t4 ON t4.aid  =  t2.aid JOIN publication AS t5 ON t4.pid  =  t5.pid JOIN publication_keyword AS t3 ON t5.pid  =  t3.pid JOIN keyword AS t1 ON t3.kid  =  t1.kid WHERE t6.name  =  "University of Michigan"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 organization
+   - name
+   - oid
+2. 表 author
+   - aid
+   - oid
+3. 表 writes
+   - aid
+   - pid
+4. 表 publication
+   - pid
+5. 表 publication_keyword
+   - kid
+   - pid
+6. 表 keyword
+   - keyword
+   - kid
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: organization.oid = author.oid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+2. WHERE 筛选：
+   - organization.name = 'University of Michigan'
+--------------------------------------------------
+
+No.97
+Question: return me the number of the papers of " H. V. Jagadish " containing keyword " User Study " .
+SQL: SELECT COUNT ( DISTINCT t5.title ) FROM publication_keyword AS t3 JOIN keyword AS t1 ON t3.kid  =  t1.kid JOIN publication AS t5 ON t5.pid  =  t3.pid JOIN writes AS t4 ON t4.pid  =  t5.pid JOIN author AS t2 ON t4.aid  =  t2.aid WHERE t2.name  =  "H. V. Jagadish" AND t1.keyword  =  "User Study"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - pid
+   - title
+4. 表 writes
+   - aid
+   - pid
+5. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish' AND keyword.keyword = 'User Study'
+--------------------------------------------------
+
+No.98
+Question: return me the number of papers in PVLDB containing keyword " Keyword search " .
+SQL: SELECT COUNT ( DISTINCT t4.title ) FROM publication_keyword AS t2 JOIN keyword AS t1 ON t2.kid  =  t1.kid JOIN publication AS t4 ON t4.pid  =  t2.pid JOIN journal AS t3 ON t4.jid  =  t3.jid WHERE t3.name  =  "PVLDB" AND t1.keyword  =  "Keyword search"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - jid
+   - pid
+   - title
+4. 表 journal
+   - jid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB' AND keyword.keyword = 'Keyword search'
+--------------------------------------------------
+
+No.99
+Question: return me the number of papers in VLDB conference containing keyword " Information Retrieval " .
+SQL: SELECT COUNT ( DISTINCT t4.title ) FROM publication_keyword AS t3 JOIN keyword AS t1 ON t3.kid  =  t1.kid JOIN publication AS t4 ON t4.pid  =  t3.pid JOIN conference AS t2 ON t4.cid  =  t2.cid WHERE t2.name  =  "VLDB" AND t1.keyword  =  "Information Retrieval"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - cid
+   - pid
+   - title
+4. 表 conference
+   - cid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+2. WHERE 筛选：
+   - conference.name = 'VLDB' AND keyword.keyword = 'Information Retrieval'
+--------------------------------------------------
+
+No.100
+Question: return me the number of authors who have papers containing keyword " Relational Database " .
+SQL: SELECT COUNT ( DISTINCT t2.name ) FROM publication_keyword AS t5 JOIN keyword AS t1 ON t5.kid  =  t1.kid JOIN publication AS t3 ON t3.pid  =  t5.pid JOIN writes AS t4 ON t4.pid  =  t3.pid JOIN author AS t2 ON t4.aid  =  t2.aid WHERE t1.keyword  =  "Relational Database"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - pid
+4. 表 writes
+   - aid
+   - pid
+5. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - keyword.keyword = 'Relational Database'
+--------------------------------------------------
+
+No.101
+Question: return me the total citations of the papers containing keyword " Natural Language "
+SQL: SELECT SUM ( t3.citation_num ) FROM publication_keyword AS t2 JOIN keyword AS t1 ON t2.kid  =  t1.kid JOIN publication AS t3 ON t3.pid  =  t2.pid WHERE t1.keyword  =  "Natural Language"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - citation_num
+   - pid
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+2. WHERE 筛选：
+   - keyword.keyword = 'Natural Language'
+--------------------------------------------------
+
+No.102
+Question: return me the number of the organizations .
+SQL: SELECT COUNT ( DISTINCT name ) FROM organization
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 organization
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：无
+2. WHERE 筛选：无
+--------------------------------------------------
+
+No.103
+Question: return me the number of the organizations in " North America " .
+SQL: SELECT COUNT ( DISTINCT name ) FROM organization WHERE continent  =  "North America"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 organization
+   - continent
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：无
+2. WHERE 筛选：
+   - organization.continent = 'North America'
+--------------------------------------------------
+
+No.104
+Question: return me the number of organizations in Databases area .
+SQL: SELECT COUNT ( DISTINCT t2.name ) FROM domain_author AS t4 JOIN author AS t1 ON t4.aid  =  t1.aid JOIN DOMAIN AS t3 ON t3.did  =  t4.did JOIN organization AS t2 ON t2.oid  =  t1.oid WHERE t3.name  =  "Databases"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 domain_author
+   - aid
+   - did
+2. 表 author
+   - aid
+   - oid
+3. 表 domain
+   - did
+   - name
+4. 表 organization
+   - name
+   - oid
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: domain_author.aid = author.aid
+   - 类型: 
+   - 条件: domain.did = domain_author.did
+   - 类型: 
+   - 条件: organization.oid = author.oid
+2. WHERE 筛选：
+   - domain.name = 'Databases'
+--------------------------------------------------
+
+No.105
+Question: return me the number of organizations in Databases area located in " North America " .
+SQL: SELECT COUNT ( DISTINCT t2.name ) FROM domain_author AS t4 JOIN author AS t1 ON t4.aid  =  t1.aid JOIN DOMAIN AS t3 ON t3.did  =  t4.did JOIN organization AS t2 ON t2.oid  =  t1.oid WHERE t3.name  =  "Databases" AND t2.continent  =  "North America"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 domain_author
+   - aid
+   - did
+2. 表 author
+   - aid
+   - oid
+3. 表 domain
+   - did
+   - name
+4. 表 organization
+   - continent
+   - name
+   - oid
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: domain_author.aid = author.aid
+   - 类型: 
+   - 条件: domain.did = domain_author.did
+   - 类型: 
+   - 条件: organization.oid = author.oid
+2. WHERE 筛选：
+   - domain.name = 'Databases' AND organization.continent = 'North America'
+--------------------------------------------------
+
+No.106
+Question: return me the number of papers in " University of Michigan " .
+SQL: SELECT COUNT ( DISTINCT t4.title ) FROM organization AS t2 JOIN author AS t1 ON t2.oid  =  t1.oid JOIN writes AS t3 ON t3.aid  =  t1.aid JOIN publication AS t4 ON t3.pid  =  t4.pid WHERE t2.name  =  "University of Michigan"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 organization
+   - name
+   - oid
+2. 表 author
+   - aid
+   - oid
+3. 表 writes
+   - aid
+   - pid
+4. 表 publication
+   - pid
+   - title
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: organization.oid = author.oid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+2. WHERE 筛选：
+   - organization.name = 'University of Michigan'
+--------------------------------------------------
+
+No.107
+Question: return me the number of papers in " University of Michigan " in Databases area .
+SQL: SELECT COUNT ( DISTINCT t4.title ) FROM domain_author AS t6 JOIN author AS t1 ON t6.aid  =  t1.aid JOIN DOMAIN AS t3 ON t3.did  =  t6.did JOIN domain_publication AS t2 ON t3.did  =  t2.did JOIN organization AS t5 ON t5.oid  =  t1.oid JOIN publication AS t4 ON t4.pid  =  t2.pid WHERE t3.name  =  "Databases" AND t5.name  =  "University of Michigan"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 domain_author
+   - aid
+   - did
+2. 表 author
+   - aid
+   - oid
+3. 表 domain
+   - did
+   - name
+4. 表 domain_publication
+   - did
+   - pid
+5. 表 organization
+   - name
+   - oid
+6. 表 publication
+   - pid
+   - title
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: domain_author.aid = author.aid
+   - 类型: 
+   - 条件: domain.did = domain_author.did
+   - 类型: 
+   - 条件: domain.did = domain_publication.did
+   - 类型: 
+   - 条件: organization.oid = author.oid
+   - 类型: 
+   - 条件: publication.pid = domain_publication.pid
+2. WHERE 筛选：
+   - domain.name = 'Databases' AND organization.name = 'University of Michigan'
+--------------------------------------------------
+
+No.108
+Question: return me the number of papers after 2000 in " University of Michigan " .
+SQL: SELECT COUNT ( DISTINCT t4.title ) FROM organization AS t2 JOIN author AS t1 ON t2.oid  =  t1.oid JOIN writes AS t3 ON t3.aid  =  t1.aid JOIN publication AS t4 ON t3.pid  =  t4.pid WHERE t2.name  =  "University of Michigan" AND t4.year  >  2000
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 organization
+   - name
+   - oid
+2. 表 author
+   - aid
+   - oid
+3. 表 writes
+   - aid
+   - pid
+4. 表 publication
+   - pid
+   - title
+   - year
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: organization.oid = author.oid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+2. WHERE 筛选：
+   - organization.name = 'University of Michigan' AND publication.year > 2000
+--------------------------------------------------
+
+No.109
+Question: return me the number of papers in VLDB conference in " University of Michigan " .
+SQL: SELECT COUNT ( DISTINCT t5.title ) FROM organization AS t3 JOIN author AS t1 ON t3.oid  =  t1.oid JOIN writes AS t4 ON t4.aid  =  t1.aid JOIN publication AS t5 ON t4.pid  =  t5.pid JOIN conference AS t2 ON t5.cid  =  t2.cid WHERE t2.name  =  "VLDB" AND t3.name  =  "University of Michigan"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 organization
+   - name
+   - oid
+2. 表 author
+   - aid
+   - oid
+3. 表 writes
+   - aid
+   - pid
+4. 表 publication
+   - cid
+   - pid
+   - title
+5. 表 conference
+   - cid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: organization.oid = author.oid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+2. WHERE 筛选：
+   - conference.name = 'VLDB' AND organization.name = 'University of Michigan'
+--------------------------------------------------
+
+No.110
+Question: return me the number of papers in PVLDB in " University of Michigan " .
+SQL: SELECT COUNT ( DISTINCT t5.title ) FROM organization AS t2 JOIN author AS t1 ON t2.oid  =  t1.oid JOIN writes AS t4 ON t4.aid  =  t1.aid JOIN publication AS t5 ON t4.pid  =  t5.pid JOIN journal AS t3 ON t5.jid  =  t3.jid WHERE t3.name  =  "PVLDB" AND t2.name  =  "University of Michigan"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 organization
+   - name
+   - oid
+2. 表 author
+   - aid
+   - oid
+3. 表 writes
+   - aid
+   - pid
+4. 表 publication
+   - jid
+   - pid
+   - title
+5. 表 journal
+   - jid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: organization.oid = author.oid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB' AND organization.name = 'University of Michigan'
+--------------------------------------------------
+
+No.111
+Question: return me the number of papers in PVLDB after 2000 in " University of Michigan " .
+SQL: SELECT COUNT ( DISTINCT t5.title ) FROM organization AS t2 JOIN author AS t1 ON t2.oid  =  t1.oid JOIN writes AS t4 ON t4.aid  =  t1.aid JOIN publication AS t5 ON t4.pid  =  t5.pid JOIN journal AS t3 ON t5.jid  =  t3.jid WHERE t3.name  =  "PVLDB" AND t2.name  =  "University of Michigan" AND t5.year  >  2000
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 organization
+   - name
+   - oid
+2. 表 author
+   - aid
+   - oid
+3. 表 writes
+   - aid
+   - pid
+4. 表 publication
+   - jid
+   - pid
+   - title
+   - year
+5. 表 journal
+   - jid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: organization.oid = author.oid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB' AND organization.name = 'University of Michigan' AND publication.year > 2000
+--------------------------------------------------
+
+No.112
+Question: return me the total citations of the papers in " University of Michigan " .
+SQL: SELECT SUM ( t4.citation_num ) FROM organization AS t2 JOIN author AS t1 ON t2.oid  =  t1.oid JOIN writes AS t3 ON t3.aid  =  t1.aid JOIN publication AS t4 ON t3.pid  =  t4.pid WHERE t2.name  =  "University of Michigan"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 organization
+   - name
+   - oid
+2. 表 author
+   - aid
+   - oid
+3. 表 writes
+   - aid
+   - pid
+4. 表 publication
+   - citation_num
+   - pid
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: organization.oid = author.oid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+2. WHERE 筛选：
+   - organization.name = 'University of Michigan'
+--------------------------------------------------
+
+No.113
+Question: return me the number of researchers in " University of Michigan " .
+SQL: SELECT COUNT ( DISTINCT t1.name ) FROM organization AS t2 JOIN author AS t1 ON t2.oid  =  t1.oid WHERE t2.name  =  "University of Michigan"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 organization
+   - name
+   - oid
+2. 表 author
+   - name
+   - oid
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: organization.oid = author.oid
+2. WHERE 筛选：
+   - organization.name = 'University of Michigan'
+--------------------------------------------------
+
+No.114
+Question: return me the number of researchers in Databases area in " University of Michigan " .
+SQL: SELECT COUNT ( DISTINCT t1.name ) FROM domain_author AS t4 JOIN author AS t1 ON t4.aid  =  t1.aid JOIN DOMAIN AS t3 ON t3.did  =  t4.did JOIN organization AS t2 ON t2.oid  =  t1.oid WHERE t3.name  =  "Databases" AND t2.name  =  "University of Michigan"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 domain_author
+   - aid
+   - did
+2. 表 author
+   - aid
+   - name
+   - oid
+3. 表 domain
+   - did
+   - name
+4. 表 organization
+   - name
+   - oid
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: domain_author.aid = author.aid
+   - 类型: 
+   - 条件: domain.did = domain_author.did
+   - 类型: 
+   - 条件: organization.oid = author.oid
+2. WHERE 筛选：
+   - domain.name = 'Databases' AND organization.name = 'University of Michigan'
+--------------------------------------------------
+
+No.115
+Question: return me the number of authors who have papers in PVLDB .
+SQL: SELECT COUNT ( DISTINCT t1.name ) FROM publication AS t4 JOIN journal AS t2 ON t4.jid  =  t2.jid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t2.name  =  "PVLDB"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - jid
+   - pid
+2. 表 journal
+   - jid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB'
+--------------------------------------------------
+
+No.116
+Question: return me the number of authors who have papers in the VLDB conference .
+SQL: SELECT COUNT ( DISTINCT t1.name ) FROM publication AS t4 JOIN conference AS t2 ON t4.cid  =  t2.cid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t2.name  =  "VLDB"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - pid
+2. 表 conference
+   - cid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - conference.name = 'VLDB'
+--------------------------------------------------
+
+No.117
+Question: return me the number of papers published on PVLDB before 2000 .
+SQL: SELECT COUNT ( DISTINCT t2.title ) FROM publication AS t2 JOIN journal AS t1 ON t2.jid  =  t1.jid WHERE t1.name  =  "PVLDB" AND t2.year  <  2000
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - jid
+   - title
+   - year
+2. 表 journal
+   - jid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB' AND publication.year < 2000
+--------------------------------------------------
+
+No.118
+Question: return me the number of papers published in the VLDB conference before 2000 .
+SQL: SELECT COUNT ( DISTINCT t2.title ) FROM publication AS t2 JOIN conference AS t1 ON t2.cid  =  t1.cid WHERE t1.name  =  "VLDB" AND t2.year  <  2000
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - title
+   - year
+2. 表 conference
+   - cid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+2. WHERE 筛选：
+   - conference.name = 'VLDB' AND publication.year < 2000
+--------------------------------------------------
+
+No.119
+Question: return me the total citations of all the papers in PVLDB .
+SQL: SELECT SUM ( t2.citation_num ) FROM publication AS t2 JOIN journal AS t1 ON t2.jid  =  t1.jid WHERE t1.name  =  "PVLDB"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - citation_num
+   - jid
+2. 表 journal
+   - jid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB'
+--------------------------------------------------
+
+No.120
+Question: return me the citations of each paper in PVLDB .
+SQL: SELECT t2.citation_num FROM publication AS t2 JOIN journal AS t1 ON t2.jid  =  t1.jid WHERE t1.name  =  "PVLDB"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - citation_num
+   - jid
+2. 表 journal
+   - jid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB'
+--------------------------------------------------
+
+No.121
+Question: return me the total citations of papers in PVLDB in 2005 .
+SQL: SELECT SUM ( t2.citation_num ) FROM publication AS t2 JOIN journal AS t1 ON t2.jid  =  t1.jid WHERE t1.name  =  "PVLDB" AND t2.year  =  2005
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - citation_num
+   - jid
+   - year
+2. 表 journal
+   - jid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB' AND publication.year = 2005
+--------------------------------------------------
+
+No.122
+Question: return me the total citations of papers in PVLDB before 2005 .
+SQL: SELECT SUM ( t2.citation_num ) FROM publication AS t2 JOIN journal AS t1 ON t2.jid  =  t1.jid WHERE t1.name  =  "PVLDB" AND t2.year  <  2005
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - citation_num
+   - jid
+   - year
+2. 表 journal
+   - jid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB' AND publication.year < 2005
+--------------------------------------------------
+
+No.123
+Question: return me the total citations of papers in PVLDB in each year .
+SQL: SELECT t2.year  ,  SUM ( t2.citation_num ) FROM publication AS t2 JOIN journal AS t1 ON t2.jid  =  t1.jid WHERE t1.name  =  "PVLDB" GROUP BY t2.year
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - citation_num
+   - jid
+   - year
+2. 表 journal
+   - jid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB'
+--------------------------------------------------
+
+No.124
+Question: return me the number of papers published in PVLDB in each year .
+SQL: SELECT COUNT ( DISTINCT t2.title )  ,  t2.year FROM publication AS t2 JOIN journal AS t1 ON t2.jid  =  t1.jid WHERE t1.name  =  "PVLDB" GROUP BY t2.year
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - jid
+   - title
+   - year
+2. 表 journal
+   - jid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB'
+--------------------------------------------------
+
+No.125
+Question: return me the total citations of all the papers in the VLDB conference .
+SQL: SELECT SUM ( t2.citation_num ) FROM publication AS t2 JOIN conference AS t1 ON t2.cid  =  t1.cid WHERE t1.name  =  "VLDB"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - citation_num
+2. 表 conference
+   - cid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+2. WHERE 筛选：
+   - conference.name = 'VLDB'
+--------------------------------------------------
+
+No.126
+Question: return me the citations of each paper in the VLDB conference .
+SQL: SELECT t2.citation_num FROM publication AS t2 JOIN conference AS t1 ON t2.cid  =  t1.cid WHERE t1.name  =  "VLDB"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - citation_num
+2. 表 conference
+   - cid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+2. WHERE 筛选：
+   - conference.name = 'VLDB'
+--------------------------------------------------
+
+No.127
+Question: return me the total citations of papers in the VLDB conference in 2005 .
+SQL: SELECT SUM ( t2.citation_num ) FROM publication AS t2 JOIN conference AS t1 ON t2.cid  =  t1.cid WHERE t1.name  =  "VLDB" AND t2.year  =  2005
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - citation_num
+   - year
+2. 表 conference
+   - cid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+2. WHERE 筛选：
+   - conference.name = 'VLDB' AND publication.year = 2005
+--------------------------------------------------
+
+No.128
+Question: return me the total citations of papers in the VLDB conference before 2005 .
+SQL: SELECT SUM ( t2.citation_num ) FROM publication AS t2 JOIN conference AS t1 ON t2.cid  =  t1.cid WHERE t1.name  =  "VLDB" AND t2.year  <  2005
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - citation_num
+   - year
+2. 表 conference
+   - cid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+2. WHERE 筛选：
+   - conference.name = 'VLDB' AND publication.year < 2005
+--------------------------------------------------
+
+No.129
+Question: return me the total citations of papers in the VLDB conference in each year .
+SQL: SELECT t2.year  ,  SUM ( t2.citation_num ) FROM publication AS t2 JOIN conference AS t1 ON t2.cid  =  t1.cid WHERE t1.name  =  "VLDB" GROUP BY t2.year
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - citation_num
+   - year
+2. 表 conference
+   - cid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+2. WHERE 筛选：
+   - conference.name = 'VLDB'
+--------------------------------------------------
+
+No.130
+Question: return me the number of papers published in the VLDB conference in each year .
+SQL: SELECT COUNT ( DISTINCT t2.title )  ,  t2.year FROM publication AS t2 JOIN conference AS t1 ON t2.cid  =  t1.cid WHERE t1.name  =  "VLDB" GROUP BY t2.year
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - title
+   - year
+2. 表 conference
+   - cid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+2. WHERE 筛选：
+   - conference.name = 'VLDB'
+--------------------------------------------------
+
+No.131
+Question: return me the authors who have cooperated both with " H. V. Jagadish " and " Divesh Srivastava " .
+SQL: SELECT t2.name FROM writes AS t4 JOIN author AS t2 ON t4.aid  =  t2.aid JOIN publication AS t7 ON t4.pid  =  t7.pid JOIN writes AS t5 ON t5.pid  =  t7.pid JOIN writes AS t6 ON t6.pid  =  t7.pid JOIN author AS t1 ON t5.aid  =  t1.aid JOIN author AS t3 ON t6.aid  =  t3.aid WHERE t1.name  =  "H. V. Jagadish" AND t3.name  =  "Divesh Srivastava"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 writes
+   - aid
+   - pid
+2. 表 author
+   - aid
+   - name
+3. 表 publication
+   - pid
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish' AND author.name = 'Divesh Srivastava'
+--------------------------------------------------
+
+No.132
+Question: return me the authors who have cooperated with " H. V. Jagadish " after 2000 .
+SQL: SELECT t2.name FROM writes AS t3 JOIN author AS t2 ON t3.aid  =  t2.aid JOIN publication AS t5 ON t3.pid  =  t5.pid JOIN writes AS t4 ON t4.pid  =  t5.pid JOIN author AS t1 ON t4.aid  =  t1.aid WHERE t1.name  =  "H. V. Jagadish" AND t5.year  >  2000
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 writes
+   - aid
+   - pid
+2. 表 author
+   - aid
+   - name
+3. 表 publication
+   - pid
+   - year
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish' AND publication.year > 2000
+--------------------------------------------------
+
+No.133
+Question: return me the papers written by " H. V. Jagadish " and " Divesh Srivastava " .
+SQL: SELECT t5.title FROM writes AS t3 JOIN author AS t2 ON t3.aid  =  t2.aid JOIN publication AS t5 ON t3.pid  =  t5.pid JOIN writes AS t4 ON t4.pid  =  t5.pid JOIN author AS t1 ON t4.aid  =  t1.aid WHERE t2.name  =  "H. V. Jagadish" AND t1.name  =  "Divesh Srivastava"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 writes
+   - aid
+   - pid
+2. 表 author
+   - aid
+   - name
+3. 表 publication
+   - pid
+   - title
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish' AND author.name = 'Divesh Srivastava'
+--------------------------------------------------
+
+No.134
+Question: return me the papers written by " H. V. Jagadish " and " Yunyao Li " after 2005 .
+SQL: SELECT t5.title FROM writes AS t3 JOIN author AS t2 ON t3.aid  =  t2.aid JOIN publication AS t5 ON t3.pid  =  t5.pid JOIN writes AS t4 ON t4.pid  =  t5.pid JOIN author AS t1 ON t4.aid  =  t1.aid WHERE t2.name  =  "H. V. Jagadish" AND t1.name  =  "Yunyao Li" AND t5.year  >  2005
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 writes
+   - aid
+   - pid
+2. 表 author
+   - aid
+   - name
+3. 表 publication
+   - pid
+   - title
+   - year
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish' AND author.name = 'Yunyao Li' AND publication.year > 2005
+--------------------------------------------------
+
+No.135
+Question: return me the papers written by " H. V. Jagadish " and " Yunyao Li " on PVLDB .
+SQL: SELECT t6.title FROM publication AS t6 JOIN journal AS t4 ON t6.jid  =  t4.jid JOIN writes AS t3 ON t3.pid  =  t6.pid JOIN writes AS t5 ON t5.pid  =  t6.pid JOIN author AS t1 ON t5.aid  =  t1.aid JOIN author AS t2 ON t3.aid  =  t2.aid WHERE t2.name  =  "H. V. Jagadish" AND t1.name  =  "Yunyao Li" AND t4.name  =  "PVLDB"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - jid
+   - pid
+   - title
+2. 表 journal
+   - jid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish' AND author.name = 'Yunyao Li' AND journal.name = 'PVLDB'
+--------------------------------------------------
+
+No.136
+Question: return me the papers written by " H. V. Jagadish " and " Yunyao Li " on PVLDB after 2005 .
+SQL: SELECT t6.title FROM publication AS t6 JOIN journal AS t4 ON t6.jid  =  t4.jid JOIN writes AS t3 ON t3.pid  =  t6.pid JOIN writes AS t5 ON t5.pid  =  t6.pid JOIN author AS t1 ON t5.aid  =  t1.aid JOIN author AS t2 ON t3.aid  =  t2.aid WHERE t2.name  =  "H. V. Jagadish" AND t1.name  =  "Yunyao Li" AND t4.name  =  "PVLDB" AND t6.year  >  2005
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - jid
+   - pid
+   - title
+   - year
+2. 表 journal
+   - jid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish' AND author.name = 'Yunyao Li' AND journal.name = 'PVLDB' AND publication.year > 2005
+--------------------------------------------------
+
+No.137
+Question: return me the authors who have cooperated with " H. V. Jagadish " .
+SQL: SELECT t2.name FROM writes AS t3 JOIN author AS t2 ON t3.aid  =  t2.aid JOIN publication AS t5 ON t3.pid  =  t5.pid JOIN writes AS t4 ON t4.pid  =  t5.pid JOIN author AS t1 ON t4.aid  =  t1.aid WHERE t1.name  =  "H. V. Jagadish"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 writes
+   - aid
+   - pid
+2. 表 author
+   - aid
+   - name
+3. 表 publication
+   - pid
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish'
+--------------------------------------------------
+
+No.138
+Question: return me the papers written by " H. V. Jagadish " and " Divesh Srivastava " before 2000 .
+SQL: SELECT t5.title FROM writes AS t3 JOIN author AS t2 ON t3.aid  =  t2.aid JOIN publication AS t5 ON t3.pid  =  t5.pid JOIN writes AS t4 ON t4.pid  =  t5.pid JOIN author AS t1 ON t4.aid  =  t1.aid WHERE t2.name  =  "H. V. Jagadish" AND t1.name  =  "Divesh Srivastava" AND t5.year  <  2000
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 writes
+   - aid
+   - pid
+2. 表 author
+   - aid
+   - name
+3. 表 publication
+   - pid
+   - title
+   - year
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish' AND author.name = 'Divesh Srivastava' AND publication.year < 2000
+--------------------------------------------------
+
+No.139
+Question: return me the authors who have cited the papers by " H. V. Jagadish " .
+SQL: SELECT t2.name FROM publication AS t7 JOIN cite AS t5 ON t7.pid  =  t5.citing JOIN publication AS t6 ON t6.pid  =  t5.cited JOIN writes AS t3 ON t3.pid  =  t7.pid JOIN writes AS t4 ON t4.pid  =  t6.pid JOIN author AS t2 ON t3.aid  =  t2.aid JOIN author AS t1 ON t4.aid  =  t1.aid WHERE t1.name  =  "H. V. Jagadish"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - pid
+2. 表 cite
+   - cited
+   - citing
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.pid = cite.citing
+     [提示]: 未命中已知外键关系
+   - 类型: 
+   - 条件: publication.pid = cite.cited
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish'
+--------------------------------------------------
+
+No.140
+Question: return me the number of papers written by " H. V. Jagadish " and " Divesh Srivastava " .
+SQL: SELECT COUNT ( DISTINCT t5.title ) FROM writes AS t3 JOIN author AS t2 ON t3.aid  =  t2.aid JOIN publication AS t5 ON t3.pid  =  t5.pid JOIN writes AS t4 ON t4.pid  =  t5.pid JOIN author AS t1 ON t4.aid  =  t1.aid WHERE t2.name  =  "H. V. Jagadish" AND t1.name  =  "Divesh Srivastava"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 writes
+   - aid
+   - pid
+2. 表 author
+   - aid
+   - name
+3. 表 publication
+   - pid
+   - title
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish' AND author.name = 'Divesh Srivastava'
+--------------------------------------------------
+
+No.141
+Question: return me the number of papers written by " H. V. Jagadish " and " Divesh Srivastava " before 2000 .
+SQL: SELECT COUNT ( DISTINCT t5.title ) FROM writes AS t3 JOIN author AS t2 ON t3.aid  =  t2.aid JOIN publication AS t5 ON t3.pid  =  t5.pid JOIN writes AS t4 ON t4.pid  =  t5.pid JOIN author AS t1 ON t4.aid  =  t1.aid WHERE t2.name  =  "H. V. Jagadish" AND t1.name  =  "Divesh Srivastava" AND t5.year  <  2000
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 writes
+   - aid
+   - pid
+2. 表 author
+   - aid
+   - name
+3. 表 publication
+   - pid
+   - title
+   - year
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish' AND author.name = 'Divesh Srivastava' AND publication.year < 2000
+--------------------------------------------------
+
+No.142
+Question: return me the number of papers written by " H. V. Jagadish " , " Yunyao Li " , and " Cong Yu " .
+SQL: SELECT COUNT ( DISTINCT t7.title ) FROM writes AS t4 JOIN author AS t2 ON t4.aid  =  t2.aid JOIN publication AS t7 ON t4.pid  =  t7.pid JOIN writes AS t5 ON t5.pid  =  t7.pid JOIN writes AS t6 ON t6.pid  =  t7.pid JOIN author AS t1 ON t5.aid  =  t1.aid JOIN author AS t3 ON t6.aid  =  t3.aid WHERE t2.name  =  "Cong Yu" AND t1.name  =  "H. V. Jagadish" AND t3.name  =  "Yunyao Li"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 writes
+   - aid
+   - pid
+2. 表 author
+   - aid
+   - name
+3. 表 publication
+   - pid
+   - title
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+2. WHERE 筛选：
+   - author.name = 'Cong Yu' AND author.name = 'H. V. Jagadish' AND author.name = 'Yunyao Li'
+--------------------------------------------------
+
+No.143
+Question: return me the number of authors who have cooperated with " H. V. Jagadish " .
+SQL: SELECT COUNT ( DISTINCT t2.name ) FROM writes AS t3 JOIN author AS t2 ON t3.aid  =  t2.aid JOIN publication AS t5 ON t3.pid  =  t5.pid JOIN writes AS t4 ON t4.pid  =  t5.pid JOIN author AS t1 ON t4.aid  =  t1.aid WHERE t1.name  =  "H. V. Jagadish"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 writes
+   - aid
+   - pid
+2. 表 author
+   - aid
+   - name
+3. 表 publication
+   - pid
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish'
+--------------------------------------------------
+
+No.144
+Question: return me the number of authors who have cited the papers by " H. V. Jagadish " .
+SQL: SELECT COUNT ( DISTINCT t2.name ) FROM publication AS t7 JOIN cite AS t5 ON t7.pid  =  t5.citing JOIN publication AS t6 ON t6.pid  =  t5.cited JOIN writes AS t3 ON t3.pid  =  t7.pid JOIN writes AS t4 ON t4.pid  =  t6.pid JOIN author AS t2 ON t3.aid  =  t2.aid JOIN author AS t1 ON t4.aid  =  t1.aid WHERE t1.name  =  "H. V. Jagadish"
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - pid
+2. 表 cite
+   - cited
+   - citing
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.pid = cite.citing
+     [提示]: 未命中已知外键关系
+   - 类型: 
+   - 条件: publication.pid = cite.cited
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish'
+--------------------------------------------------
+
+No.145
+Question: return me the papers written by " H. V. Jagadish " and " Divesh Srivastava " with more than 200 citations .
+SQL: SELECT t5.title FROM writes AS t3 JOIN author AS t2 ON t3.aid  =  t2.aid JOIN publication AS t5 ON t3.pid  =  t5.pid JOIN writes AS t4 ON t4.pid  =  t5.pid JOIN author AS t1 ON t4.aid  =  t1.aid WHERE t2.name  =  "H. V. Jagadish" AND t1.name  =  "Divesh Srivastava" AND t5.citation_num  >  200
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 writes
+   - aid
+   - pid
+2. 表 author
+   - aid
+   - name
+3. 表 publication
+   - citation_num
+   - pid
+   - title
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish' AND author.name = 'Divesh Srivastava' AND publication.citation_num > 200
+--------------------------------------------------
+
+No.146
+Question: return me the author who has the most number of papers containing keyword " Relational Database " .
+SQL: SELECT t2.name FROM publication_keyword AS t5 JOIN keyword AS t1 ON t5.kid  =  t1.kid JOIN publication AS t3 ON t3.pid  =  t5.pid JOIN writes AS t4 ON t4.pid  =  t3.pid JOIN author AS t2 ON t4.aid  =  t2.aid WHERE t1.keyword  =  "Relational Database" GROUP BY t2.name ORDER BY COUNT ( DISTINCT t3.title ) DESC LIMIT 1
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - pid
+   - title
+4. 表 writes
+   - aid
+   - pid
+5. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - keyword.keyword = 'Relational Database'
+--------------------------------------------------
+
+No.147
+Question: return me the conference that has the most number of papers containing keyword " Relational Database " .
+SQL: SELECT t2.name FROM publication_keyword AS t4 JOIN keyword AS t1 ON t4.kid  =  t1.kid JOIN publication AS t3 ON t3.pid  =  t4.pid JOIN conference AS t2 ON t3.cid  =  t2.cid WHERE t1.keyword  =  "Relational Database" GROUP BY t2.name ORDER BY COUNT ( DISTINCT t3.title ) DESC LIMIT 1
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - cid
+   - pid
+   - title
+4. 表 conference
+   - cid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+2. WHERE 筛选：
+   - keyword.keyword = 'Relational Database'
+--------------------------------------------------
+
+No.148
+Question: return me the conference, which has the most number of papers containing keyword " Relational Database " .
+SQL: SELECT t2.name FROM publication_keyword AS t4 JOIN keyword AS t1 ON t4.kid  =  t1.kid JOIN publication AS t3 ON t3.pid  =  t4.pid JOIN conference AS t2 ON t3.cid  =  t2.cid WHERE t1.keyword  =  "Relational Database" GROUP BY t2.name ORDER BY COUNT ( DISTINCT t3.title ) DESC LIMIT 1
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - cid
+   - pid
+   - title
+4. 表 conference
+   - cid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+2. WHERE 筛选：
+   - keyword.keyword = 'Relational Database'
+--------------------------------------------------
+
+No.149
+Question: return me the journal that has the most number of papers containing keyword " Relational Database " .
+SQL: SELECT t3.name FROM publication_keyword AS t4 JOIN keyword AS t1 ON t4.kid  =  t1.kid JOIN publication AS t2 ON t2.pid  =  t4.pid JOIN journal AS t3 ON t2.jid  =  t3.jid WHERE t1.keyword  =  "Relational Database" GROUP BY t3.name ORDER BY COUNT ( DISTINCT t2.title ) DESC LIMIT 1
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - jid
+   - pid
+   - title
+4. 表 journal
+   - jid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+2. WHERE 筛选：
+   - keyword.keyword = 'Relational Database'
+--------------------------------------------------
+
+No.150
+Question: return me the journal, which has the most number of papers containing keyword " Relational Database " .
+SQL: SELECT t3.name FROM publication_keyword AS t4 JOIN keyword AS t1 ON t4.kid  =  t1.kid JOIN publication AS t2 ON t2.pid  =  t4.pid JOIN journal AS t3 ON t2.jid  =  t3.jid WHERE t1.keyword  =  "Relational Database" GROUP BY t3.name ORDER BY COUNT ( DISTINCT t2.title ) DESC LIMIT 1
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - jid
+   - pid
+   - title
+4. 表 journal
+   - jid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+2. WHERE 筛选：
+   - keyword.keyword = 'Relational Database'
+--------------------------------------------------
+
+No.151
+Question: return me the keyword, which have been contained by the most number of papers in VLDB conference .
+SQL: SELECT t1.keyword FROM publication_keyword AS t4 JOIN keyword AS t1 ON t4.kid  =  t1.kid JOIN publication AS t3 ON t3.pid  =  t4.pid JOIN conference AS t2 ON t3.cid  =  t2.cid WHERE t2.name  =  "VLDB" GROUP BY t1.keyword ORDER BY COUNT ( DISTINCT t3.title ) DESC LIMIT 1
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - cid
+   - pid
+   - title
+4. 表 conference
+   - cid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+2. WHERE 筛选：
+   - conference.name = 'VLDB'
+--------------------------------------------------
+
+No.152
+Question: return me the keyword, which have been contained by the most number of papers in PVLDB .
+SQL: SELECT t1.keyword FROM publication_keyword AS t4 JOIN keyword AS t1 ON t4.kid  =  t1.kid JOIN publication AS t2 ON t2.pid  =  t4.pid JOIN journal AS t3 ON t2.jid  =  t3.jid WHERE t3.name  =  "PVLDB" GROUP BY t1.keyword ORDER BY COUNT ( DISTINCT t2.title ) DESC LIMIT 1
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - jid
+   - pid
+   - title
+4. 表 journal
+   - jid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB'
+--------------------------------------------------
+
+No.153
+Question: return me the keyword, which have been contained by the most number of papers by " H. V. Jagadish " .
+SQL: SELECT t1.keyword FROM publication_keyword AS t5 JOIN keyword AS t1 ON t5.kid  =  t1.kid JOIN publication AS t3 ON t3.pid  =  t5.pid JOIN writes AS t4 ON t4.pid  =  t3.pid JOIN author AS t2 ON t4.aid  =  t2.aid WHERE t2.name  =  "H. V. Jagadish" GROUP BY t1.keyword ORDER BY COUNT ( DISTINCT t3.title ) DESC LIMIT 1
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - pid
+   - title
+4. 表 writes
+   - aid
+   - pid
+5. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish'
+--------------------------------------------------
+
+No.154
+Question: return me the author in the " University of Michigan " whose papers have the most total citations .
+SQL: SELECT t1.name FROM organization AS t2 JOIN author AS t1 ON t2.oid  =  t1.oid JOIN writes AS t3 ON t3.aid  =  t1.aid JOIN publication AS t4 ON t3.pid  =  t4.pid WHERE t2.name  =  "University of Michigan" GROUP BY t1.name ORDER BY SUM ( t4.citation_num ) DESC LIMIT 1
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 organization
+   - name
+   - oid
+2. 表 author
+   - aid
+   - name
+   - oid
+3. 表 writes
+   - aid
+   - pid
+4. 表 publication
+   - citation_num
+   - pid
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: organization.oid = author.oid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+2. WHERE 筛选：
+   - organization.name = 'University of Michigan'
+--------------------------------------------------
+
+No.155
+Question: return me the author in the " University of Michigan " whose papers in Databases area have the most total citations .
+SQL: SELECT t1.name FROM DOMAIN AS t4 JOIN domain_publication AS t2 ON t4.did  =  t2.did JOIN publication AS t5 ON t5.pid  =  t2.pid JOIN writes AS t3 ON t3.pid  =  t5.pid JOIN author AS t1 ON t3.aid  =  t1.aid JOIN organization AS t6 ON t6.oid  =  t1.oid WHERE t4.name  =  "Databases" AND t6.name  =  "University of Michigan" GROUP BY t1.name ORDER BY SUM ( t5.citation_num ) DESC LIMIT 1
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 domain
+   - did
+   - name
+2. 表 domain_publication
+   - did
+   - pid
+3. 表 publication
+   - citation_num
+   - pid
+4. 表 writes
+   - aid
+   - pid
+5. 表 author
+   - aid
+   - name
+   - oid
+6. 表 organization
+   - name
+   - oid
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: domain.did = domain_publication.did
+   - 类型: 
+   - 条件: publication.pid = domain_publication.pid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: organization.oid = author.oid
+2. WHERE 筛选：
+   - domain.name = 'Databases' AND organization.name = 'University of Michigan'
+--------------------------------------------------
+
+No.156
+Question: return me the papers written by " H. V. Jagadish " and " Divesh Srivastava " with the most number of citations .
+SQL: SELECT t5.title FROM writes AS t3 JOIN author AS t2 ON t3.aid  =  t2.aid JOIN publication AS t5 ON t3.pid  =  t5.pid JOIN writes AS t4 ON t4.pid  =  t5.pid JOIN author AS t1 ON t4.aid  =  t1.aid WHERE t2.name  =  "Divesh Srivastava" AND t1.name  =  "H. V. Jagadish" ORDER BY t5.citation_num DESC LIMIT 1
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 writes
+   - aid
+   - pid
+2. 表 author
+   - aid
+   - name
+3. 表 publication
+   - citation_num
+   - pid
+   - title
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+2. WHERE 筛选：
+   - author.name = 'Divesh Srivastava' AND author.name = 'H. V. Jagadish'
+--------------------------------------------------
+
+No.157
+Question: return me the conferences, which have more than 10 papers by " H. V. Jagadish " .
+SQL: SELECT t2.name FROM publication AS t4 JOIN conference AS t2 ON t4.cid  =  t2.cid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t1.name  =  "H. V. Jagadish" GROUP BY t2.name HAVING COUNT ( DISTINCT t4.title )  >  10
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - pid
+   - title
+2. 表 conference
+   - cid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish'
+--------------------------------------------------
+
+No.158
+Question: return me the conference, which have the most number of papers by " H. V. Jagadish " .
+SQL: SELECT t2.name FROM publication AS t4 JOIN conference AS t2 ON t4.cid  =  t2.cid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t1.name  =  "H. V. Jagadish" GROUP BY t2.name ORDER BY COUNT ( DISTINCT t4.title ) DESC LIMIT 1
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - pid
+   - title
+2. 表 conference
+   - cid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish'
+--------------------------------------------------
+
+No.159
+Question: return me the journals, which have more than 10 papers by " H. V. Jagadish " .
+SQL: SELECT t2.name FROM publication AS t4 JOIN journal AS t2 ON t4.jid  =  t2.jid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t1.name  =  "H. V. Jagadish" GROUP BY t2.name HAVING COUNT ( DISTINCT t4.title )  >  10
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - jid
+   - pid
+   - title
+2. 表 journal
+   - jid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish'
+--------------------------------------------------
+
+No.160
+Question: return me the journal, which have the most number of papers by " H. V. Jagadish " .
+SQL: SELECT t2.name FROM publication AS t4 JOIN journal AS t2 ON t4.jid  =  t2.jid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t1.name  =  "H. V. Jagadish" GROUP BY t2.name ORDER BY COUNT ( DISTINCT t4.title ) DESC LIMIT 1
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - jid
+   - pid
+   - title
+2. 表 journal
+   - jid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish'
+--------------------------------------------------
+
+No.161
+Question: return me the paper with the most citations .
+SQL: SELECT title FROM publication ORDER BY citation_num DESC LIMIT 1
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - citation_num
+   - title
+
+涉及的关系信息：
+1. JOIN 连接：无
+2. WHERE 筛选：无
+--------------------------------------------------
+
+No.162
+Question: return me the paper in Databases area with the most citations .
+SQL: SELECT t3.title FROM DOMAIN AS t2 JOIN domain_publication AS t1 ON t2.did  =  t1.did JOIN publication AS t3 ON t3.pid  =  t1.pid WHERE t2.name  =  "Databases" ORDER BY t3.citation_num DESC LIMIT 1
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 domain
+   - did
+   - name
+2. 表 domain_publication
+   - did
+   - pid
+3. 表 publication
+   - citation_num
+   - pid
+   - title
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: domain.did = domain_publication.did
+   - 类型: 
+   - 条件: publication.pid = domain_publication.pid
+2. WHERE 筛选：
+   - domain.name = 'Databases'
+--------------------------------------------------
+
+No.163
+Question: return me the paper in PVLDB with the most citations .
+SQL: SELECT t2.title FROM publication AS t2 JOIN journal AS t1 ON t2.jid  =  t1.jid WHERE t1.name  =  "PVLDB" ORDER BY t2.citation_num DESC LIMIT 1
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - citation_num
+   - jid
+   - title
+2. 表 journal
+   - jid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB'
+--------------------------------------------------
+
+No.164
+Question: return me the paper in VLDB conference with the most citations .
+SQL: SELECT t2.title FROM publication AS t2 JOIN conference AS t1 ON t2.cid  =  t1.cid WHERE t1.name  =  "VLDB" ORDER BY t2.citation_num DESC LIMIT 1
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - citation_num
+   - title
+2. 表 conference
+   - cid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+2. WHERE 筛选：
+   - conference.name = 'VLDB'
+--------------------------------------------------
+
+No.165
+Question: return me the paper by " H. V. Jagadish " with the most citations .
+SQL: SELECT t3.title FROM writes AS t2 JOIN author AS t1 ON t2.aid  =  t1.aid JOIN publication AS t3 ON t2.pid  =  t3.pid WHERE t1.name  =  "H. V. Jagadish" ORDER BY t3.citation_num DESC LIMIT 1
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 writes
+   - aid
+   - pid
+2. 表 author
+   - aid
+   - name
+3. 表 publication
+   - citation_num
+   - pid
+   - title
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish'
+--------------------------------------------------
+
+No.166
+Question: return me the paper after 2000 with the most citations .
+SQL: SELECT title FROM publication WHERE YEAR  >  2000 ORDER BY citation_num DESC LIMIT 1
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - citation_num
+   - title
+   - year
+
+涉及的关系信息：
+1. JOIN 连接：无
+2. WHERE 筛选：
+   - publication.year > 2000
+--------------------------------------------------
+
+No.167
+Question: return me the paper after 2000 in Databases area with the most citations .
+SQL: SELECT t3.title FROM DOMAIN AS t2 JOIN domain_publication AS t1 ON t2.did  =  t1.did JOIN publication AS t3 ON t3.pid  =  t1.pid WHERE t2.name  =  "Databases" AND t3.year  >  2000 ORDER BY t3.citation_num DESC LIMIT 1
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 domain
+   - did
+   - name
+2. 表 domain_publication
+   - did
+   - pid
+3. 表 publication
+   - citation_num
+   - pid
+   - title
+   - year
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: domain.did = domain_publication.did
+   - 类型: 
+   - 条件: publication.pid = domain_publication.pid
+2. WHERE 筛选：
+   - domain.name = 'Databases' AND publication.year > 2000
+--------------------------------------------------
+
+No.168
+Question: return me the paper after 2000 in PVLDB with the most citations .
+SQL: SELECT t2.title FROM publication AS t2 JOIN journal AS t1 ON t2.jid  =  t1.jid WHERE t1.name  =  "PVLDB" AND t2.year  >  2000 ORDER BY t2.citation_num DESC LIMIT 1
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - citation_num
+   - jid
+   - title
+   - year
+2. 表 journal
+   - jid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB' AND publication.year > 2000
+--------------------------------------------------
+
+No.169
+Question: return me the paper after 2000 in VLDB conference with the most citations .
+SQL: SELECT t2.title FROM publication AS t2 JOIN conference AS t1 ON t2.cid  =  t1.cid WHERE t1.name  =  "VLDB" AND t2.year  >  2000 ORDER BY t2.citation_num DESC LIMIT 1
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - citation_num
+   - title
+   - year
+2. 表 conference
+   - cid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+2. WHERE 筛选：
+   - conference.name = 'VLDB' AND publication.year > 2000
+--------------------------------------------------
+
+No.170
+Question: return me the authors who have more than 10 papers in PVLDB .
+SQL: SELECT t1.name FROM publication AS t4 JOIN journal AS t2 ON t4.jid  =  t2.jid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t2.name  =  "PVLDB" GROUP BY t1.name HAVING COUNT ( DISTINCT t4.title )  >  10
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - jid
+   - pid
+   - title
+2. 表 journal
+   - jid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB'
+--------------------------------------------------
+
+No.171
+Question: return me the authors who have the most number of papers in PVLDB .
+SQL: SELECT t1.name FROM publication AS t4 JOIN journal AS t2 ON t4.jid  =  t2.jid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t2.name  =  "PVLDB" GROUP BY t1.name ORDER BY COUNT ( DISTINCT t4.title ) DESC LIMIT 1
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - jid
+   - pid
+   - title
+2. 表 journal
+   - jid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB'
+--------------------------------------------------
+
+No.172
+Question: return me the authors who have more than 10 papers containing keyword " Relational Database " .
+SQL: SELECT t2.name FROM publication_keyword AS t5 JOIN keyword AS t1 ON t5.kid  =  t1.kid JOIN publication AS t3 ON t3.pid  =  t5.pid JOIN writes AS t4 ON t4.pid  =  t3.pid JOIN author AS t2 ON t4.aid  =  t2.aid WHERE t1.keyword  =  "Relational Database" GROUP BY t2.name HAVING COUNT ( DISTINCT t3.title )  >  10
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - pid
+   - title
+4. 表 writes
+   - aid
+   - pid
+5. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - keyword.keyword = 'Relational Database'
+--------------------------------------------------
+
+No.173
+Question: return me the conferences, which have more than 60 papers containing keyword " Relational Database " .
+SQL: SELECT t2.name FROM publication_keyword AS t4 JOIN keyword AS t1 ON t4.kid  =  t1.kid JOIN publication AS t3 ON t3.pid  =  t4.pid JOIN conference AS t2 ON t3.cid  =  t2.cid WHERE t1.keyword  =  "Relational Database" GROUP BY t2.name HAVING COUNT ( DISTINCT t3.title )  >  60
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - cid
+   - pid
+   - title
+4. 表 conference
+   - cid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+2. WHERE 筛选：
+   - keyword.keyword = 'Relational Database'
+--------------------------------------------------
+
+No.174
+Question: return me the journals, which have more than 60 papers containing keyword " Relational Database " .
+SQL: SELECT t3.name FROM publication_keyword AS t4 JOIN keyword AS t1 ON t4.kid  =  t1.kid JOIN publication AS t2 ON t2.pid  =  t4.pid JOIN journal AS t3 ON t2.jid  =  t3.jid WHERE t1.keyword  =  "Relational Database" GROUP BY t3.name HAVING COUNT ( DISTINCT t2.title )  >  60
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - jid
+   - pid
+   - title
+4. 表 journal
+   - jid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+2. WHERE 筛选：
+   - keyword.keyword = 'Relational Database'
+--------------------------------------------------
+
+No.175
+Question: return me the keywords, which have been contained by more than 100 papers in VLDB conference .
+SQL: SELECT t1.keyword FROM publication_keyword AS t4 JOIN keyword AS t1 ON t4.kid  =  t1.kid JOIN publication AS t3 ON t3.pid  =  t4.pid JOIN conference AS t2 ON t3.cid  =  t2.cid WHERE t2.name  =  "VLDB" GROUP BY t1.keyword HAVING COUNT ( DISTINCT t3.title )  >  100
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - cid
+   - pid
+   - title
+4. 表 conference
+   - cid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+2. WHERE 筛选：
+   - conference.name = 'VLDB'
+--------------------------------------------------
+
+No.176
+Question: return me the keywords, which have been contained by more than 100 papers in PVLDB .
+SQL: SELECT t1.keyword FROM publication_keyword AS t4 JOIN keyword AS t1 ON t4.kid  =  t1.kid JOIN publication AS t2 ON t2.pid  =  t4.pid JOIN journal AS t3 ON t2.jid  =  t3.jid WHERE t3.name  =  "PVLDB" GROUP BY t1.keyword HAVING COUNT ( DISTINCT t2.title )  >  100
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - jid
+   - pid
+   - title
+4. 表 journal
+   - jid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+   - 类型: 
+   - 条件: publication.jid = journal.jid
+2. WHERE 筛选：
+   - journal.name = 'PVLDB'
+--------------------------------------------------
+
+No.177
+Question: return me the keywords, which have been contained by more than 10 papers of " H. V. Jagadish " .
+SQL: SELECT t1.keyword FROM publication_keyword AS t5 JOIN keyword AS t1 ON t5.kid  =  t1.kid JOIN publication AS t3 ON t3.pid  =  t5.pid JOIN writes AS t4 ON t4.pid  =  t3.pid JOIN author AS t2 ON t4.aid  =  t2.aid WHERE t2.name  =  "H. V. Jagadish" GROUP BY t1.keyword HAVING COUNT ( DISTINCT t3.title )  >  10
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication_keyword
+   - kid
+   - pid
+2. 表 keyword
+   - keyword
+   - kid
+3. 表 publication
+   - pid
+   - title
+4. 表 writes
+   - aid
+   - pid
+5. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication_keyword.kid = keyword.kid
+   - 类型: 
+   - 条件: publication.pid = publication_keyword.pid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - author.name = 'H. V. Jagadish'
+--------------------------------------------------
+
+No.178
+Question: return me the authors who have more than 10 papers in the VLDB conference .
+SQL: SELECT t1.name FROM publication AS t4 JOIN conference AS t2 ON t4.cid  =  t2.cid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t2.name  =  "VLDB" GROUP BY t1.name HAVING COUNT ( DISTINCT t4.title )  >  10
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - pid
+   - title
+2. 表 conference
+   - cid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - conference.name = 'VLDB'
+--------------------------------------------------
+
+No.179
+Question: return me the author who has the most number of papers in the VLDB conference .
+SQL: SELECT t1.name FROM publication AS t4 JOIN conference AS t2 ON t4.cid  =  t2.cid JOIN writes AS t3 ON t3.pid  =  t4.pid JOIN author AS t1 ON t3.aid  =  t1.aid WHERE t2.name  =  "VLDB" GROUP BY t1.name ORDER BY COUNT ( DISTINCT t4.title ) DESC LIMIT 1
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 publication
+   - cid
+   - pid
+   - title
+2. 表 conference
+   - cid
+   - name
+3. 表 writes
+   - aid
+   - pid
+4. 表 author
+   - aid
+   - name
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: publication.cid = conference.cid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+2. WHERE 筛选：
+   - conference.name = 'VLDB'
+--------------------------------------------------
+
+No.180
+Question: return me the author in the " University of Michigan " whose papers have more than 5000 total citations .
+SQL: SELECT t1.name FROM organization AS t2 JOIN author AS t1 ON t2.oid  =  t1.oid JOIN writes AS t3 ON t3.aid  =  t1.aid JOIN publication AS t4 ON t3.pid  =  t4.pid WHERE t2.name  =  "University of Michigan" GROUP BY t1.name HAVING SUM ( t4.citation_num )  >  5000
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 organization
+   - name
+   - oid
+2. 表 author
+   - aid
+   - name
+   - oid
+3. 表 writes
+   - aid
+   - pid
+4. 表 publication
+   - citation_num
+   - pid
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: organization.oid = author.oid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+2. WHERE 筛选：
+   - organization.name = 'University of Michigan'
+--------------------------------------------------
+
+No.181
+Question: return me the author in the " University of Michigan " in Databases area whose papers have more than 5000 total citations .
+SQL: SELECT t1.name FROM domain_author AS t6 JOIN author AS t1 ON t6.aid  =  t1.aid JOIN DOMAIN AS t3 ON t3.did  =  t6.did JOIN organization AS t5 ON t5.oid  =  t1.oid JOIN writes AS t2 ON t2.aid  =  t1.aid JOIN publication AS t4 ON t2.pid  =  t4.pid WHERE t3.name  =  "Databases" AND t5.name  =  "University of Michigan" GROUP BY t1.name HAVING SUM ( t4.citation_num )  >  5000
+-------------------- Analysis --------------------
+涉及的数据库实体：
+1. 表 domain_author
+   - aid
+   - did
+2. 表 author
+   - aid
+   - name
+   - oid
+3. 表 domain
+   - did
+   - name
+4. 表 organization
+   - name
+   - oid
+5. 表 writes
+   - aid
+   - pid
+6. 表 publication
+   - citation_num
+   - pid
+
+涉及的关系信息：
+1. JOIN 连接：
+   - 类型: 
+   - 条件: domain_author.aid = author.aid
+   - 类型: 
+   - 条件: domain.did = domain_author.did
+   - 类型: 
+   - 条件: organization.oid = author.oid
+   - 类型: 
+   - 条件: writes.aid = author.aid
+   - 类型: 
+   - 条件: writes.pid = publication.pid
+2. WHERE 筛选：
+   - domain.name = 'Databases' AND organization.name = 'University of Michigan'
+--------------------------------------------------
+
