@@ -5,6 +5,8 @@ DEFAULT_DATA_ROOT = (Path(__file__).parent.parent / "data").resolve()
 PROJECT_ROOT = (Path(__file__).parent.parent).resolve()
 # 输出目录
 OUTPUT_ROOT = (Path(__file__).parent.parent / "output").resolve()
+# 数据目录
+DATA_ROOT = PROJECT_ROOT/"data"
 
 TRAIN_BIRD = r"F:\train_bird\train_databases"
 
