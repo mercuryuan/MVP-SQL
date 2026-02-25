@@ -29,7 +29,6 @@ d:\MVP-SQL-V2/
 │   │   ├── core/           # Low-level processing components
 │   │   ├── pipeline.py     # Main ETL entry point
 │   │   ├── batch_run.py    # Batch processing script
-│   │   ├── vis.py          # Graph Visualization App (Streamlit)
 │   │   └── convert_repo.py # Legacy Graph Conversion Tool
 │   ├── llm/                # LLM Interaction Module
 │   │   ├── clients.py      # OpenAI, Ollama & Gemini Client Implementations
@@ -37,12 +36,16 @@ d:\MVP-SQL-V2/
 │   │   └── example_usage.py # Usage examples for LLM clients
 │   ├── schema_linking/     # Schema Linking Module
 │   │   └── anchor_generator.py # Schema Anchor Generation
+│   ├── visualization/      # Visualization Hub (Streamlit)
+│   │   ├── Home.py         # Main Entry Point
+│   │   └── pages/          # Functional Pages
+│   │       ├── 1_Schema_Viewer.py # Schema Graph Viewer
+│   │       └── 2_SQL_Analyzer.py  # SQL Analysis & Visualization
 │   └── utils/              # Downstream Consumption Utilities
 │       ├── dataloder.py    # NL-SQL dataset loader
 │       ├── graph_explorer.py # Graph query API
 │       ├── graph_loader.py # Graph Loading Utility
 │       ├── graph_schema_extractor.py # Graph-based schema & FK extractor
 │       ├── schema_generator.py # Schema text description generator
-│       ├── sql_parser.py   # SQL analysis, validation & reporting
-│       └── sql_vis.py      # SQL visualization & analysis tool (Streamlit)
+│       └── sql_parser.py   # SQL analysis, validation & reporting
 ```
