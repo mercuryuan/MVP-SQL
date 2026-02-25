@@ -78,7 +78,13 @@ class AnchorSelector:
 
         try:
             raw_response = self.llm_client.driver.request(messages)
-            return self._extract_json(raw_response)
+            result = self._extract_json(raw_response)
+            # Add prompts to result for visualization
+            result["_prompts"] = {
+                "system": self.system_prompt,
+                "user": user_msg
+            }
+            return result
         except Exception as e:
             logger.error(f"Anchor Selection LLM error: {str(e)}")
             return {"selected_entity": [], "reasoning": {}, "decomposition_steps": []}
@@ -89,7 +95,8 @@ def run_anchor_selection(
         db_id: str,
         question: str,
         provider: str = "deepseek",
-        model: Optional[str] = None
+        model: Optional[str] = None,
+        schema_detail_level: str = "full"
 ) -> Dict:
     """
     【核心封装接口】执行一次完整的锚点选择流程。
@@ -100,11 +107,12 @@ def run_anchor_selection(
         question (str): 自然语言问题
         provider (str): 模型供应商 (默认 'deepseek')
         model (str, optional): 指定模型名称。不传则使用默认。
+        schema_detail_level (str): Schema 描述的详细程度 ('full', 'brief', 'minimal')
 
     Returns:
         Dict: 包含 'selected_entity', 'reasoning' 等字段的结果
     """
-    logger.info(f"Starting Anchor Selection for DB: '{db_id}' using {provider} ({model or 'default'})")
+    logger.info(f"Starting Anchor Selection for DB: '{db_id}' using {provider} ({model or 'default'}) with detail: {schema_detail_level}")
 
     # 1. 动态定位 Schema Graph 文件路径
     base_repo = OUTPUT_ROOT / "schema_graph_repo" / dataset_name
@@ -126,7 +134,7 @@ def run_anchor_selection(
 
         sg = SchemaGenerator(graph)
         db_schema_str = "\n".join(
-            sg.generate_combined_description(table) for table in sg.tables
+            sg.generate_combined_description(table, detail_level=schema_detail_level) for table in sg.tables
         )
 
         # 3. 初始化选择器 (传入 provider 和 model)
