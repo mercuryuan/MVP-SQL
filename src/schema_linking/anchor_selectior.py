@@ -45,22 +45,45 @@ class AnchorSelector:
 
     def _extract_json(self, text: str) -> Dict:
         """从 LLM 响应中提取 JSON"""
+        # 1. 尝试直接完整解析
         try:
             return json.loads(text)
-        except:
-            # 尝试提取 Markdown 代码块
-            code_block = re.search(r'```json\s*(\{.*?\})\s*```', text, re.DOTALL)
-            if code_block:
+        except json.JSONDecodeError:
+            pass
+
+        # 2. 尝试提取 Markdown 代码块 (优先级高)
+        code_block = re.search(r'```json\s*(\{.*?\})\s*```', text, re.DOTALL)
+        if code_block:
+            try:
                 return json.loads(code_block.group(1))
+            except json.JSONDecodeError:
+                pass
 
-            # 尝试提取最外层大括号
-            matches = re.search(r'(\{.*\})', text, re.DOTALL)
-            if matches:
+        # 3. 尝试寻找第一个有效 JSON 对象 (解决 "Extra data" 问题的核心)
+        start_idx = text.find('{')
+        if start_idx != -1:
+            try:
+                # raw_decode 会在解析完第一个对象后停止，忽略后续文本
+                obj, _ = json.JSONDecoder().raw_decode(text[start_idx:])
+                return obj
+            except json.JSONDecodeError:
+                pass
+
+        # 4. 最后尝试贪婪匹配作为兜底
+        matches = re.search(r'(\{.*\})', text, re.DOTALL)
+        if matches:
+            try:
                 return json.loads(matches.group(1))
+            except json.JSONDecodeError:
+                pass
 
-            # 如果都失败，记录错误但不要抛出异常中断流程，而是返回空结果
-            logger.error(f"JSON extraction failed for text: {text[:100]}...")
-            return {"selected_entity": [], "reasoning": {}, "decomposition_steps": []}
+        # 如果都失败，记录错误但不要抛出异常中断流程，而是返回空结果
+        logger.error(f"JSON extraction failed for text: {text[:200]}...")
+        return {
+            "selected_entity": [],
+            "reasoning": {},
+            "the steps of decomposed the question": []
+        }
 
     def select_anchors(self, db_schema_str: str, question: str) -> Dict:
         """执行锚点选择的核心交互逻辑"""

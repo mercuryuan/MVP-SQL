@@ -7,6 +7,8 @@ PROJECT_ROOT = (Path(__file__).parent.parent).resolve()
 OUTPUT_ROOT = (Path(__file__).parent.parent / "output").resolve()
 # 数据目录
 DATA_ROOT = PROJECT_ROOT/"data"
+# 推理结果目录
+INFERENCE_RESULT_ROOT = DATA_ROOT / "inference_results"
 
 TRAIN_BIRD = r"F:\train_bird\train_databases"
 

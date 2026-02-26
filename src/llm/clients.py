@@ -48,6 +48,18 @@ class OllamaDriver(BaseDriver):
             logger.error(f"Ollama Error: {e}")
             raise
 
+    def list_models(self) -> List[str]:
+        """Fetch available models from Ollama"""
+        url = f"{self.base_url}/api/tags"
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            data = response.json()
+            return [model['name'] for model in data.get('models', [])]
+        except Exception as e:
+            logger.error(f"Failed to list Ollama models: {e}")
+            return []
+
 
 class GeminiDriver(BaseDriver):
     def __init__(self, api_key: str, model: str):
@@ -89,7 +101,7 @@ class LLMClient:
         elif self.provider == "ollama":
             self.driver = OllamaDriver(
                 base_url=kwargs.get("base_url", os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")),
-                model=model or "llama3"
+                model=model or "deepseek-r1:7b"
             )
         elif self.provider == "openai":
             self.driver = OpenAIDriver(
@@ -138,6 +150,14 @@ class LLMClient:
         # 3. 发送请求
         return self.ask(user_prompt, system=system_prompt, **kwargs)
 
+    def list_models(self) -> List[str]:
+        """
+        列出可用模型 (目前仅支持 Ollama)
+        """
+        if self.provider == "ollama" and hasattr(self.driver, "list_models"):
+            return self.driver.list_models()
+        return []
+
 
 # --- 3. 使用示例 ---
 if __name__ == '__main__':
@@ -145,7 +165,8 @@ if __name__ == '__main__':
     # system_sql: "你是一个数据库专家，只输出 SQL。"
     # generate_sql: "基于以下表结构：\n{schema}\n\n请生成查询：{question}"
 
-    client = LLMClient(provider="gemini")
+    client = LLMClient(provider="ollama")
+    # client = LLMClient(provider="gemini")
     # client = LLMClient(provider="deepseek")
     print(client.ask("你是谁？"))
 

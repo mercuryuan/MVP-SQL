@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 # Add project root to Python path
-# run as streamlit run src/visualization/Home.py
+
 # This file is at src/visualization/Home.py
 # Root is at ../../
 project_root = Path(__file__).parent.parent.parent
@@ -33,3 +33,4 @@ st.markdown("""
 - 'src/visualization/pages/1_Schema_Viewer.py'：交互式图可视化
 - 'src/visualization/pages/2_SQL_Analyzer.py'：SQL 解析与子图分析
 """)
+# streamlit run src/visualization/Home.py

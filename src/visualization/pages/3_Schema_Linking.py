@@ -16,6 +16,8 @@ from src.utils.graph_loader import GraphLoader
 from src.utils.dataloder import DataLoader
 from src.schema_linking.anchor_selectior import run_anchor_selection
 from src.utils.sql_parser import SQLParser
+from src.llm.clients import LLMClient
+from src.utils.experiment_logger import ExperimentLogger
 
 # ==========================================
 # 0. Global Config & Styles
@@ -130,18 +132,24 @@ def load_existing_results(dataset_name, db_id):
             st.error(f"读取历史结果失败: {e}")
     return {}
 
-def save_result(dataset_name, db_id, question, model_key, result_data):
+def save_result(dataset_name, db_id, question_index, question, model_key, result_data):
     """Save a single result"""
     path = get_result_file_path(dataset_name, db_id)
     all_results = load_existing_results(dataset_name, db_id)
     
-    # Use question hash as key to handle special chars
-    q_hash = hashlib.md5(question.encode('utf-8')).hexdigest()
-    
-    if q_hash not in all_results:
-        all_results[q_hash] = {"question": question, "models": {}}
+    # 结构: db_id -> question_index -> {question, schema_linking_results}
+    if db_id not in all_results:
+        all_results[db_id] = {}
         
-    all_results[q_hash]["models"][model_key] = {
+    q_idx_str = str(question_index)
+    if q_idx_str not in all_results[db_id]:
+        all_results[db_id][q_idx_str] = {
+            "question": question,
+            "schema_linking_results": {}
+        }
+        
+    # 保存本次推理结果，使用 model_key 作为标识
+    all_results[db_id][q_idx_str]["schema_linking_results"][model_key] = {
         "result": result_data,
         "timestamp": datetime.now().isoformat()
     }
@@ -313,7 +321,18 @@ def render_sidebar():
     elif model_provider == "gemini":
         model_options = ["gemini-2.0-flash", "gemini-pro"]
     elif model_provider == "ollama":
-        model_options = ["llama3", "mistral"]
+        try:
+            # 动态获取 Ollama 模型列表
+            temp_client = LLMClient(provider="ollama")
+            ollama_models = temp_client.list_models()
+            if ollama_models:
+                model_options = ollama_models
+            else:
+                st.sidebar.warning("Ollama 连接成功但未返回模型列表。")
+                model_options = ["llama3", "mistral"]
+        except Exception as e:
+            st.sidebar.error(f"Ollama 连接失败: {e}")
+            model_options = ["llama3", "mistral"]
         
     selected_model = st.sidebar.selectbox("选择模型 (Model)", model_options)
     
@@ -329,6 +348,7 @@ def render_sidebar():
     st.sidebar.markdown("---")
     qa_list = load_qa_data(selected_dataset, selected_db)
     selected_qa = None
+    selected_index = 0
     
     if qa_list:
         qa_options = {i: f"{i}. {q['question'][:50]}..." for i, q in enumerate(qa_list)}
@@ -344,15 +364,15 @@ def render_sidebar():
     st.sidebar.markdown("---")
     show_columns = st.sidebar.checkbox("显示列节点", value=True) # Default to True to show GT columns
     
-    return selected_dataset, selected_db, selected_qa, pkl_file, show_columns, model_provider, selected_model, schema_detail
+    return selected_dataset, selected_db, selected_qa, selected_index, pkl_file, show_columns, model_provider, selected_model, schema_detail
 
 # ==========================================
 # 3. Main Logic
 # ==========================================
 def main():
     st.title("⚓ Schema Linking & Anchor Selection")
-    
-    (selected_dataset, selected_db, selected_qa, pkl_file, 
+    st.set_page_config(layout="wide")
+    (selected_dataset, selected_db, selected_qa, selected_index, pkl_file, 
      show_columns, model_provider, selected_model, schema_detail) = render_sidebar()
     
     if not pkl_file or not selected_qa:
@@ -395,15 +415,28 @@ def main():
     col_action, col_hist = st.columns([1, 2])
     
     # Unique Key for this run
-    q_hash = hashlib.md5(selected_qa['question'].encode('utf-8')).hexdigest()
+    # q_hash = hashlib.md5(selected_qa['question'].encode('utf-8')).hexdigest() # No longer used for lookup
     model_key = f"{model_provider}@{selected_model}@{schema_detail}"
     
     # Check history
-    history = load_existing_results(selected_dataset, selected_db)
+    # 使用 ExperimentLogger 加载历史
+    logger = ExperimentLogger(selected_dataset, "schema_linking")
+    history = logger.load_results(selected_db)
+    
     existing_result = None
-    if q_hash in history and model_key in history[q_hash]["models"]:
-        existing_result = history[q_hash]["models"][model_key]
+    q_idx_str = str(selected_index)
+    
+    if selected_db in history and q_idx_str in history[selected_db]:
+        question_entry = history[selected_db][q_idx_str]
+        if "schema_linking_results" in question_entry and model_key in question_entry["schema_linking_results"]:
+            existing_result = question_entry["schema_linking_results"][model_key]
 
+    # Clear current_result if it belongs to a different question/db
+    if 'current_result_meta' in st.session_state:
+        meta = st.session_state.current_result_meta
+        if meta.get('db') != selected_db or meta.get('q_idx') != selected_index or meta.get('model') != model_key:
+             st.session_state.current_result = None
+             
     # Run Button
     with col_action:
         run_label = "🚀 运行锚点选择"
@@ -422,17 +455,34 @@ def main():
                     schema_detail_level=schema_detail
                 )
                 if "error" not in result:
-                    save_result(selected_dataset, selected_db, selected_qa['question'], model_key, result)
+                    # 使用 ExperimentLogger 保存结果
+                    logger.save_result(
+                        db_id=selected_db,
+                        question_index=selected_index,
+                        question=selected_qa['question'],
+                        model_key=model_key,
+                        result_data=result,
+                        ground_truth_sql=selected_qa['sql_query'],
+                        evidence=selected_qa.get('evidence')
+                    )
                     st.session_state.current_result = result
+                    st.session_state.current_result_meta = {
+                        'db': selected_db,
+                        'q_idx': selected_index,
+                        'model': model_key
+                    }
                     st.rerun() # Refresh to show saved result
                 else:
                     st.error(f"推理出错: {result['error']}")
 
     # Display Result
     display_result = None
-    if 'current_result' in st.session_state:
+    
+    # Priority 1: Just run result (in session state)
+    if st.session_state.get('current_result'):
         display_result = st.session_state.current_result
     
+    # Priority 2: Historical result (if no fresh run)
     if not display_result and existing_result:
         display_result = existing_result["result"]
 
@@ -449,6 +499,10 @@ def main():
             st.text(prompts_used.get("system", "N/A"))
             st.markdown("#### User Prompt")
             st.text(prompts_used.get("user", "N/A"))
+            
+        # --- Show Raw Output ---
+        with st.expander("👀 查看 LLM 详细输出信息 (Raw Output)", expanded=False):
+            st.json(display_result)
         
         # --- Comparison Logic ---
         # Separate Table and Column Stats
