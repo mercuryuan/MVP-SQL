@@ -188,7 +188,7 @@ class AnchorSelector:
         return {
             "selected_entity": [],
             "reasoning": {},
-            "the steps of decomposed the question": []
+            "question_decomposition_steps": []
         }
 
     def select_anchors(self, db_schema_str: str, question: str) -> Dict:
@@ -217,7 +217,7 @@ class AnchorSelector:
             return result
         except Exception as e:
             logger.error(f"Anchor Selection LLM error: {str(e)}")
-            return {"selected_entity": [], "reasoning": {}, "the steps of decomposed the question": []}
+            return {"selected_entity": [], "reasoning": {}, "question_decomposition_steps": []}
 
 def initialize_subgraph(dataset_name: str, db_id: str, question: str, provider: str = "deepseek", model: Optional[str] = None, schema_detail_level: str = "full") -> Dict:
     """

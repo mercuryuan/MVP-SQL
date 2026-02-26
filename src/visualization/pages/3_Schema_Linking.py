@@ -503,7 +503,30 @@ def main():
              st.info(f"🚦 Routing Status: **{display_result.get('status')}**")
              
              with st.expander("查看路由决策详情 (Routing Details)"):
-                 st.json(display_result.get("step2_route_result", {}))
+                 route_res = display_result.get("step2_route_result", {})
+                 
+                 # Compare initial LLM anchors with final subgraph nodes
+                 initial = set(display_result.get("step1_llm_result", {}).get("selected_entity", []))
+                 # Only keep table names from initial (remove columns)
+                 initial_tables = set([x.split('.')[0] for x in initial])
+                 
+                 final = set(selected_anchors)
+                 
+                 added = final - initial_tables
+                 removed = initial_tables - final # Should be empty ideally unless filtered
+                 
+                 c1, c2 = st.columns(2)
+                 with c1:
+                     st.write("🔹 **Initial Anchors (LLM):**")
+                     st.write(list(initial_tables))
+                 with c2:
+                     st.write("🔸 **Added by Graph Algorithm:**")
+                     if added:
+                         st.success(list(added))
+                     else:
+                         st.caption("No extra nodes added.")
+                         
+                 st.json(route_res)
                  
         else:
             # Fallback for old result format (just LLM result)

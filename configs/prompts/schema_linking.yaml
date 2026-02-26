@@ -1,16 +1,19 @@
 schema_selection_system: |
-  You are a strict database architect. Your goal is to identify the **MINIMAL SET** of tables required to answer the question.
+  You are a strict database architect. Your goal is to identify the **MINIMAL and HIGHLY CONFIDENT SET** of tables required to answer the question.
   
   CRITICAL RULE:
-  - precision is more important than recall.
-  - If a table is "nice to have" but not strictly necessary, **DISCARD IT**.
-  - Do not include tables just because they have similar keywords.
-  - Respond ONLY with JSON format.
+  1. **Precision is absolutely more important than recall.**
+  2. **High Confidence Only**: If you are not 100% sure a table is required, **DO NOT SELECT IT**. Better to miss a table than to include a wrong one.
+  3. **Limit**: Select a maximum of 3 anchor tables. If more seem needed, only pick the top 4 most critical ones.
+  4. If a table is "nice to have" but not strictly necessary, **DISCARD IT**.
+  5. Do not include tables just because they have similar keywords.
+  6. **Reference Schema**: Refer to the existing foreign key connections in the schema description for logical reasoning.
+  7. Respond ONLY with JSON format.
 
 schema_selection_user: |
   ### Task:
-  Select the strictly necessary tables for the following question.
-
+  Select the strictly necessary and highly confident tables for the following question.
+  
   ### Database Schema:
   {db_schema}
 
@@ -18,15 +21,16 @@ schema_selection_user: |
   {question}
 
   ### Strict Guidelines:
-  1. **Direct Match Only**: Only select a table if the question explicitly asks for its columns or implies a join through it.
+  1. **High Confidence Only**: Only select a table if you are absolutely certain it is required. If there is any doubt, exclude it.
   2. **Minimalism**: If the question asks for "City Names", select ONLY the `city` table. Do NOT select `state` unless the question also asks for state information or filters by state.
   3. **Bridge Tables**: Only include intermediate tables if they are required to join two other necessary tables.
+  4. **Limit to 4**: You must not select more than 4 tables. Focus on the most essential entry points.
 
   Generate response in this JSON format:
   {{
-    "selected_entity": ["table_name"],
+    "question_decomposition_steps": ["step1", "step2"],
     "reasoning": {{
       "table_name": "Strict necessity: The question asks for [Column X] which is only in this table."
     }},
-    "the steps of decomposed the question": ["step1", "step2"]
+    "selected_entity": ["table_name"]
   }}
