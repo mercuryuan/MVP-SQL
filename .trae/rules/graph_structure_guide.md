@@ -1,3 +1,7 @@
+---
+alwaysApply: false
+description: 当需要处理数据库图结构的相关操作时，需要参考该文档。
+---
 # MVP-SQL 数据库图结构指南
 
 本文档详细说明了本项目中数据库图结构（Graph Structure）的生成逻辑、组成元素及数据处理策略。该图结构基于 NetworkX DiGraph 构建，旨在为下游任务（如 Text-to-SQL、GNN 分析）提供富含语义和统计信息的结构化输入。

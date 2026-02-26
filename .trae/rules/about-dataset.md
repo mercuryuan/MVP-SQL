@@ -1,3 +1,7 @@
+---
+alwaysApply: false
+description: 当涉及实验数据集的操作，需要阅读该文档，了解数据集的基本信息和处理策略。
+---
 # 关于数据集
 
 ## 📄 文档一：项目前提提要 (Project Context & Background)
