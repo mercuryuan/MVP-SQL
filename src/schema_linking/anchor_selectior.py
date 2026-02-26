@@ -22,6 +22,112 @@ from src.llm.prompt_manager import PromptManager
 from configs.paths import OUTPUT_ROOT
 
 
+import networkx as nx
+from networkx.algorithms.approximation import steiner_tree
+
+class SubgraphRouter:
+    """
+    智能子图路由器 (Smart Subgraph Router)
+    基于锚点数量和图拓扑结构，决定 Schema Linking 的下一步策略。
+    实现 Neuro-Symbolic 思想：LLM 找点，图算法铺路。
+    """
+    
+    def __init__(self, graph: nx.DiGraph):
+        # 计算连通性时使用无向视图，因为 SQL JOIN 是无向的
+        self.G_undirected = graph.to_undirected()
+        self.original_G = graph
+        
+    def route(self, anchor_tables: List[str]) -> Dict:
+        """
+        核心路由逻辑
+        Args:
+            anchor_tables: 初始选定的锚点表名列表
+        Returns:
+            Dict: 包含 status, subgraph_nodes, message 等字段
+        """
+        # 过滤掉不在图中的表
+        valid_anchors = [t for t in anchor_tables if t in self.G_undirected]
+        n = len(valid_anchors)
+        
+        # 🌿 分支 0: 无锚点
+        if n == 0:
+            return {"status": "failed", "reason": "No valid initial tables found."}
+            
+        # 🌿 分支 1: 单表直通
+        if n == 1:
+            return {
+                "status": "fast_track",
+                "subgraph_nodes": valid_anchors,
+                "message": "Single table query.",
+                "branch": "1-SingleTable"
+            }
+            
+        # 🌿 分支 2: 双表寻路
+        if n == 2:
+            return self._handle_two_tables(valid_anchors[0], valid_anchors[1])
+            
+        # 🌿 分支 3: 多表斯坦纳树
+        return self._handle_multi_tables(valid_anchors)
+
+    def _handle_two_tables(self, t1: str, t2: str) -> Dict:
+        try:
+            # 获取所有最短路径
+            paths = list(nx.all_shortest_paths(self.G_undirected, source=t1, target=t2))
+            
+            # 子分支 2.A: 唯一通途
+            if len(paths) == 1:
+                return {
+                    "status": "fast_track",
+                    "subgraph_nodes": paths[0],
+                    "message": "Unique shortest path found.",
+                    "branch": "2A-UniquePath"
+                }
+                
+            # 子分支 2.B: 歧义探索
+            return {
+                "status": "ambiguity_needs_resolution",
+                "anchors": [t1, t2],
+                "path_clues": paths, # 返回所有可能的路径供 LLM 决策
+                "message": f"Found {len(paths)} shortest paths.",
+                "branch": "2B-Ambiguity"
+            }
+            
+        except nx.NetworkXNoPath:
+            return {"status": "failed", "reason": "Nodes are physically disconnected."}
+
+    def _handle_multi_tables(self, anchors: List[str]) -> Dict:
+        try:
+            # 近似斯坦纳树
+            # 注意: steiner_tree 要求图是连通的，或者终端节点在同一连通分量
+            # 这里简单处理，如果不在同一连通分量会抛出异常
+            tree = steiner_tree(self.G_undirected, anchors)
+            tree_nodes = list(tree.nodes())
+            
+            # 毒化防御机制
+            extra_nodes_count = len(tree_nodes) - len(anchors)
+            
+            # 子分支 3.A: 结构紧凑
+            if extra_nodes_count <= 3: # 阈值可配置
+                return {
+                    "status": "fast_track",
+                    "subgraph_nodes": tree_nodes,
+                    "message": "Steiner tree connected safely.",
+                    "branch": "3A-CompactTree"
+                }
+                
+            # 子分支 3.B: 过度延伸 (毒化)
+            return {
+                "status": "toxic_anchors_detected",
+                "anchors": anchors,
+                "tree_nodes": tree_nodes,
+                "message": f"Suspected poisoning. Introduced {extra_nodes_count} extra nodes.",
+                "branch": "3B-ToxicAlert"
+            }
+            
+        except Exception as e:
+            # 可能是节点不连通等原因
+            return {"status": "failed", "reason": str(e)}
+
 class AnchorSelector:
     """
     锚点选择器 (Anchor Selector)
@@ -102,6 +208,7 @@ class AnchorSelector:
         try:
             raw_response = self.llm_client.driver.request(messages)
             result = self._extract_json(raw_response)
+            
             # Add prompts to result for visualization
             result["_prompts"] = {
                 "system": self.system_prompt,
@@ -110,8 +217,68 @@ class AnchorSelector:
             return result
         except Exception as e:
             logger.error(f"Anchor Selection LLM error: {str(e)}")
-            return {"selected_entity": [], "reasoning": {}, "decomposition_steps": []}
+            return {"selected_entity": [], "reasoning": {}, "the steps of decomposed the question": []}
 
+def initialize_subgraph(dataset_name: str, db_id: str, question: str, provider: str = "deepseek", model: Optional[str] = None, schema_detail_level: str = "full") -> Dict:
+    """
+    【新版核心接口】执行完整的子图初始化流程 (Smart Initialization Phase)
+    Step 1: LLM Anchor Selection
+    Step 2: Graph Algorithm Routing & Decision Tree
+    """
+    # 1. 执行 Step 1: 锚点选择 (复用原有 run_anchor_selection 逻辑的一部分，但需要图对象)
+    # 为了避免重复加载图，这里我们稍微重构一下流程
+    
+    # 动态定位 Schema Graph 文件路径
+    base_repo = OUTPUT_ROOT / "schema_graph_repo" / dataset_name
+    pkl_path = base_repo / db_id / f"{db_id}.pkl"
+    if not pkl_path.exists(): pkl_path = base_repo / f"{db_id}.pkl"
+    
+    if not pkl_path.exists():
+        return {"error": f"Graph file not found: {pkl_path}"}
+        
+    try:
+        # 加载图
+        graph = GraphLoader.load_graph(str(pkl_path))
+        if not graph: raise ValueError("Graph empty")
+        
+        # 生成 Schema 描述
+        sg = SchemaGenerator(graph)
+        db_schema_str = "\n".join(sg.generate_combined_description(table, detail_level=schema_detail_level) for table in sg.tables)
+        
+        # LLM 选择锚点
+        selector = AnchorSelector(provider=provider, model=model)
+        llm_result = selector.select_anchors(db_schema_str, question)
+        
+        initial_anchors = llm_result.get("selected_entity", [])
+        # 过滤只保留表名 (去除列名)
+        table_anchors = list(set([a.split('.')[0] for a in initial_anchors]))
+        
+        # Step 2: 核心决策路由
+        router = SubgraphRouter(graph)
+        route_result = router.route(table_anchors)
+        
+        # 合并结果
+        final_result = {
+            "step1_llm_result": llm_result,
+            "step2_route_result": route_result,
+            "final_subgraph_nodes": route_result.get("subgraph_nodes", []), # 可能是空，取决于 status
+            "status": route_result.get("status", "unknown")
+        }
+        
+        # 如果需要解决歧义 (Ambiguity Resolution)，这里可以再次调用 LLM (Future Work)
+        if route_result["status"] == "ambiguity_needs_resolution":
+             # TODO: Implement ambiguity resolution prompt
+             pass
+             
+        return final_result
+        
+    except Exception as e:
+        logger.error(f"Initialization failed: {e}", exc_info=True)
+        return {"error": str(e)}
+
+# 保持兼容性，重命名旧的 run_anchor_selection 或保留它但标记为 Deprecated
+# 这里我们更新 run_anchor_selection 让它直接调用新逻辑，或者让它只做 Step 1
+# 为了满足用户需求 "完成相关的逻辑实现"，我们应该使用新的 initialize_subgraph 替代原来的单一 LLM 调用
 
 def run_anchor_selection(
         dataset_name: str,
@@ -122,56 +289,10 @@ def run_anchor_selection(
         schema_detail_level: str = "full"
 ) -> Dict:
     """
-    【核心封装接口】执行一次完整的锚点选择流程。
-
-    Args:
-        dataset_name (str): 数据集名称 (如 'spider')
-        db_id (str): 数据库 ID (如 'geo')
-        question (str): 自然语言问题
-        provider (str): 模型供应商 (默认 'deepseek')
-        model (str, optional): 指定模型名称。不传则使用默认。
-        schema_detail_level (str): Schema 描述的详细程度 ('full', 'brief', 'minimal')
-
-    Returns:
-        Dict: 包含 'selected_entity', 'reasoning' 等字段的结果
+    [Updated] 现在调用完整的 initialize_subgraph 流程
     """
-    logger.info(f"Starting Anchor Selection for DB: '{db_id}' using {provider} ({model or 'default'}) with detail: {schema_detail_level}")
+    return initialize_subgraph(dataset_name, db_id, question, provider, model, schema_detail_level)
 
-    # 1. 动态定位 Schema Graph 文件路径
-    base_repo = OUTPUT_ROOT / "schema_graph_repo" / dataset_name
-    pkl_path = base_repo / db_id / f"{db_id}.pkl"
-
-    if not pkl_path.exists():
-        pkl_path = base_repo / f"{db_id}.pkl"
-
-    if not pkl_path.exists():
-        error_msg = f"Schema Graph file not found at: {pkl_path}"
-        logger.error(error_msg)
-        return {"error": error_msg, "selected_entity": []}
-
-    try:
-        # 2. 加载图结构并生成 Schema 描述
-        graph = GraphLoader.load_graph(str(pkl_path))
-        if not graph:
-            raise ValueError("Graph loaded is empty")
-
-        sg = SchemaGenerator(graph)
-        db_schema_str = "\n".join(
-            sg.generate_combined_description(table, detail_level=schema_detail_level) for table in sg.tables
-        )
-
-        # 3. 初始化选择器 (传入 provider 和 model)
-        selector = AnchorSelector(provider=provider, model=model)
-
-        # 4. 执行选择
-        result = selector.select_anchors(db_schema_str, question)
-
-        logger.info(f"Anchor Selection completed. Selected: {result.get('selected_entity', [])}")
-        return result
-
-    except Exception as e:
-        logger.error(f"Fatal error in run_anchor_selection: {e}", exc_info=True)
-        return {"error": str(e), "selected_entity": []}
 
 
 # --- 测试调用示例 ---

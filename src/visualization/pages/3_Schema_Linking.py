@@ -490,15 +490,33 @@ def main():
     prompts_used = {}
     
     if display_result:
-        selected_anchors = display_result.get("selected_entity", [])
-        prompts_used = display_result.get("_prompts", {})
-        
+        # Check if display_result has the new structure with step2_route_result
+        if "step2_route_result" in display_result:
+             # Use the final subgraph nodes from the routing step
+             selected_anchors = display_result.get("final_subgraph_nodes", [])
+             
+             # Extract prompts from step1_llm_result (if available)
+             step1 = display_result.get("step1_llm_result", {})
+             prompts_used = step1.get("_prompts", {})
+             
+             # Show Route Status
+             st.info(f"🚦 Routing Status: **{display_result.get('status')}**")
+             
+             with st.expander("查看路由决策详情 (Routing Details)"):
+                 st.json(display_result.get("step2_route_result", {}))
+                 
+        else:
+            # Fallback for old result format (just LLM result)
+            selected_anchors = display_result.get("selected_entity", [])
+            prompts_used = display_result.get("_prompts", {})
+            
         # --- Show Prompts ---
-        with st.expander("📝 查看输入 Prompt (System & User)", expanded=False):
-            st.markdown("#### System Prompt")
-            st.text(prompts_used.get("system", "N/A"))
-            st.markdown("#### User Prompt")
-            st.text(prompts_used.get("user", "N/A"))
+        if prompts_used:
+            with st.expander("📝 查看输入 Prompt (System & User)", expanded=False):
+                st.markdown("#### System Prompt")
+                st.text(prompts_used.get("system", "N/A"))
+                st.markdown("#### User Prompt")
+                st.text(prompts_used.get("user", "N/A"))
             
         # --- Show Raw Output ---
         with st.expander("👀 查看 LLM 详细输出信息 (Raw Output)", expanded=False):
