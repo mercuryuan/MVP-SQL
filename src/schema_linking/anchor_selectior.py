@@ -19,6 +19,7 @@ from src.utils.graph_loader import GraphLoader
 from src.utils.schema_generator import SchemaGenerator
 from src.llm.clients import LLMClient
 from src.llm.prompt_manager import PromptManager
+from src.schema_linking.iterative_expander import IterativeSubgraphExpander
 from configs.paths import OUTPUT_ROOT
 
 
@@ -142,6 +143,7 @@ class AnchorSelector:
                       如果为 None，则使用 LLMClient 内部定义的默认值。
         """
         self.prompt_manager = PromptManager()
+        self.prompt_manager.reload() # Force reload prompts to ensure latest YAMLs are loaded
 
         # 初始化 LLM 客户端，透传参数
         self.llm_client = LLMClient(provider=provider, model=model)
@@ -219,11 +221,12 @@ class AnchorSelector:
             logger.error(f"Anchor Selection LLM error: {str(e)}")
             return {"selected_entity": [], "reasoning": {}, "question_decomposition_steps": []}
 
-def initialize_subgraph(dataset_name: str, db_id: str, question: str, provider: str = "deepseek", model: Optional[str] = None, schema_detail_level: str = "full") -> Dict:
+def initialize_subgraph(dataset_name: str, db_id: str, question: str, provider: str = "deepseek", model: Optional[str] = None, schema_detail_level: str = "full", run_sl2: bool = True) -> Dict:
     """
     【新版核心接口】执行完整的子图初始化流程 (Smart Initialization Phase)
     Step 1: LLM Anchor Selection
     Step 2: Graph Algorithm Routing & Decision Tree
+    Step 3: Iterative Expansion (Optional)
     """
     # 1. 执行 Step 1: 锚点选择 (复用原有 run_anchor_selection 逻辑的一部分，但需要图对象)
     # 为了避免重复加载图，这里我们稍微重构一下流程
@@ -269,6 +272,30 @@ def initialize_subgraph(dataset_name: str, db_id: str, question: str, provider: 
         if route_result["status"] == "ambiguity_needs_resolution":
              # TODO: Implement ambiguity resolution prompt
              pass
+
+        # Step 3: Iterative Expansion (SL2)
+        # Execute only if we have a valid starting subgraph (Single Table or Connected Tree)
+        # AND if run_sl2 is True
+        if run_sl2 and route_result["status"] in ["fast_track", "ambiguity_needs_resolution", "3A-CompactTree"]:
+            try:
+                # Use the nodes from routing as the initial core for expansion
+                # Ensure we only pass table names, not columns (though currently route returns tables)
+                initial_tables_sl2 = [n for n in final_result["final_subgraph_nodes"] if graph.nodes[n].get("type", "Table") == "Table"]
+                
+                if initial_tables_sl2:
+                    logger.info(f"Starting SL2 Iterative Expansion with core: {initial_tables_sl2}")
+                    expander = IterativeSubgraphExpander(graph, provider=provider, model=model)
+                    sl2_result = expander.run_expansion(question, initial_tables_sl2)
+                    
+                    final_result["step3_expansion_result"] = sl2_result
+                    # Update final nodes with SL2 result (which includes columns)
+                    final_result["final_subgraph_nodes"] = sl2_result["final_subgraph_nodes"]
+                    final_result["status"] = "sl2_completed"
+                else:
+                    logger.warning("No valid tables found for SL2 expansion.")
+            except Exception as e:
+                logger.error(f"SL2 Expansion failed: {e}", exc_info=True)
+                final_result["sl2_error"] = str(e)
              
         return final_result
         
@@ -286,12 +313,13 @@ def run_anchor_selection(
         question: str,
         provider: str = "deepseek",
         model: Optional[str] = None,
-        schema_detail_level: str = "full"
+        schema_detail_level: str = "full",
+        run_sl2: bool = True
 ) -> Dict:
     """
     [Updated] 现在调用完整的 initialize_subgraph 流程
     """
-    return initialize_subgraph(dataset_name, db_id, question, provider, model, schema_detail_level)
+    return initialize_subgraph(dataset_name, db_id, question, provider, model, schema_detail_level, run_sl2)
 
 
 

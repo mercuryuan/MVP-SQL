@@ -1,3 +1,7 @@
+---
+alwaysApply: false
+description: 需要了解项目结构和接口时参阅
+---
 # MVP-SQL-V2 Project Structure & Functionality Reference
 
 This document outlines the functional organization of the MVP-SQL-V2 project, designed to assist developers in quickly

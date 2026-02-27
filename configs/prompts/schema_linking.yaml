@@ -34,3 +34,54 @@ schema_selection_user: |
     }},
     "selected_entity": ["table_name"]
   }}
+
+schema_expansion_system: |
+  You are an expert database engineer performing an iterative subgraph expansion to find the optimal schema for a Text-to-SQL task.
+  Your goal is to start from a "Core Subgraph" and decide whether to expand it by including neighbor tables ("Frontier") or selecting specific columns.
+
+  You will be given:
+  1. **Current Core Tables**: The tables already selected, with their full column details.
+  2. **Frontier Tables**: The tables that are 1-hop away from the core, with brief details.
+  3. **Previous Reasoning**: Why we are in this iteration (if any).
+
+  Your Tasks:
+  1. **Select Columns**: For each Core Table, identify which columns are needed to answer the question.
+  2. **Expand or Stop**:
+     - If the current core tables + selected columns are sufficient to answer the question, set "is_solvable" to true.
+     - If you need information from a Frontier Table (e.g., for a join path or missing attribute), select it in "selected_tables_from_frontier" and set "is_solvable" to false.
+
+  CRITICAL RULES:
+  - **Minimalism**: Do not add frontier tables unless absolutely necessary for the join path or data filtering.
+  - **Completeness**: Ensure you have all columns for SELECT, WHERE, GROUP BY, ORDER BY clauses.
+  - **Termination**: If you have everything, STOP. Do not loop endlessly.
+
+schema_expansion_user: |
+  ### Question:
+  {question}
+
+  ### Iteration Context:
+  {iteration_context}
+
+  ### Current Core Subgraph (Full Details):
+  {core_schema}
+
+  ### Frontier Tables (Candidates for Expansion):
+  {frontier_schema}
+
+  ### Instructions:
+  Analyze the question and the current graph state.
+  1. Which columns from the **Core Tables** are used?
+  2. Do we need any table from the **Frontier** to answer the question?
+  3. Can we stop now?
+
+  Respond in JSON format:
+  {{
+    "selected_columns_from_core": {{
+      "TableName": ["col1", "col2"]
+    }},
+    "selected_tables_from_frontier": ["FrontierTableA"],
+    "to_solve_the_question": {{
+      "is_solvable": boolean,
+      "reasoning": "Explanation of why we stop or why we expand."
+    }}
+  }}

@@ -14,6 +14,9 @@ sys.path.insert(0, str(project_root))
 from configs import paths
 from src.utils.graph_loader import GraphLoader
 from src.utils.dataloder import DataLoader
+import importlib
+import src.schema_linking.anchor_selectior
+importlib.reload(src.schema_linking.anchor_selectior)
 from src.schema_linking.anchor_selectior import run_anchor_selection
 from src.utils.sql_parser import SQLParser
 from src.llm.clients import LLMClient
@@ -208,8 +211,7 @@ def convert_nx_to_agraph(G, show_columns=True, selected_nodes=None, gt_nodes=Non
         is_pred = node_id in pred_set
         is_gt = node_id in gt_set
         
-        # Priority: False Positive (Red) > True Positive (Orange) > Ground Truth Missed (Purple)
-        
+        # Result Comparison View (Default)
         if is_pred and is_gt:
              # True Positive -> Keep as Prediction Style (Orange) per user request
              # "LLM选择的节点继续采用原来的黄色样式（不变）"
@@ -227,6 +229,7 @@ def convert_nx_to_agraph(G, show_columns=True, selected_nodes=None, gt_nodes=Non
             conf.update(STYLE["GroundTruth"])
 
         real_name = attrs.get("name", node_id)
+
         truncate_len = 8 if node_type == "Column" else 10
         label_text = smart_truncate(real_name, truncate_len)
         diameter = conf.get("size", 30)
@@ -283,7 +286,15 @@ def render_sidebar():
         st.sidebar.error(f"No datasets found in {ROOT_DIR}")
         return None, None, None, None, None, None, None, None
 
-    selected_dataset = st.sidebar.selectbox("1. 选择数据集", available_datasets, index=0)
+    # Load previous selection from session state
+    prev_dataset = st.session_state.get('prev_dataset', available_datasets[0])
+    try:
+        dataset_index = available_datasets.index(prev_dataset)
+    except ValueError:
+        dataset_index = 0
+
+    selected_dataset = st.sidebar.selectbox("1. 选择数据集", available_datasets, index=dataset_index, key="dataset_selector")
+    st.session_state['prev_dataset'] = selected_dataset
     
     # 2. Database
     dataset_path = os.path.join(ROOT_DIR, selected_dataset)
@@ -291,7 +302,14 @@ def render_sidebar():
     if not available_dbs:
         return selected_dataset, None, None, None, None, None, None, None
         
-    selected_db = st.sidebar.selectbox("2. 选择数据库", available_dbs)
+    prev_db = st.session_state.get('prev_db', available_dbs[0] if available_dbs else None)
+    try:
+        db_index = available_dbs.index(prev_db)
+    except ValueError:
+        db_index = 0
+        
+    selected_db = st.sidebar.selectbox("2. 选择数据库", available_dbs, index=db_index, key="db_selector")
+    st.session_state['prev_db'] = selected_db
     
     # Find PKL
     pkl_file = None
@@ -306,11 +324,20 @@ def render_sidebar():
     st.sidebar.markdown("---")
     st.sidebar.subheader("🤖 模型配置")
     
+    providers = ["deepseek", "openai", "gemini", "ollama"]
+    prev_provider = st.session_state.get('prev_provider', "deepseek")
+    try:
+        provider_index = providers.index(prev_provider)
+    except ValueError:
+        provider_index = 0
+        
     model_provider = st.sidebar.selectbox(
         "选择供应商 (Provider)",
-        ["deepseek", "openai", "gemini", "ollama"],
-        index=0
+        providers,
+        index=provider_index,
+        key="provider_selector"
     )
+    st.session_state['prev_provider'] = model_provider
     
     # Dynamic model options
     model_options = []
@@ -334,15 +361,31 @@ def render_sidebar():
             st.sidebar.error(f"Ollama 连接失败: {e}")
             model_options = ["llama3", "mistral"]
         
-    selected_model = st.sidebar.selectbox("选择模型 (Model)", model_options)
+    prev_model = st.session_state.get('prev_model', model_options[0] if model_options else None)
+    try:
+        model_index = model_options.index(prev_model)
+    except ValueError:
+        model_index = 0
+        
+    selected_model = st.sidebar.selectbox("选择模型 (Model)", model_options, index=model_index, key="model_selector")
+    st.session_state['prev_model'] = selected_model
     
     # Schema Detail Level
+    detail_levels = ["full", "brief", "minimal"]
+    prev_detail = st.session_state.get('prev_detail', "full")
+    try:
+        detail_index = detail_levels.index(prev_detail)
+    except ValueError:
+        detail_index = 0
+        
     schema_detail = st.sidebar.selectbox(
         "Schema 详细程度 (Input Prompt)",
-        ["full", "brief", "minimal"],
-        index=0,
-        help="控制输入给 LLM 的数据库 Schema 描述的详细程度"
+        detail_levels,
+        index=detail_index,
+        help="控制输入给 LLM 的数据库 Schema 描述的详细程度",
+        key="detail_selector"
     )
+    st.session_state['prev_detail'] = schema_detail
 
     # 4. QA Selection
     st.sidebar.markdown("---")
@@ -352,17 +395,29 @@ def render_sidebar():
     
     if qa_list:
         qa_options = {i: f"{i}. {q['question'][:50]}..." for i, q in enumerate(qa_list)}
+        
+        # QA selection logic - try to keep index if within range
+        prev_qa_index = st.session_state.get('prev_qa_index', 0)
+        if prev_qa_index >= len(qa_list):
+            prev_qa_index = 0
+            
         selected_index = st.sidebar.selectbox(
             "3. 选择测试问题", 
             options=qa_options.keys(), 
-            format_func=lambda x: qa_options[x]
+            format_func=lambda x: qa_options[x],
+            index=prev_qa_index,
+            key="qa_selector"
         )
+        st.session_state['prev_qa_index'] = selected_index
         selected_qa = qa_list[selected_index]
     else:
         st.sidebar.warning("未找到该数据库的测试问题")
 
     st.sidebar.markdown("---")
-    show_columns = st.sidebar.checkbox("显示列节点", value=True) # Default to True to show GT columns
+    
+    prev_show_cols = st.session_state.get('prev_show_cols', True)
+    show_columns = st.sidebar.checkbox("显示列节点", value=prev_show_cols, key="show_cols_selector") # Default to True to show GT columns
+    st.session_state['prev_show_cols'] = show_columns
     
     return selected_dataset, selected_db, selected_qa, selected_index, pkl_file, show_columns, model_provider, selected_model, schema_detail
 
@@ -439,20 +494,54 @@ def main():
              
     # Run Button
     with col_action:
-        run_label = "🚀 运行锚点选择"
         if existing_result:
             st.success(f"已发现历史记录 ({existing_result['timestamp'][:16]})")
-            run_label = "🔄 重新运行"
-            
-        if st.button(run_label, type="primary", use_container_width=True):
-            with st.spinner(f"正在调用 {model_key} 进行推理..."):
+        
+        # Two buttons logic
+        # 1. SL1 Only
+        if st.button("🚀 仅运行锚点选择 (SL1)", type="secondary", use_container_width=True):
+             with st.spinner(f"正在调用 {model_key} 进行 SL1 推理..."):
                 result = run_anchor_selection(
                     dataset_name=selected_dataset,
                     db_id=selected_db,
                     question=selected_qa['question'],
                     provider=model_provider,
                     model=selected_model,
-                    schema_detail_level=schema_detail
+                    schema_detail_level=schema_detail,
+                    run_sl2=False # Disable SL2
+                )
+                if "error" not in result:
+                    # 使用 ExperimentLogger 保存结果
+                    logger.save_result(
+                        db_id=selected_db,
+                        question_index=selected_index,
+                        question=selected_qa['question'],
+                        model_key=model_key,
+                        result_data=result,
+                        ground_truth_sql=selected_qa['sql_query'],
+                        evidence=selected_qa.get('evidence')
+                    )
+                    st.session_state.current_result = result
+                    st.session_state.current_result_meta = {
+                        'db': selected_db,
+                        'q_idx': selected_index,
+                        'model': model_key
+                    }
+                    st.rerun() # Refresh to show saved result
+                else:
+                    st.error(f"推理出错: {result['error']}")
+
+        # 2. Full Pipeline
+        if st.button("🚀 运行全流程 (SL1 + SL2)", type="primary", use_container_width=True):
+            with st.spinner(f"正在调用 {model_key} 进行全流程推理..."):
+                result = run_anchor_selection(
+                    dataset_name=selected_dataset,
+                    db_id=selected_db,
+                    question=selected_qa['question'],
+                    provider=model_provider,
+                    model=selected_model,
+                    schema_detail_level=schema_detail,
+                    run_sl2=True # Enable SL2
                 )
                 if "error" not in result:
                     # 使用 ExperimentLogger 保存结果
@@ -599,45 +688,141 @@ def main():
 
     # --- Graph Visualization ---
     st.markdown("---")
-    st.subheader("🕸️ 数据库图结构可视化")
+    st.subheader("🕸️ 数据库图结构可视化 (Schema Graph Visualization)")
     
-    # Legend
-    st.markdown("""
-    <div style="display: flex; gap: 20px; margin-bottom: 10px;">
-        <div><span style="color:#FF9800; font-size:20px;">●</span> <b>模型预测 (Prediction)</b></div>
-        <div><span style="color:#9C27B0; font-size:20px;">●</span> <b>真值漏选 (Missed GT)</b></div>
-        <div><span style="color:#D32F2F; font-size:20px;">●</span> <b>错误多选 (False Positive)</b></div>
-        <div><span style="color:#1976D2; font-size:20px;">●</span> 普通表节点</div>
-    </div>
-    """, unsafe_allow_html=True)
+    # Check if we have SL2 iterations to show
+    sl2_data = display_result.get("step3_expansion_result") if display_result else None
     
-    G = load_graph_from_pkl(pkl_file)
-    
-    if G:
-        nodes, edges, edge_map = convert_nx_to_agraph(
-            G, 
-            show_columns, 
-            selected_nodes=selected_anchors,
-            gt_nodes=gt_all_nodes
-        )
+    if sl2_data and "iterations" in sl2_data:
+        st.info("检测到 SL2 迭代扩展数据，启用分步可视化模式。")
         
-        config = Config(
-            width="100%",
-            height=800,
-            directed=True,
-            physics=True,
-            hierarchical=False,
-            physicsOptions={
-                "barnesHut": {
-                    "gravitationalConstant": -5000,
-                    "springLength": 220,
-                    "springConstant": 0.05,
-                    "damping": 0.09
+        iterations = sl2_data["iterations"]
+        # Create tabs for each iteration + Final Result
+        tab_labels = [f"Iteration {i['iteration']}" for i in iterations] + ["🏁 最终结果 (Final)"]
+        tabs = st.tabs(tab_labels)
+        
+        G = load_graph_from_pkl(pkl_file)
+        
+        # --- Iteration Tabs ---
+        for idx, it_data in enumerate(iterations):
+            with tabs[idx]:
+                st.markdown(f"#### 🔄 Iteration {it_data['iteration']}")
+                
+                # Show Prompts & Reasoning
+                with st.expander("📝 Iteration Prompt & Response", expanded=False):
+                    c1, c2 = st.columns(2)
+                    with c1:
+                        st.markdown("**User Prompt:**")
+                        st.text(it_data.get("prompts", {}).get("user", ""))
+                    with c2:
+                        st.markdown("**LLM Response:**")
+                        st.json(it_data.get("llm_response", {}))
+                        
+                # Graph State
+                core = it_data.get("core_tables", [])
+                frontier = it_data.get("frontier_tables", [])
+                selected_frontier = it_data.get("llm_response", {}).get("selected_tables_from_frontier", [])
+                selected_cols_dict = it_data.get("llm_response", {}).get("selected_columns_from_core", {})
+                
+                # Construct "Current Prediction" nodes for this iteration
+                # Prediction = Core Tables + Selected Frontier Tables + Selected Columns
+                current_pred_nodes = set(core)
+                current_pred_nodes.update(selected_frontier)
+                
+                # Add columns
+                for table, cols in selected_cols_dict.items():
+                    # We need to match column names to node IDs. 
+                    # Usually "Table.Column". We can try to guess or just add them and let logic handle it.
+                    # Or better, iterate cols and try "Table.Col" format.
+                    if isinstance(cols, list):
+                        for c in cols:
+                            current_pred_nodes.add(f"{table}.{c}")
+                    elif isinstance(cols, str):
+                         current_pred_nodes.add(f"{table}.{cols}")
+
+                # Legend for Iteration (Standard)
+                st.markdown("""
+                <div style="display: flex; gap: 20px; margin-bottom: 10px;">
+                    <div><span style="color:#FF9800; font-size:20px;">●</span> <b>模型预测 (Prediction)</b></div>
+                    <div><span style="color:#9C27B0; font-size:20px;">●</span> <b>真值漏选 (Missed GT)</b></div>
+                    <div><span style="color:#D32F2F; font-size:20px;">●</span> <b>错误多选 (False Positive)</b></div>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                if G:
+                    nodes, edges, _ = convert_nx_to_agraph(
+                        G, 
+                        show_columns=True, # Show columns to see column hits
+                        selected_nodes=list(current_pred_nodes),
+                        gt_nodes=gt_all_nodes
+                    )
+                    config = Config(width="100%", height=600, directed=True, physics=True, hierarchical=False)
+                    agraph(nodes=nodes, edges=edges, config=config)
+
+        # --- Final Result Tab ---
+        with tabs[-1]:
+            st.markdown("#### 🏁 Final Subgraph vs Ground Truth")
+            # Legend
+            st.markdown("""
+            <div style="display: flex; gap: 20px; margin-bottom: 10px;">
+                <div><span style="color:#FF9800; font-size:20px;">●</span> <b>模型预测 (Prediction)</b></div>
+                <div><span style="color:#9C27B0; font-size:20px;">●</span> <b>真值漏选 (Missed GT)</b></div>
+                <div><span style="color:#D32F2F; font-size:20px;">●</span> <b>错误多选 (False Positive)</b></div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            if G:
+                nodes, edges, _ = convert_nx_to_agraph(
+                    G, 
+                    show_columns, 
+                    selected_nodes=selected_anchors,
+                    gt_nodes=gt_all_nodes
+                )
+                config = Config(
+                    width="100%", height=800, directed=True, physics=True, hierarchical=False,
+                    physicsOptions={"barnesHut": {"gravitationalConstant": -5000, "springLength": 220, "springConstant": 0.05}}
+                )
+                agraph(nodes=nodes, edges=edges, config=config)
+
+    else:
+        # Standard View (No SL2 or SL2 failed)
+        # Legend
+        st.markdown("""
+        <div style="display: flex; gap: 20px; margin-bottom: 10px;">
+            <div><span style="color:#FF9800; font-size:20px;">●</span> <b>模型预测 (Prediction)</b></div>
+            <div><span style="color:#9C27B0; font-size:20px;">●</span> <b>真值漏选 (Missed GT)</b></div>
+            <div><span style="color:#D32F2F; font-size:20px;">●</span> <b>错误多选 (False Positive)</b></div>
+            <div><span style="color:#1976D2; font-size:20px;">●</span> 普通表节点</div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        G = load_graph_from_pkl(pkl_file)
+        
+        if G:
+            nodes, edges, edge_map = convert_nx_to_agraph(
+                G, 
+                show_columns, 
+                selected_nodes=selected_anchors,
+                gt_nodes=gt_all_nodes
+            )
+            
+            config = Config(
+                width="100%",
+                height=800,
+                directed=True,
+                physics=True,
+                hierarchical=False,
+                physicsOptions={
+                    "barnesHut": {
+                        "gravitationalConstant": -5000,
+                        "springLength": 220,
+                        "springConstant": 0.05,
+                        "damping": 0.09
+                    }
                 }
-            }
-        )
-        
-        agraph(nodes=nodes, edges=edges, config=config)
+            )
+            
+            agraph(nodes=nodes, edges=edges, config=config)
 
 if __name__ == "__main__":
     main()
