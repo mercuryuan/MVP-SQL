@@ -84,29 +84,34 @@ class LLMClient:
         :param prompt_dir: 指定提示词 YAML 文件的目录，如果不传则使用 PromptManager 的默认路径
         """
         self.provider = provider.lower()
+        self.model = model
 
         # 1. 初始化驱动 (Driver)
         if self.provider == "deepseek":
+            self.model = self.model or "deepseek-chat"
             self.driver = OpenAIDriver(
                 api_key=kwargs.get("api_key", os.getenv("DEEPSEEK_API_KEY")),
                 base_url="https://api.deepseek.com",
                 # 模型只有deepseek-chat和deepseek-reasoner
-                model=model or "deepseek-chat"
+                model=self.model
             )
         elif self.provider == "gemini":
+            self.model = self.model or "gemini-2.0-flash"
             self.driver = GeminiDriver(
                 api_key=kwargs.get("api_key", os.getenv("GEMINI_API_KEY")),
-                model=model or "gemini-2.0-flash"
+                model=self.model
             )
         elif self.provider == "ollama":
+            self.model = self.model or "deepseek-r1:7b"
             self.driver = OllamaDriver(
                 base_url=kwargs.get("base_url", os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")),
-                model=model or "deepseek-r1:7b"
+                model=self.model
             )
         elif self.provider == "openai":
+            self.model = self.model or "gpt-4o"
             self.driver = OpenAIDriver(
                 api_key=kwargs.get("api_key", os.getenv("OPENAI_API_KEY")),
-                model=model or "gpt-4o"
+                model=self.model
             )
         else:
             raise ValueError(f"Unknown provider: {self.provider}")
@@ -127,6 +132,13 @@ class LLMClient:
             {"role": "system", "content": system},
             {"role": "user", "content": prompt}
         ]
+        return self.driver.request(messages, **kwargs)
+
+    def chat(self, messages: List[Dict[str, str]], **kwargs) -> str:
+        """
+        原生接口：直接传消息列表
+        :param messages: [{"role": "system", "content": "..."}, {"role": "user", "content": "..."}]
+        """
         return self.driver.request(messages, **kwargs)
 
     def ask_with_template(self, template_name: str, variables: Dict[str, Any] = {}, system_template: str = None,

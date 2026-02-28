@@ -1,0 +1,210 @@
+sl2_initial_selection_system: |
+  You are an expert in database schema reasoning.
+
+sl2_initial_selection_user: |
+  ### Task Description: 
+  You are given a database schema and a natural language question. 
+  Your task is to identify the most relevant tables for generating an SQL query to answer the question.
+
+  You MUST follow these instructions exactly:
+
+  1. Use ONLY the provided database schema for reasoning. Do NOT hallucinate table names.
+  2. Select ONLY tables that are **high-confidence** and necessary to answer the question.
+  Your table selection must be based on concrete reasoning from the schema:
+     - Match question keywords to **table names** and **column names**.
+     - If a concept is not explicitly represented in the schema, do NOT assume its presence.
+     - Consider **foreign key relations** if multiple tables must be combined to answer the question.
+  3. Select at most 3 relevant tables, ordered by confidence (most to least).
+  4. Extract **value keywords** from the question — these are specific words or phrases likely to appear as actual data values in the database (e.g., names, locations, dates, events). They will be used for fuzzy matching in database content.
+     - DO include: entity names, dates, locations, years, domain-specific identifiers.
+     - DO NOT include: table or column names, action words (find, list), numbers without context, comparison phrases ("more than", "after").
+     - To Consider: the computational cost of each value keyword. If the keyword is vague or likely to appear very frequently (e.g., “John”, “2020”), skip it unless it’s critical to intent.
+  5. Output must be in **RAW JSON format only** — absolutely NO markdown, no extra commentary, no triple backticks.
+  6. The JSON must include ALL the following fields, or your output will be INVALID:
+     - `selected_entity`: a list of the selected table names.
+     - `reasoning`: explanation for why each table was selected, based on table/column match and relationship reasoning.
+     - `the steps of decomposed the question`: a step-by-step breakdown of the question to show your reasoning process.
+     - `value_keywords`: a list of keywords (strings) that represent likely values in the database for filtering or searching.
+
+  Here is the input:
+  ### Database Name:
+  {db_name}
+
+  ### Question:
+  {question}
+
+  {evidence}
+  ### Database Schema:
+  {db_schema}
+
+  Respond strictly in this JSON format:
+  {{
+    "selected_entity": ["table1", "table2"],
+    "reasoning": {{
+      "<selected_table>": "<why columns were selected/discarded>",
+      ...
+    }},
+    "the steps of decomposed the question": ["step1", "step2", ...],
+    "value_keywords": ["keyword1", "keyword2", ...]
+  }}
+
+sl2_expansion_system: |
+  You are an SQL schema expert. Follow these ABSOLUTE RULES:
+  1. Respond ONLY with valid JSON.
+  2. NEVER include any explanation outside the JSON structure.
+  3. STRICTLY adhere to the step-by-step process.
+
+  Your task is to select appropriate table nodes and the direct foreign key relationships from the provided subgraph.
+
+  The graph consists of:
+  - Table nodes connected via foreign key relationships.
+  - Column nodes that belong to specific table nodes.
+
+  As an expert in Text-to-SQL over graph-structured database schemas, your goal is to select:
+  - The relevant table nodes.
+  - The direct foreign key relationships that connect them.
+
+  IMPORTANT: Only select table nodes that are directly connected by foreign key relationships within the given subgraph. Do NOT select table nodes that are more than 1-hop away or indirectly connected through intermediate nodes.
+
+  Note: This is only one iteration in a multi-step process. Focus solely on nodes and edges within a 0-hop to 1-hop distance for this step.
+
+  ⚠️ The current schema view is centered around the source table(s) connected via outgoing foreign keys, and includes only directly linked 1-hop tables. It does not represent the full schema.
+
+sl2_expansion_user: |
+  ### Task Requirements (MUST FOLLOW):
+  1. **Mandatory Starting Point**:
+     - Begin with select_table(s) '{select_table}'
+     - If '{select_table}' contains all necessary information to answer the `question`, set `is_solvable` to `true`.
+
+
+  2. **Expand to 1-hop neighboring tables (Only if necessary)**:
+     - If '{select_table}' alone cannot provide enough information to answer the `question`, identify all neighboring tables that are **directly connected** to '{select_table}' via **foreign key relationships**.
+     - From these neighboring tables, only select columns that are **relevant to the question**.
+     - If a neighboring table is selected, **include the foreign key columns** that link the neighboring table to the '{select_table}'.
+
+  3. **Column Selection Rules**:
+     - Select ONLY columns that are directly required to answer: "{question}".
+     - Consider the keyword match results provided in "KEYWORD MATCH RESULTS" as potential strong signals of relevance.
+     - Always include foreign key columns needed to form the reference path.
+     - Prefer the **minimal** set of foreign keys necessary for the join.
+
+  4. **Validation Rules**:
+     ❌ The output will be REJECTED if:
+     - Analysis of '{select_table}' is missing
+     - Any selected table violates the 1-hop constraint
+     - Reference paths are hypothetical or indirect
+     - Required foreign keys are omitted
+
+  ### Step-by-Step Process:
+  1. Determine if '{select_table}' alone can answer the question.
+  2. If not:
+     a) Identify valid 1-hop neighbors via schema foreign key relationships
+     b) Select minimal and relevant columns (including required foreign keys)  
+     c) Provide concise justification for each table selected
+
+  ### Required JSON Format:
+  ```json
+  {{
+    "selected_columns": {{
+      "<selected_table>": ["<column>", ...],
+      ...
+      "<neighbor_table>": ["<column>", "<foreign_key>", ...],
+      ...
+    }},
+    "selected_reference_path": {{
+    "<table1.column=table2.column>": "<why this reference_path is selected>"
+      ...
+    }},
+    "reasoning": {{
+      "<selected_table>": "<why table and columns were selected>",
+      ...
+      "<neighbor_table>": "<why this table is selected>"
+      ...
+    }},
+    "to_solve_the_question": {{
+      "is_solvable": <true/false>,
+      "question": {question}
+      "reason": "<Describe the information needed for the currently selected entity and if it corresponds to the problem one by one IN Detail>"
+    }}
+  }}
+  ```
+  ### Database Name:
+  {db_name}
+
+  ### Question:
+  {question}
+
+  {keyword_hints}
+  {evidence}
+
+  ### Starting Table(s):
+  {select_table}
+
+  {result_from_last_round}
+  {hint}
+  ### Database Schema:
+  {db_schema}
+
+  ### Please provide the STRICTLY COMPLIANT JSON Response.
+
+sl2_candidate_system: |
+  You are a database domain expert skilled at analyzing which database entities and relationships are needed to answer a natural language question.
+  The candidate results you receive come from traversing a database schema represented as a graph.
+  The LLM first selects several table nodes most relevant to the question, then iteratively expands subgraphs by including the most related entities and relationships.
+  The final candidates have passed strict validation to ensure all selected entities are consistent with the real database schema.
+
+  ### Task:
+  Your task is critical: you must carefully analyze the question, all candidate results, and their reasoning.
+  You are presented with multiple candidate results, each representing a different perspective of the schema.
+  Each candidate may offer a valid but partial view of the information needed to solve the question.
+  Your goal is to select the most **reliable, stable, and complete** result — the one most likely to ensure downstream SQL generation is accurate, executable, and successful.
+  If necessary, you may combine the strengths of different candidates to create a unified answer.
+
+  ⚠️ Do not choose a risky or speculative candidate, even if it has a chance to succeed.
+  ✅ One word: **stable** — always prefer the safest, most grounded result, even if it is slightly conservative.
+
+  Return the chosen candidate result in JSON format, including all its fields (selected_columns, selected_reference_path, reasoning, to_solve_the_question).
+
+  ### Required JSON Format:
+  ```json
+  {{
+    "selected_columns": {{
+      "<selected_table>": ["<column>", ...],  /* REQUIRED unless empty */
+      ...
+      "<neighbor_table>": ["<column>", "<foreign_key>", ...],
+      ...
+    }},
+    "selected_reference_path": {{
+    "<table1.column=table2.column>": "<why this reference_path is needed>"
+      ...
+    }},
+    "reasoning": {{
+      "<selected_table>": "<why columns were selected>",
+      ...
+      "<neighbor_table>": "<why this table is needed>"
+      ...
+    }},
+    "to_solve_the_question": {{
+      "is_solvable": <true/false>,
+      "question": <question>
+      "reason": "<Describe the information needed for the currently selected entity and if it corresponds to the problem one by one IN Detail>"
+    }}
+  }}
+  ```
+  ### Database:
+  {db_name}
+  ### Question:
+  {question}
+  ### Recommendation table(s):
+  {recommend_tables}
+  {evidence}
+  {keyword_hints}
+  ### Candidate Schema:
+  {candidate_schema}
+  {result_from_last_round}
+
+sl2_candidate_user: |
+  ### Candidate Results :
+  {candidate_results}
+  
+  ### please return the chosen candidate result in JSON format:
