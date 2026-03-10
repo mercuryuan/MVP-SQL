@@ -54,12 +54,20 @@ class CandidateFilter:
         return norm
 
     @staticmethod
-    def normalize_selected_reference_path(selected_reference_path: dict):
+    def normalize_selected_reference_path(selected_reference_path):
         """
         对 selected_reference_path 做标准化：转换每个连接为无向的 frozenset，并放入集合中
+        支持 Dict (old) 和 List (new)
         """
         norm = set()
-        for path in selected_reference_path.keys():
+        
+        iterator = []
+        if isinstance(selected_reference_path, dict):
+            iterator = selected_reference_path.keys()
+        elif isinstance(selected_reference_path, list):
+            iterator = selected_reference_path
+            
+        for path in iterator:
             normalized = CandidateFilter.parse_reference_path(path)
             if normalized is None:
                 continue
@@ -72,7 +80,7 @@ class CandidateFilter:
         过滤掉 is_solvable 不为 true 的候选结果后：
           - 如果候选结果只有一个，则直接返回该候选结果（原封不动输出），同时返回一致标志 True。
           - 如果候选结果超过一个：
-               * 如果所有候选结果在 selected_columns 与 selected_reference_path 上（无向比较）完全一致，
+               * 如果所有候选结果在 selected_columns (或 business_columns) 与 selected_reference_path (或 join_paths) 上（无向比较）完全一致，
                  则返回第一个候选结果（原封不动输出），同时返回一致标志 True。
                * 如果不完全一致，则返回过滤后的所有候选结果（原输出只保留 is_solvable 为 true 的候选），
                  同时返回一致标志 False。
@@ -81,8 +89,17 @@ class CandidateFilter:
         # 过滤掉 is_solvable 不为 true 的候选结果
         filtered_candidates = {}
         for candidate_key, candidate_value in result_json.items():
-            to_solve = candidate_value.get("to_solve_the_question", {})
-            if to_solve.get("is_solvable", False) is True:
+            # Try new format first
+            is_solvable = False
+            termination_check = candidate_value.get("termination_check", {})
+            if termination_check:
+                is_solvable = termination_check.get("is_solvable", False)
+            else:
+                # Fallback to old format
+                to_solve = candidate_value.get("to_solve_the_question", {})
+                is_solvable = to_solve.get("is_solvable", False)
+                
+            if is_solvable is True:
                 filtered_candidates[candidate_key] = candidate_value
             else:
                 pass
@@ -102,8 +119,10 @@ class CandidateFilter:
         # 对多个候选结果进行标准化比较
         normalized_results = {}
         for candidate_key, candidate_value in filtered_candidates.items():
-            sel_cols = candidate_value.get("selected_columns", {})
-            sel_paths = candidate_value.get("selected_reference_path", {})
+            # Handle both formats
+            sel_cols = candidate_value.get("business_columns", {}) or candidate_value.get("selected_columns", {})
+            sel_paths = candidate_value.get("join_paths", []) or candidate_value.get("selected_reference_path", {})
+            
             norm_cols = CandidateFilter.normalize_selected_columns(sel_cols)
             norm_paths = CandidateFilter.normalize_selected_reference_path(sel_paths)
             normalized_results[candidate_key] = (norm_cols, norm_paths)

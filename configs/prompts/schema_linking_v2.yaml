@@ -49,100 +49,136 @@ sl2_initial_selection_user: |
   }}
 
 sl2_expansion_system: |
-  You are an SQL schema expert. Follow these ABSOLUTE RULES:
-  1. Respond ONLY with valid JSON.
-  2. NEVER include any explanation outside the JSON structure.
-  3. STRICTLY adhere to the step-by-step process.
+  You are an expert in SQL schema selection for Text-to-SQL.
 
-  Your task is to select appropriate table nodes and the direct foreign key relationships from the provided subgraph.
-
-  The graph consists of:
-  - Table nodes connected via foreign key relationships.
-  - Column nodes that belong to specific table nodes.
-
-  As an expert in Text-to-SQL over graph-structured database schemas, your goal is to select:
-  - The relevant table nodes.
-  - The direct foreign key relationships that connect them.
-
-  IMPORTANT: Only select table nodes that are directly connected by foreign key relationships within the given subgraph. Do NOT select table nodes that are more than 1-hop away or indirectly connected through intermediate nodes.
-
-  Note: This is only one iteration in a multi-step process. Focus solely on nodes and edges within a 0-hop to 1-hop distance for this step.
-
-  ⚠️ The current schema view is centered around the source table(s) connected via outgoing foreign keys, and includes only directly linked 1-hop tables. It does not represent the full schema.
+  Follow these mandatory rules:
+  1. Output ONLY valid JSON.
+  2. Do not output markdown, code fences, or any extra text.
+  3. Use standard JSON arrays only. Example: ["a", "b"].
+  4. Select only:
+     - the starting table(s)
+     - directly connected 1-hop neighboring tables in the given subgraph
+  5. Never select 2-hop or indirectly connected tables.
+  6. If a selected neighbor table is used, include the minimal foreign key columns needed for the direct join.
+  7. `is_solvable` must be logically consistent with the reason.
+  8. Set `is_solvable` to true ONLY if all required information in the question is present in the selected 0-hop and 1-hop tables.
+  9. If any required entity, filter, or condition is missing, set `is_solvable` to false.
+  10. Be minimal: do not select irrelevant tables or columns.
 
 sl2_expansion_user: |
   ### Task Requirements (MUST FOLLOW):
   1. **Mandatory Starting Point**:
      - Begin with select_table(s) '{select_table}'
-     - If '{select_table}' contains all necessary information to answer the `question`, set `is_solvable` to `true`.
-
-
-  2. **Expand to 1-hop neighboring tables (Only if necessary)**:
+  
+  2. **Select a 1-hop neighboring table only when the starting table alone does not contain enough information for the question**:
      - If '{select_table}' alone cannot provide enough information to answer the `question`, identify all neighboring tables that are **directly connected** to '{select_table}' via **foreign key relationships**.
      - From these neighboring tables, only select columns that are **relevant to the question**.
      - If a neighboring table is selected, **include the foreign key columns** that link the neighboring table to the '{select_table}'.
-
+  
   3. **Column Selection Rules**:
      - Select ONLY columns that are directly required to answer: "{question}".
      - Consider the keyword match results provided in "KEYWORD MATCH RESULTS" as potential strong signals of relevance.
      - Always include foreign key columns needed to form the reference path.
      - Prefer the **minimal** set of foreign keys necessary for the join.
-
-  4. **Validation Rules**:
-     ❌ The output will be REJECTED if:
-     - Analysis of '{select_table}' is missing
-     - Any selected table violates the 1-hop constraint
-     - Reference paths are hypothetical or indirect
-     - Required foreign keys are omitted
-
+  
+  4. **Solvability Check (CRITICAL)**:
+     - Identify ALL entities/filters mentioned in the question.
+     - If ANY required information (e.g., an author name, a specific date) is completely MISSING from the currently selected 0-hop and 1-hop tables, you MUST set `is_solvable` to `false`.
+     - Set `is_solvable` to `true` ONLY if 100% of the required information is present in the selected tables.
+  
+  5. **Validation Rules**:
+     You MUST do the following:
+     - include analysis for starting table
+     - include FK if selecting a neighbor
+     - use standard JSON arrays
+     - set is_solvable=false if anything required is missing
+  
   ### Step-by-Step Process:
   1. Determine if '{select_table}' alone can answer the question.
-  2. If not:
-     a) Identify valid 1-hop neighbors via schema foreign key relationships
-     b) Select minimal and relevant columns (including required foreign keys)  
-     c) Provide concise justification for each table selected
-
+  2. If not, identify valid 1-hop neighbors and select minimal relevant columns (including FKs).
+  3. Draft the reason checking for missing entities.
+  4. Output the final JSON.
+  
   ### Required JSON Format:
   ```json
   {{
     "selected_columns": {{
-      "<selected_table>": ["<column>", ...],
-      ...
-      "<neighbor_table>": ["<column>", "<foreign_key>", ...],
-      ...
+      "<selected_table>": ["<column1>", "<column2>"],
+      "<neighbor_table>": ["<column>", "<foreign_key>"]
     }},
     "selected_reference_path": {{
-    "<table1.column=table2.column>": "<why this reference_path is selected>"
-      ...
+      "<table1.column=table2.column>": "<why this reference_path is selected>"
     }},
     "reasoning": {{
       "<selected_table>": "<why table and columns were selected>",
-      ...
       "<neighbor_table>": "<why this table is selected>"
-      ...
     }},
     "to_solve_the_question": {{
-      "is_solvable": <true/false>,
-      "question": {question}
-      "reason": "<Describe the information needed for the currently selected entity and if it corresponds to the problem one by one IN Detail>"
+      "question": "{question}",
+      "reason": "<STEP 1: List required entities from the question. STEP 2: Check if they exist in selected tables. STEP 3: Explicitly declare if anything is missing.>",
+      "is_solvable": <true/false>
     }}
   }}
   ```
+  Reason Style Rules (VERY IMPORTANT):
+  - Use short, direct sentences.
+  - Do not use vague phrases like "may be enough" or "possibly solvable".
+  - For is_solvable=true, STEP 3 must clearly say that no required information is missing.
+  - For is_solvable=false, STEP 3 must clearly say what information is missing.
+  - Do not set is_solvable=true just because some relevant tables are found.
+  - A question is solvable only when the whole question can be answered from the selected 0-hop and 1-hop tables.
+  
+  ### Example Output 1: Starting table alone is sufficient
+  {{
+  "selected_columns": {{
+  "publisher": ["publisher_id", "publisher_name"]
+  }},
+  "selected_reference_path": {{}},
+  "reasoning": {{
+  "publisher": "The starting table publisher alone is sufficient. publisher_id is needed to identify the row. publisher_name is needed to answer the question."
+  }},
+  "to_solve_the_question": {{
+  "question": "What is the name of the publisher whose publisher_id is 10?",
+  "reason": "STEP 1: Required information: publisher_id and publisher_name. STEP 2: Present information: both publisher_id and publisher_name exist in publisher. Missing information: none. STEP 3: Final conclusion: no required information is missing, so the question is solvable.",
+  "is_solvable": true
+  }}
+  }}
+  
+  ## Example Output 2: Close to solvable, but actually NOT solvable
+  
+  {{
+  "selected_columns": {{
+  "publisher": ["publisher_id", "publisher_name"],
+  "book": ["book_id", "publisher_id"]
+  }},
+  "selected_reference_path": {{
+  "book.publisher_id=publisher.publisher_id": "This direct foreign key path is needed to connect books to their publisher and identify books published by Scholastic."
+  }},
+  "reasoning": {{
+  "publisher": "The starting table publisher is needed to identify Scholastic and provide the join key publisher_id.",
+  "book": "The 1-hop neighbor table book is needed because the question is about books published by Scholastic. book_id identifies book records. publisher_id is required for the direct join. However, no author information exists in the selected tables."
+  }},
+  "to_solve_the_question": {{
+  "question": "Among the books published by Scholastic, how many were written by J.K. Rowling?",
+  "reason": "STEP 1: Required information: publisher=Scholastic, book records, author=J.K. Rowling. STEP 2: Present information: publisher_name exists in publisher, and book records exist in book. Missing information: no author name or author identifier exists in the selected tables. STEP 3: Final conclusion: author information is missing, so the question is not solvable in the current 0-hop and 1-hop schema view.",
+  "is_solvable": false
+  }}
+  }}
+  -------- Here is your task: --------
   ### Database Name:
   {db_name}
 
   ### Question:
   {question}
-
-  {keyword_hints}
+  
+  ### Result from Last Round:
+  {result_from_last_round}
+  
+  ### Database Schema:
   {evidence}
 
   ### Starting Table(s):
   {select_table}
-
-  {result_from_last_round}
-  {hint}
-  ### Database Schema:
   {db_schema}
 
   ### Please provide the STRICTLY COMPLIANT JSON Response.

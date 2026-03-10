@@ -75,8 +75,14 @@ class PromptManager:
             try:
                 return prompt_template.format(**kwargs)
             except KeyError as e:
-                logger.warning(f"Missing key for prompt format: {e}")
-                return prompt_template  # Return raw if formatting fails? Or raise?
+                # IMPORTANT: Raise the error so it can be caught and displayed by the UI
+                error_msg = f"Missing key for prompt format in '{prompt_name}': {e}"
+                logger.error(error_msg)
+                raise ValueError(error_msg) from e
+            except Exception as e:
+                error_msg = f"Error formatting prompt '{prompt_name}': {e}"
+                logger.error(error_msg)
+                raise ValueError(error_msg) from e
 
         return prompt_template
 

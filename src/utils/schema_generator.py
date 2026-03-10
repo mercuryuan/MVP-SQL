@@ -287,6 +287,51 @@ class SchemaGenerator:
         # 4. 闭合描述块
         return "\n".join(descriptions) + "\n]"
 
+    def merge_selected_columns(self, candidate_results):
+        """
+        合并所有候选结果中的 selected_columns 字段。
+        """
+        merged = {}
+        # 遍历所有候选结果
+        for candidate_key, candidate in candidate_results.items():
+            selected_columns = candidate.get("selected_columns", {})
+            # 遍历每个候选项中的 selected_columns
+            for table, columns in selected_columns.items():
+                if table not in merged:
+                    merged[table] = set()  # 用 set 来避免重复项
+                merged[table].update(columns)
+        # 将集合转换为列表
+        merged = {table: list(columns) for table, columns in merged.items()}
+        return merged
+
+    def generate_combined_description_for_selected(self, selected_results, detail_level="full"):
+        """
+        为选择的实体生成对应的局部描述
+        """
+        # 合并所有结果中的 selected_columns 字段
+        merged = self.merge_selected_columns(selected_results)
+        descriptions = []
+        for table, columns in merged.items():
+            # 生成表的描述,只提供内部的外键连接
+            table_description = self.generate_table_description(table, "full", selected_tables=list(merged.keys()))
+            descriptions.append(table_description)
+            
+            # 暂取列信息
+            all_columns = self.explorer.get_columns_for_table(table)
+            for column in columns:
+                # 兼容处理: 检查列名是否存在 (可能包含表名缀)
+                col_key = column
+                if "." in column and column.startswith(table):
+                    col_key = column.split(".")[-1]
+                
+                if col_key in all_columns:
+                    column_info = all_columns[col_key]
+                    # 生成列的描述
+                    column_description = self.generate_column_description(column_info, mode=detail_level)
+                    descriptions.append(column_description)
+            descriptions.append("]")
+        return "\n".join(descriptions)
+
 
 # ================= 测试入口 =================
 if __name__ == "__main__":

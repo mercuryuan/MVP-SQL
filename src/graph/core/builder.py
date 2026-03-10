@@ -1,5 +1,4 @@
 import networkx as nx
-from .utils import generate_fk_hash
 
 
 class GraphBuilder:
@@ -86,17 +85,38 @@ class GraphBuilder:
         """
         # 构造辅助 ID
         reference_path = f"{from_table}.{from_column}={to_table}.{to_column}"
-        fk_hash = generate_fk_hash(from_table, from_column, to_table, to_column)
 
-        # 1. 添加 Table -> Table 的边
-        self.G.add_edge(from_table, to_table,
-                        type="FOREIGN_KEY",
-                        from_table=from_table,
-                        from_column=from_column,
-                        to_table=to_table,
-                        to_column=to_column,
-                        reference_path=reference_path,
-                        fk_hash=fk_hash)
+        if self.G.has_edge(from_table, to_table):
+            edge_data = self.G[from_table][to_table]
+            if edge_data.get("type") == "FOREIGN_KEY":
+                existing_reference_path = edge_data.get("reference_path")
+                reference_paths = edge_data.get("reference_paths", [])
+                if existing_reference_path and existing_reference_path not in reference_paths:
+                    reference_paths.append(existing_reference_path)
+                if reference_path not in reference_paths:
+                    reference_paths.append(reference_path)
+                edge_data["reference_paths"] = reference_paths
+                edge_data["reference_path"] = reference_path
+                edge_data["from_column"] = from_column
+                edge_data["to_column"] = to_column
+            else:
+                self.G.add_edge(from_table, to_table,
+                                type="FOREIGN_KEY",
+                                from_table=from_table,
+                                from_column=from_column,
+                                to_table=to_table,
+                                to_column=to_column,
+                                reference_path=reference_path,
+                                reference_paths=[reference_path])
+        else:
+            self.G.add_edge(from_table, to_table,
+                            type="FOREIGN_KEY",
+                            from_table=from_table,
+                            from_column=from_column,
+                            to_table=to_table,
+                            to_column=to_column,
+                            reference_path=reference_path,
+                            reference_paths=[reference_path])
 
         # 2. 更新节点属性 (Python 内存操作比 Cypher 简单得多)
         # 我们直接获取节点对象引用 (字典)，然后操作列表

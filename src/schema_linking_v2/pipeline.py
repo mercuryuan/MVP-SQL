@@ -11,6 +11,7 @@ from src.schema_linking_v2.sl2 import SubgraphSelector
 from src.schema_linking_v2.sl3 import CandidateSelector
 from src.utils.graph_explorer import GraphExplorer
 from src.utils.graph_loader import GraphLoader
+# from src.utils.validator import Validator
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +31,7 @@ class SchemaLinkingPipelineV2:
             raise ValueError(f"Failed to load graph from {self.pkl_path}")
             
         self.explorer = GraphExplorer(self.graph)
+        # self.validator = Validator(self.explorer)
         
         # Initialize components
         self.sl1 = TableSelector(dataset_name, db_name, self.explorer, self.question_data)
@@ -65,7 +67,31 @@ class SchemaLinkingPipelineV2:
             db_schema_sl1.append(desc)
         db_schema_sl1_str = "\n".join(db_schema_sl1)
         
-        sl1_result, sl1_prompts = self.sl1.select_relevant_tables(db_schema_sl1_str, question)
+        sl1_retries = 3
+        sl1_result = {}
+        sl1_prompts = {}
+        
+        for attempt in range(sl1_retries):
+            try:
+                sl1_result, sl1_prompts = self.sl1.select_relevant_tables(db_schema_sl1_str, question)
+                # Validator Removed: Rely on LLM output directly
+                # is_valid, corrected_result, error_msg = self.validator.validate_sl1(sl1_result)
+                
+                # Simple check: selected_entity must be a list
+                selected_entity = sl1_result.get("selected_entity")
+                if isinstance(selected_entity, list) and len(selected_entity) > 0:
+                    break
+                else:
+                    logger.warning(f"SL1 attempt {attempt+1} failed: No tables selected or invalid format.")
+                    if attempt == sl1_retries - 1:
+                         # Last attempt failed
+                         pass
+            except Exception as e:
+                logger.error(f"SL1 attempt {attempt+1} exception: {e}")
+                if attempt == sl1_retries - 1:
+                    yield {"step": "error", "message": f"SL1 failed: {e}"}
+                    return {}
+
         selected_tables = sl1_result.get("selected_entity", [])
         value_keywords = sl1_result.get("value_keywords", [])
         
@@ -127,6 +153,9 @@ class SchemaLinkingPipelineV2:
             detail_level=self.sl3_detail
         )
         
+        # Validator Removed
+        # final_result = self.validator.validate_and_correct(final_result)
+        
         # Construct final return dict
         full_result = {
             "final_result": final_result,
@@ -159,7 +188,7 @@ class SchemaLinkingPipelineV2:
         current_selected_tables = [start_table]
         result_from_last_round = ""
         hint = ""
-        max_iterations = 3
+        max_iterations = 5
         
         # Format keyword hints
         keyword_hints = f"Potential values: {', '.join(value_keywords)}" if value_keywords else ""
@@ -168,53 +197,86 @@ class SchemaLinkingPipelineV2:
         final_iteration_result = {}
         
         for i in range(max_iterations):
-            # Generate schema description based on current selection (0-hop + 1-hop view)
-            db_schema_sl2 = self.sl2.generate_schema_description(current_selected_tables, detail_level=self.sl2_detail)
+            try:
+                # Generate schema description based on current selection (0-hop + 1-hop view)
+                db_schema_sl2 = self.sl2.generate_schema_description(current_selected_tables, detail_level=self.sl2_detail)
+                
+                # Record Prompt Context (Optional, for debugging)
+                
+                result, sl2_prompts = self.sl2.select_relevant_tables(
+                    db_schema=db_schema_sl2,
+                    question=question,
+                    select_table=current_selected_tables,
+                    keyword_hints=keyword_hints,
+                    result_from_last_round=result_from_last_round,
+                    hint=hint
+                )
+                
+                # Validator Removed
+                # result = self.validator.validate_and_correct(result)
+                
+                # Store iteration info
+                iteration_info = {
+                    "iteration": i + 1,
+                    "core_tables": list(current_selected_tables), # Copy list
+                    "llm_response": result, 
+                    "prompts": sl2_prompts,
+                    "db_schema_context_len": len(db_schema_sl2)
+                }
+                history.append(iteration_info)
+                
+                final_iteration_result = result
+                
+                # Check solvability
+                to_solve = result.get("to_solve_the_question", {})
+                if to_solve.get("is_solvable") is True:
+                    # Found a solution
+                    return {
+                        "table": start_table,
+                        "final_result": result,
+                        "history": history,
+                        "status": "solved"
+                    }
+                
+                # Prepare for next iteration
+                selected_columns = result.get("selected_columns", {})
+                
+                # Double check if selected_columns is a dict (Validator should have handled this, but be safe)
+                if not isinstance(selected_columns, dict):
+                     # If validator failed to fix it, stop here
+                     logger.error(f"selected_columns is not a dict: {type(selected_columns)}")
+                     return {
+                        "table": start_table,
+                        "final_result": result,
+                        "history": history,
+                        "status": "format_error",
+                        "error_message": "Invalid format: selected_columns must be a dictionary."
+                    }
+
+                new_selected_tables = list(selected_columns.keys())
+                
+                if set(new_selected_tables) == set(current_selected_tables):
+                    # Stuck
+                    pass
+                
+                current_selected_tables = new_selected_tables
+                result_from_last_round = json.dumps(result)
             
-            # Record Prompt Context (Optional, for debugging)
-            
-            result, sl2_prompts = self.sl2.select_relevant_tables(
-                db_schema=db_schema_sl2,
-                question=question,
-                select_table=current_selected_tables,
-                keyword_hints=keyword_hints,
-                result_from_last_round=result_from_last_round,
-                hint=hint
-            )
-            
-            # Store iteration info
-            iteration_info = {
-                "iteration": i + 1,
-                "core_tables": list(current_selected_tables), # Copy list
-                "llm_response": result, 
-                "prompts": sl2_prompts,
-                "db_schema_context_len": len(db_schema_sl2)
-            }
-            history.append(iteration_info)
-            
-            final_iteration_result = result
-            
-            # Check solvability
-            to_solve = result.get("to_solve_the_question", {})
-            if to_solve.get("is_solvable") is True:
-                # Found a solution
+            except Exception as e:
+                logger.error(f"Error in SL2 iteration {i+1} for table {start_table}: {e}")
+                # Append error info to history if possible
+                history.append({
+                    "iteration": i + 1,
+                    "error": str(e),
+                    "status": "exception"
+                })
                 return {
                     "table": start_table,
-                    "final_result": result,
+                    "final_result": final_iteration_result if final_iteration_result else {"error": str(e)},
                     "history": history,
-                    "status": "solved"
+                    "status": "error",
+                    "error_message": str(e)
                 }
-            
-            # Prepare for next iteration
-            selected_columns = result.get("selected_columns", {})
-            new_selected_tables = list(selected_columns.keys())
-            
-            if set(new_selected_tables) == set(current_selected_tables):
-                # Stuck
-                pass
-            
-            current_selected_tables = new_selected_tables
-            result_from_last_round = json.dumps(result)
             
         return {
             "table": start_table,

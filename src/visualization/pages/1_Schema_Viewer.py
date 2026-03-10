@@ -13,6 +13,8 @@ sys.path.insert(0, str(project_root))
 
 from configs import paths
 from src.utils.graph_loader import GraphLoader
+from src.utils.graph_explorer import GraphExplorer
+from src.utils.validator import Validator
 
 # ==========================================
 # 0. 全局配置
@@ -304,7 +306,229 @@ def _render_compact_table(data, ignore_keys):
 
 
 # ==========================================
-# 5. 主程序
+# 5. 验证器测试模块
+# ==========================================
+def render_validator_sandbox(G):
+    def nested_columns_to_dict(nested):
+        selected_columns = {}
+        if isinstance(nested, list):
+            for row in nested:
+                if isinstance(row, list) and len(row) == 2:
+                    table = str(row[0]).strip()
+                    cols_raw = row[1] if isinstance(row[1], list) else [row[1]]
+                    cols = []
+                    for c in cols_raw:
+                        col = str(c).strip()
+                        if col and col not in cols:
+                            cols.append(col)
+                    if table:
+                        selected_columns[table] = cols
+        return selected_columns
+
+    def nested_paths_to_dict(nested):
+        selected_reference_path = {}
+        if isinstance(nested, list):
+            for row in nested:
+                if isinstance(row, list) and len(row) >= 1:
+                    path = str(row[0]).strip()
+                    reason = str(row[1]).strip() if len(row) > 1 else ""
+                    if path:
+                        selected_reference_path[path] = reason
+        return selected_reference_path
+
+    def selected_columns_to_nested(selected_columns):
+        if not isinstance(selected_columns, dict):
+            return []
+        nested = []
+        for table, cols in selected_columns.items():
+            columns = cols if isinstance(cols, list) else [cols]
+            nested.append([str(table), [str(c) for c in columns]])
+        return nested
+
+    def selected_paths_to_nested(selected_paths):
+        if not isinstance(selected_paths, dict):
+            return []
+        return [[str(path), str(reason)] for path, reason in selected_paths.items()]
+
+    def collect_column_entities(selected_columns):
+        entities = set()
+        if not isinstance(selected_columns, dict):
+            return entities
+        for table, cols in selected_columns.items():
+            if isinstance(cols, list):
+                for col in cols:
+                    entities.add(f"{table}.{col}")
+        return entities
+
+    st.markdown("---")
+    st.header("🧪 Validator 全功能实验台")
+    st.info("输入 LLM 原始 JSON，展示：格式归一化、严格校验、清洗结果、失败原因、差异对比、过滤接口结果。")
+
+    explorer = GraphExplorer(G)
+    validator = Validator(explorer)
+    first_two_tables_nested = explorer.get_first_n_tables_schema_nested(2)
+    fk_tables_nested, fk_paths_dict = explorer.get_any_foreign_key_nested()
+    fk_paths_nested = [[k, v] for k, v in fk_paths_dict.items()]
+
+    invalid_case_nested = json.loads(json.dumps(first_two_tables_nested, ensure_ascii=False))
+    if invalid_case_nested and len(invalid_case_nested) > 0:
+        invalid_case_nested[0][1].append("__non_exist_col__")
+
+    presets = {
+        "Schema 基线（前两表）": {
+            "selected_columns_nested": first_two_tables_nested,
+            "selected_reference_path_nested": [],
+            "reasoning": {},
+            "to_solve_the_question": {"is_solvable": True}
+        },
+        "FK 基线（任一外键）": {
+            "selected_columns_nested": fk_tables_nested,
+            "selected_reference_path_nested": fk_paths_nested,
+            "reasoning": {},
+            "to_solve_the_question": {"is_solvable": True}
+        },
+        "错误注入（含不存在列）": {
+            "selected_columns_nested": invalid_case_nested,
+            "selected_reference_path_nested": fk_paths_nested,
+            "reasoning": {},
+            "to_solve_the_question": {"is_solvable": True}
+        }
+    }
+
+    preset_name = st.selectbox("模板", list(presets.keys()))
+    default_json = json.dumps(presets[preset_name], ensure_ascii=False, indent=2)
+    json_input = st.text_area("LLM 原始输出 JSON", value=default_json, height=420)
+    run_btn = st.button("🚀 执行验证器全流程", type="primary", use_container_width=True)
+
+    if not run_btn:
+        return
+
+    try:
+        import copy
+        raw_input = json.loads(json_input)
+
+        prepared_input = copy.deepcopy(raw_input)
+        if "selected_columns_nested" in prepared_input:
+            prepared_input["selected_columns"] = nested_columns_to_dict(prepared_input.get("selected_columns_nested", []))
+        if "selected_reference_path_nested" in prepared_input:
+            prepared_input["selected_reference_path"] = nested_paths_to_dict(prepared_input.get("selected_reference_path_nested", []))
+
+        st.subheader("1) 输入结构诊断")
+        schema_diag = {
+            "selected_columns_type": type(prepared_input.get("selected_columns")).__name__,
+            "selected_reference_path_type": type(prepared_input.get("selected_reference_path")).__name__,
+            "reasoning_type": type(prepared_input.get("reasoning")).__name__ if "reasoning" in prepared_input else "missing",
+            "selected_columns_count": len(prepared_input.get("selected_columns", {})) if isinstance(prepared_input.get("selected_columns"), dict) else 0,
+            "selected_paths_count": len(prepared_input.get("selected_reference_path", {})) if isinstance(prepared_input.get("selected_reference_path"), dict) else 0
+        }
+        st.json(schema_diag)
+
+        if "selected_entity" in prepared_input:
+            st.subheader("2) SL1 验证")
+            sl1_valid, sl1_result, sl1_msg = validator.validate_sl1(copy.deepcopy(prepared_input))
+            status_col1, status_col2, status_col3 = st.columns(3)
+            status_col1.metric("SL1 合法", "是" if sl1_valid else "否")
+            status_col2.metric("输入表数量", len(prepared_input.get("selected_entity", [])) if isinstance(prepared_input.get("selected_entity"), list) else 0)
+            status_col3.metric("输出表数量", len(sl1_result.get("selected_entity", [])) if isinstance(sl1_result.get("selected_entity"), list) else 0)
+            st.write(sl1_msg if sl1_msg else "无附加信息")
+            view_a, view_b = st.columns(2)
+            with view_a:
+                st.markdown("**SL1 输入**")
+                st.json(prepared_input)
+            with view_b:
+                st.markdown("**SL1 输出**")
+                st.json(sl1_result)
+            return
+
+        st.subheader("2) Validator 主流程 (SL2/SL3)")
+        original_for_compare = copy.deepcopy(prepared_input)
+        validated_result = validator.validate_and_correct(copy.deepcopy(prepared_input))
+        to_solve = validated_result.get("to_solve_the_question", {})
+        failure_reasons = to_solve.get("failure_reasons", []) if isinstance(to_solve, dict) else []
+        is_solvable = to_solve.get("is_solvable") if isinstance(to_solve, dict) else None
+
+        metric1, metric2, metric3, metric4 = st.columns(4)
+        metric1.metric("is_solvable", str(is_solvable))
+        metric2.metric("失败条数", len(failure_reasons))
+        metric3.metric(
+            "输入列实体数",
+            len(collect_column_entities(original_for_compare.get("selected_columns", {})))
+        )
+        metric4.metric(
+            "输出列实体数",
+            len(collect_column_entities(validated_result.get("selected_columns", {})))
+        )
+
+        if failure_reasons:
+            st.error("本轮存在校验失败项，已清洗非法实体并返回 failure_reasons。")
+        else:
+            st.success("本轮无失败项，输出已通过验证并规范化。")
+
+        st.subheader("3) 原始 vs 验证后")
+        left, right = st.columns(2)
+        with left:
+            st.markdown("**LLM 原始输入（用于验证前）**")
+            st.json(original_for_compare)
+        with right:
+            st.markdown("**验证器输出（清洗后）**")
+            st.json(validated_result)
+
+        st.subheader("4) 嵌套列表视角")
+        nested_view_a, nested_view_b = st.columns(2)
+        with nested_view_a:
+            st.markdown("**输入嵌套结构**")
+            st.json({
+                "selected_columns_nested": selected_columns_to_nested(original_for_compare.get("selected_columns", {})),
+                "selected_reference_path_nested": selected_paths_to_nested(original_for_compare.get("selected_reference_path", {}))
+            })
+        with nested_view_b:
+            st.markdown("**输出嵌套结构**")
+            st.json({
+                "selected_columns_nested": selected_columns_to_nested(validated_result.get("selected_columns", {})),
+                "selected_reference_path_nested": selected_paths_to_nested(validated_result.get("selected_reference_path", {}))
+            })
+
+        st.subheader("5) 差异摘要")
+        in_tables = set(original_for_compare.get("selected_columns", {}).keys()) if isinstance(original_for_compare.get("selected_columns"), dict) else set()
+        out_tables = set(validated_result.get("selected_columns", {}).keys()) if isinstance(validated_result.get("selected_columns"), dict) else set()
+        in_columns = collect_column_entities(original_for_compare.get("selected_columns", {}))
+        out_columns = collect_column_entities(validated_result.get("selected_columns", {}))
+        in_paths = set(original_for_compare.get("selected_reference_path", {}).keys()) if isinstance(original_for_compare.get("selected_reference_path"), dict) else set()
+        out_paths = set(validated_result.get("selected_reference_path", {}).keys()) if isinstance(validated_result.get("selected_reference_path"), dict) else set()
+
+        st.json({
+            "removed_tables": sorted(list(in_tables - out_tables)),
+            "added_tables": sorted(list(out_tables - in_tables)),
+            "removed_columns": sorted(list(in_columns - out_columns)),
+            "added_columns": sorted(list(out_columns - in_columns)),
+            "removed_paths": sorted(list(in_paths - out_paths)),
+            "added_paths": sorted(list(out_paths - in_paths))
+        })
+
+        st.subheader("6) failure_reasons 结构化展示")
+        if failure_reasons:
+            st.dataframe(pd.DataFrame(failure_reasons), use_container_width=True, hide_index=True)
+        else:
+            st.info("无 failure_reasons。")
+
+        st.subheader("7) 过滤接口结果（辅助核验）")
+        helper_col1, helper_col2 = st.columns(2)
+        with helper_col1:
+            st.markdown("**filter_valid_tables**")
+            st.json(validator.filter_valid_tables(original_for_compare.get("selected_columns", {})))
+        with helper_col2:
+            st.markdown("**filter_valid_foreign_keys**")
+            st.json(validator.filter_valid_foreign_keys(original_for_compare.get("selected_reference_path", {})))
+
+    except json.JSONDecodeError as e:
+        st.error(f"JSON 解析失败: {e}")
+    except Exception as e:
+        st.error(f"执行异常: {e}")
+        st.exception(e)
+
+
+# ==========================================
+# 6. 主程序
 # ==========================================
 def main():
     pkl_file, show_columns = render_sidebar()
@@ -344,6 +568,9 @@ def main():
     with col_details:
         # 【修改点3】传递 edge_map 和 selected_id
         render_details_panel(G, edge_map, selected_id)
+
+    # 渲染验证器测试沙箱
+    render_validator_sandbox(G)
 
 
 if __name__ == "__main__":

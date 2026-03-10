@@ -158,11 +158,26 @@ class SQLParser:
                 real_col = self._col_map_lower[t_lower][c_lower]
                 table_columns[real_table].add(real_col)
 
-        # 4. 处理独立的 Star (*) 节点 (SELECT *)
-        # 如果 qualify 没有扩展 * (例如因大小写问题)，这里会捕获到
+        def _is_projection_star(star_node: Star) -> bool:
+            p = star_node.parent
+            while p is not None:
+                if isinstance(p, Column):
+                    return False
+                if isinstance(p, sqlglot.exp.Func):
+                    return False
+                if isinstance(p, sqlglot.exp.Select):
+                    return True
+                p = p.parent
+            return False
+
+        # 4. 处理独立的投影 Star (*) 节点 (SELECT *)
+        # qualify 可能不会把 * 展开到具体列名，这里做补全
         for star in expression.find_all(Star):
             # 忽略作为 Column 一部分的 Star (t.* 已在上面处理)
             if isinstance(star.parent, Column):
+                continue
+
+            if not _is_projection_star(star):
                 continue
             
             # 对于 SELECT *，我们将当前作用域内所有表的列都加进去

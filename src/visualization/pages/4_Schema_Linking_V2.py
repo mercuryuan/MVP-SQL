@@ -213,7 +213,25 @@ def display_prompt_response(title, prompts, response, expanded=False):
     prompts: {"system": ..., "user": ...}
     response: JSON object or string
     """
+    # Check for validation errors
+    is_valid = True
+    failure_reasons = []
+    if isinstance(response, dict):
+        to_solve = response.get("to_solve_the_question", {})
+        if isinstance(to_solve, dict):
+             failure_reasons = to_solve.get("failure_reasons", [])
+             if failure_reasons:
+                 is_valid = False
+                 title = f"{title} ⚠️ (Corrected/Failed)"
+    
     with st.expander(title, expanded=expanded):
+        if not is_valid:
+             st.error(f"Found {len(failure_reasons)} validation issues:")
+             for err in failure_reasons:
+                 st.markdown(f"- **{err.get('type', 'Error')}**: {err.get('message', '')} _(Entity: {err.get('entity', '')})_")
+                 if err.get('action'):
+                    st.caption(f"  Action: {err.get('action')}")
+        
         c1, c2 = st.columns(2)
         with c1:
             st.markdown("#### 📤 Input (Prompts)")
@@ -481,8 +499,6 @@ def main():
         
         agraph(nodes=nodes, edges=edges, config=config)
 
-    st.markdown("---")
-
     # Move Run Button Here
     col_run, col_history = st.columns([2, 1])
     with col_run:
@@ -508,6 +524,8 @@ def main():
 
     if existing_result:
         st.success(f"已发现历史记录 ({existing_result['timestamp'][:16]})")
+
+    st.markdown("---")
 
     if run_btn:
         st.session_state.streaming_status_v2 = "running"
@@ -571,24 +589,50 @@ def main():
                         table_res = event["result"]
                         # table_res has "history" where prompts are
                         st.session_state.streaming_sl2_v2[table] = table_res
-                        status.write(f"✅ SL2 表 {table} 完成")
+                        
+                        status_code = table_res.get("status")
+                        is_solved = status_code == "solved"
+                        if is_solved:
+                            status_icon = "✅"
+                        elif status_code in ["error", "format_error"]:
+                            status_icon = "❌"
+                        else:
+                            status_icon = "⚠️"
+                            
+                        status.write(f"{status_icon} SL2 表 {table} 完成 (Status: {status_code})")
+                        
                         # Render SL2 table update
                         with sl2_container:
-                            with st.expander(f"Step 2 (Table: {table})", expanded=False):
+                            with st.expander(f"Step 2 (Table: {table}) {status_icon}", expanded=not is_solved):
+                                if status_code in ["error", "format_error"]:
+                                    st.error(f"Error: {table_res.get('error_message', 'Unknown error')}")
+                                
                                 history = table_res.get("history", [])
                                 for i, h in enumerate(history):
-                                    st.markdown(f"**Iteration {h['iteration']}**")
-                                    display_prompt_response(
-                                        f"Iteration {h['iteration']} Details",
-                                        h.get("prompts", {}),
-                                        h["llm_response"],
-                                        expanded=False
-                                    )
-                                st.markdown("**Final Result for Table**")
+                                    st.markdown(f"**Iteration {h.get('iteration', i+1)}**")
+                                    if h.get("status") == "exception":
+                                        st.error(f"Exception: {h.get('error')}")
+                                    else:
+                                        display_prompt_response(
+                                            f"Iteration {h.get('iteration', i+1)} Details",
+                                            h.get("prompts", {}),
+                                            h.get("llm_response", {}),
+                                            expanded=False
+                                        )
+                                st.markdown(f"**Final Result for Table {table}**")
                                 st.json(table_res.get("final_result", {}))
 
                     elif step == "sl2_table_error":
-                        status.write(f"❌ SL2 表 {event['table']} 失败: {event['error']}")
+                        table = event['table']
+                        error_msg = event['error']
+                        status.write(f"❌ SL2 表 {table} 失败: {error_msg}")
+                        # 记录失败状态，以便展示
+                        st.session_state.streaming_sl2_v2[table] = {
+                            "status": "error",
+                            "error_message": error_msg,
+                            "history": [],
+                            "final_result": {"error": error_msg}
+                        }
                         
                     elif step == "sl3_start":
                         status.write("正在执行 SL3: 候选结果优选...")
@@ -600,9 +644,10 @@ def main():
                         final_res = event["result"]
                         status.write("✅ SL3 完成")
                         with sl3_container:
+                             st.markdown("### Step 3: 最终候选选择")
                              res = event["result"]["final_result"]
                              display_prompt_response(
-                                 "Step 3: 最终候选选择",
+                                 "Step 3: 最终候选选择详情",
                                  event.get("prompts", {}),
                                  res,
                                  expanded=True
@@ -656,15 +701,33 @@ def main():
         # 2. SL2
         if st.session_state.streaming_sl2_v2:
             st.markdown("### Step 2: 子图扩展详情")
-            tabs = st.tabs(list(st.session_state.streaming_sl2_v2.keys()))
+            
+            # Create tabs with status icons
+            tab_labels = []
+            for table, res in st.session_state.streaming_sl2_v2.items():
+                status_code = res.get("status")
+                if status_code == "solved":
+                    icon = "✅"
+                elif status_code in ["error", "format_error"]:
+                    icon = "❌"
+                else:
+                    icon = "⚠️"
+                tab_labels.append(f"{table} {icon}")
+            
+            tabs = st.tabs(tab_labels)
+            
             for i, (table, res) in enumerate(st.session_state.streaming_sl2_v2.items()):
                 with tabs[i]:
+                    st.info(f"Status: {res.get('status')}")
+                    if res.get("status") in ["error", "format_error"]:
+                         st.error(f"Error Message: {res.get('error_message')}")
+                         
                     history = res.get("history", [])
                     for h in history:
                          display_prompt_response(
-                            f"Iteration {h['iteration']}",
+                            f"Iteration {h.get('iteration', '?')}",
                             h.get("prompts", {}),
-                            h["llm_response"],
+                            h.get("llm_response", {}),
                             expanded=False
                         )
         else:
@@ -679,7 +742,8 @@ def main():
         
         prompts = st.session_state.get("streaming_sl3_prompts_v2", {}) or result_data.get("_prompts", {}).get("sl3", {})
              
-        display_prompt_response("Step 3: 最终候选选择", prompts, final_result, expanded=True)
+        st.markdown("### Step 3: 最终候选选择")
+        display_prompt_response("Step 3: 最终候选选择详情", prompts, final_result, expanded=True)
 
         # --- Graph Visualization ---
         st.markdown("### 🏁 最终结果统计 (Final Prediction)")

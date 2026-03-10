@@ -1,4 +1,3 @@
-import hashlib
 from datetime import datetime, date
 
 
@@ -53,11 +52,3 @@ def convert_date_string(date_str):
             continue
     return None
 
-
-def generate_fk_hash(table1, column1, table2, column2):
-    """
-    生成无序的外键ID，用于唯一标识外键关系。
-    """
-    elements = sorted([f"{table1}.{column1}", f"{table2}.{column2}"])
-    unique_string = "|".join(elements)
-    return hashlib.md5(unique_string.encode()).hexdigest()

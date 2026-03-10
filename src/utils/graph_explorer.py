@@ -16,6 +16,24 @@ class GraphExplorer:
 
     def __init__(self, graph: nx.DiGraph):
         self.graph = graph
+        self._table_name_to_node_id = {}
+        for node_id, data in self.graph.nodes(data=True):
+            if data.get("type") == "Table":
+                table_name = data.get("name")
+                if table_name:
+                    self._table_name_to_node_id[table_name] = node_id
+
+    def _resolve_table_node_id(self, table_name: str):
+        if table_name in self.graph and self.graph.nodes[table_name].get("type") == "Table":
+            return table_name
+        return self._table_name_to_node_id.get(table_name)
+
+    def _resolve_table_name(self, table_node_id: str):
+        if table_node_id not in self.graph:
+            return None
+        if self.graph.nodes[table_node_id].get("type") != "Table":
+            return None
+        return self.graph.nodes[table_node_id].get("name", table_node_id)
 
     def get_all_nodes(self) -> List[Dict[str, Any]]:
         """
@@ -74,23 +92,14 @@ class GraphExplorer:
         Retries parameters are kept for API compatibility but are not needed for in-memory graph.
         """
         columns = {}
-        if table_name in self.graph:
-            # Check outgoing edges for HAS_COLUMN
-            for neighbor in self.graph.successors(table_name):
-                edge_data = self.graph.get_edge_data(table_name, neighbor)
+        table_node_id = self._resolve_table_node_id(table_name)
+        if table_node_id in self.graph:
+            for neighbor in self.graph.successors(table_node_id):
+                edge_data = self.graph.get_edge_data(table_node_id, neighbor)
                 if edge_data and edge_data.get("type") == "HAS_COLUMN":
                     node_data = self.graph.nodes[neighbor]
                     if node_data.get("type") == "Column":
-                        # Use node properties as column info
                         columns[node_data.get("name")] = node_data
-
-        if not columns:
-            # Just a warning, not necessarily an error (table might have no columns or not exist)
-            # But following original logic, it might print warning.
-            # Original code: print warning if not found.
-            pass
-            # logger.warning(f"No columns found for table '{table_name}'")
-
         return columns
 
     def get_neighbor_tables(self, table_name: str, n_hop: int) -> List[str]:
@@ -230,23 +239,58 @@ class GraphExplorer:
         """
         Get reference paths for FKs between two tables.
         """
-        paths = []
-
-        # t1 -> t2
-        if self.graph.has_edge(table1, table2):
-            data = self.graph[table1][table2]
+        paths = set()
+        table1_node = self._resolve_table_node_id(table1)
+        table2_node = self._resolve_table_node_id(table2)
+        if table1_node is None or table2_node is None:
+            return []
+        if self.graph.has_edge(table1_node, table2_node):
+            data = self.graph[table1_node][table2_node]
             if data.get("type") == "FOREIGN_KEY":
-                if data.get("reference_path"):
-                    paths.append(data["reference_path"])
-
-        # t2 -> t1
-        if self.graph.has_edge(table2, table1):
-            data = self.graph[table2][table1]
+                reference_path = data.get("reference_path")
+                if reference_path:
+                    paths.add(reference_path)
+                for item in data.get("reference_paths", []):
+                    if item:
+                        paths.add(item)
+        if self.graph.has_edge(table2_node, table1_node):
+            data = self.graph[table2_node][table1_node]
             if data.get("type") == "FOREIGN_KEY":
-                if data.get("reference_path"):
-                    paths.append(data["reference_path"])
+                reference_path = data.get("reference_path")
+                if reference_path:
+                    paths.add(reference_path)
+                for item in data.get("reference_paths", []):
+                    if item:
+                        paths.add(item)
+        return list(paths)
 
-        return paths
+    def get_table_schema_nested(self, table_name: str) -> List[Any]:
+        columns = list(self.get_columns_for_table(table_name).keys())
+        return [table_name, columns]
+
+    def get_first_n_tables_schema_nested(self, n: int = 2) -> List[List[Any]]:
+        tables = list(self.get_all_tables().keys())[:n]
+        return [self.get_table_schema_nested(table_name) for table_name in tables]
+
+    def get_any_foreign_key_nested(self):
+        for u, v, data in self.graph.edges(data=True):
+            if data.get("type") != "FOREIGN_KEY":
+                continue
+            u_name = self._resolve_table_name(u) or u
+            v_name = self._resolve_table_name(v) or v
+            if data.get("from_column") and data.get("to_column"):
+                return [[u_name, [data.get("from_column")]], [v_name, [data.get("to_column")]]], {
+                    f"{u_name}.{data.get('from_column')}={v_name}.{data.get('to_column')}": "fk_example"
+                }
+            reference_path = data.get("reference_path")
+            if reference_path and "=" in reference_path:
+                left, right = reference_path.split("=")
+                left_table, left_col = left.strip().rsplit(".", 1)
+                right_table, right_col = right.strip().rsplit(".", 1)
+                return [[left_table, [left_col]], [right_table, [right_col]]], {
+                    f"{left_table}.{left_col}={right_table}.{right_col}": "fk_example"
+                }
+        return [], {}
 
 
 if __name__ == "__main__":

@@ -116,6 +116,7 @@ if __name__ == '__main__':
 
     # 2. 测试 BIRD (会保留原始 evidence 内容)
     bird_loader = DataLoader("bird")
+    print(bird_loader.list_dbnames())
     bird_res = bird_loader.filter_data(db_id="superstore", fields=["question", "sql_query", "evidence"],
                                        show_count=True)
     if bird_res:
